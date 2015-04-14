@@ -8,8 +8,8 @@ _pytave_la_CPPFLAGS = @OCTAVE_CPPFLAGS@ @PYTHON_CPPFLAGS@ -I@NUMPY_INCLUDEDIR@
 
 # Having -module in LDFLAGS lets us use a non-standard library name 
 # (e.g. _pytave instead of libpytave)
-_pytave_la_LDFLAGS = -module -L@OCTAVE_LIBRARYDIR@ -loctinterp -loctave  \
--lcruft -l@BOOST_PYTHON_LIB@ -R @PYTAVE_OCTAVE_RPATH@
+_pytave_la_LDFLAGS = -module -L@OCTAVE_LIBRARYDIR@ @OCTAVE_LIBS@  \
+-l@BOOST_PYTHON_LIB@ -R @PYTAVE_OCTAVE_RPATH@
 
 _pytave_la_SOURCES = octave_to_python.cc pytave.cc python_to_octave.cc \
 arrayobjectdefs.h octave_to_python.h pytavedefs.h exceptions.h   \
