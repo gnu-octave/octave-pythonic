@@ -182,7 +182,7 @@ namespace pytave {
       // Numpy is kind enough to provide us with the old-style defines.
       else if (bytes == sizeof(long long)) {
          boost::integral_constant<bool, bytes == sizeof(long long) && bytes != sizeof(int)> inst;
-         return create_array<long long, CLASS>(value, PyArray_LONGLONG, inst);
+         return create_array<long, CLASS>(value, PyArray_LONGLONG, inst);
       }
       else if (bytes == sizeof(long)) {
          boost::integral_constant<bool, bytes == sizeof(long) && bytes != sizeof(int) && bytes != sizeof(long long)> inst;
