@@ -29,11 +29,12 @@
 #undef HAVE_STAT
 #undef HAVE_FSTAT
 
+#include <octave/config.h>
 #include <octave/oct.h>
 #include <octave/oct-map.h>
 #include <octave/Cell.h>
-#include <octave/Matrix.h>
 #include <octave/ov.h>
+#include <octave/Array.h>
 
 #include "pytavedefs.h"
 #include "arrayobjectdefs.h"
@@ -352,15 +353,15 @@ namespace pytave {
 
       dim_vector dims = dim_vector(1, 1);
 
-      Array<octave_value> vals (length);
-      Array<std::string> keys (length);
+      octave_value_list vals (length);
+      string_vector keys (length);
 
       // Extract all keys and convert values. Remember whether dimensions
       // match.
       
       for(octave_idx_type i = 0; i < length; i++) {
 
-         std::string& key = keys(i);
+         std::string& key = keys[i];
 
          boost::python::tuple tuple =
             boost::python::extract<boost::python::tuple>(list[i])();
@@ -396,11 +397,11 @@ namespace pytave {
          }
       }
 
-      Octave_map map = Octave_map(dims);
+      octave_map map = octave_map(dims);
 
       for(octave_idx_type i = 0; i < length; i++) {
 
-         std::string& key = keys(i);
+         std::string& key = keys[i];
          octave_value val = vals(i);
 
          if(val.is_cell()) {

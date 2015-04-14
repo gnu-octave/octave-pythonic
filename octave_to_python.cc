@@ -28,8 +28,8 @@
 #undef HAVE_STAT
 #undef HAVE_FSTAT
 
+#include <octave/config.h>
 #include <octave/oct.h>
-#include <octave/Matrix.h>
 #include <octave/ov.h>
 #include <octave/oct-map.h>
 
@@ -282,7 +282,7 @@ namespace pytave {
    }
 
    static void octmap_to_pyobject(boost::python::object &py_object,
-                                  const Octave_map& map) {
+                                  const octave_map& map) {
       py_object = boost::python::dict();
       string_vector keys = map.keys();
 

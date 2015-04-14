@@ -27,6 +27,7 @@
 #undef HAVE_STAT
 #undef HAVE_FSTAT
 
+#include <octave/config.h>
 #include <octave/oct.h>
 
 #include <octave/oct-map.h>
@@ -125,10 +126,10 @@ namespace pytave { /* {{{ */
                                   variable_name_exception::excclass)));
    }
 
-   string make_error_message (const Octave_map& map) {
+   string make_error_message (const octave_map& map) {
       ostringstream exceptionmsg;
-      string message = map.stringfield("message", "");
-      string identifier = map.stringfield("identifier", "");
+      string message = map(0).getfield("message").string_value();
+      string identifier = map(0).getfield("identifier").string_value();
       Cell stackCell = map.contents("stack");
 
       // Trim trailing new lines
@@ -137,11 +138,11 @@ namespace pytave { /* {{{ */
       if (!stackCell.is_empty() && stackCell(0).is_map()) {
          // The struct element is called "stack" but only contain
          // info about the top frame.
-         Octave_map stack = stackCell(0).map_value();
-         string file = stack.stringfield("file", "");
-         string name = stack.stringfield("name", "");
-         int line = stack.intfield("line", 1);
-         int column = stack.intfield("column", 2);
+         octave_map stack = stackCell(0).map_value();
+         string file = stack(0).getfield("file").string_value();
+         string name = stack(0).getfield("name").string_value();
+         int line = stack(0).getfield("line").int_value();
+         int column = stack(0).getfield("column").int_value();
 
          exceptionmsg << file << ":" << line << ":" << column << ": ";
          if (!name.empty())
@@ -315,9 +316,9 @@ namespace pytave { /* {{{ */
       pyobj_to_octvalue(val, pyobject);
 
       if (global)
-         symbol_table::global_varref(name) = val;
+         symbol_table::global_assign (name, val);
       else
-         symbol_table::varref(name) = val;
+         symbol_table::assign (name, val);
    }
 
    bool isvar(const string& name, bool global) {
@@ -374,7 +375,7 @@ namespace pytave { /* {{{ */
 #endif
 
       Py_BEGIN_ALLOW_THREADS
-      do_octave_atexit();
+      clean_up_and_exit (0);
       Py_END_ALLOW_THREADS
 
 #ifdef HAVE_USELOCALE
