@@ -47,7 +47,6 @@
  *  (e.g. PyArray_INT ).
  */
 
-using namespace std;
 using namespace boost::python;
 
 namespace pytave {
@@ -163,7 +162,7 @@ namespace pytave {
             bytes == sizeof(short) && bytes != sizeof(int)> inst;
          return create_array<unsigned short, CLASS>(value, PyArray_USHORT, inst);
       } else {
-         ostringstream os;
+         std::ostringstream os;
          os << "Numeric arrays does not support unsigned " << (bytes*8)
             << "-bit values on this architecture.";
          throw value_convert_exception(os.str());
@@ -195,7 +194,7 @@ namespace pytave {
             bytes==sizeof(short) && bytes != sizeof(int)> inst;
          return create_array<signed short, CLASS>(value, PyArray_SHORT, inst);
       } else {
-         ostringstream os;
+         std::ostringstream os;
          os << "Numeric arrays doesn't support signed " << (bytes*8)
             << "-bit values on this architecture.";
          throw value_convert_exception(os.str());

@@ -40,7 +40,6 @@
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 
-using namespace std;
 using namespace boost::python;
 
 namespace pytave {
@@ -91,12 +90,12 @@ namespace pytave {
          for (int i = 0; i < pyarr->dimensions[dimension]; i++) {
             PyObject *pobj = *(PyObject **)
                &ptr[offset + i*pyarr->strides[dimension]];
-            pyobj_to_octvalue (matrix.elem(matindex + i*matstride), 
+            pyobj_to_octvalue (matrix.elem(matindex + i*matstride),
                                object(handle<PyObject> (borrowed (pobj))));
          }
       } else if (pyarr->nd == 0) {
             PyObject *pobj = *(PyObject **) ptr;
-            pyobj_to_octvalue (matrix.elem(0), 
+            pyobj_to_octvalue (matrix.elem(0),
                                object(handle<PyObject> (borrowed (pobj))));
       } else {
          for (int i = 0; i < pyarr->dimensions[dimension]; i++) {
@@ -202,7 +201,7 @@ namespace pytave {
             throw object_convert_exception(
                PyEval_GetFuncName((PyObject*)pyarr)
                + (PyEval_GetFuncDesc((PyObject*)pyarr)
-               + string(": Unsupported Python array type")));
+               + std::string(": Unsupported Python array type")));
       }
    }
 
@@ -319,7 +318,7 @@ namespace pytave {
             break;
          default:
             throw object_convert_exception(
-               PyEval_GetFuncDesc((PyObject*)(pyarr)) + string(" ")
+               PyEval_GetFuncDesc((PyObject*)(pyarr)) + std::string(" ")
                + PyEval_GetFuncName((PyObject*)(pyarr))
                + ": Encountered unsupported Python array");
             break;
@@ -358,7 +357,7 @@ namespace pytave {
 
       // Extract all keys and convert values. Remember whether dimensions
       // match.
-      
+
       for(octave_idx_type i = 0; i < length; i++) {
 
          std::string& key = keys[i];
@@ -369,7 +368,7 @@ namespace pytave {
          boost::python::extract<std::string> str(tuple[0]);
          if(!str.check()) {
             throw object_convert_exception(
-               string("Can not convert key of type ")
+               std::string("Can not convert key of type ")
                + PyEval_GetFuncName(boost::python::object(tuple[0]).ptr())
                + PyEval_GetFuncDesc(boost::python::object(tuple[0]).ptr())
                + " to a structure field name. Field names must be strings.");
@@ -379,7 +378,7 @@ namespace pytave {
 
          if (!valid_identifier(key)) {
             throw object_convert_exception(
-               string("Can not convert key `") + key + "' to a structure "
+               std::string("Can not convert key `") + key + "' to a structure "
                "field name. Field names must be valid Octave identifiers.");
          }
 
@@ -423,7 +422,7 @@ namespace pytave {
       extract<int> intx(py_object);
       extract<double> doublex(py_object);
       extract<Complex> complexx(py_object);
-      extract<string> stringx(py_object);
+      extract<std::string> stringx(py_object);
       extract<numeric::array> arrayx(py_object);
       extract<boost::python::list> listx(py_object);
       extract<boost::python::dict> dictx(py_object);
@@ -445,7 +444,7 @@ namespace pytave {
          throw object_convert_exception(
             PyEval_GetFuncName(py_object.ptr())
             + (PyEval_GetFuncDesc(py_object.ptr())
-               + string(": Unsupported Python object type, "
+               + std::string(": Unsupported Python object type, "
                         "cannot convert to Octave value")));
       }
    }

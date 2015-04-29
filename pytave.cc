@@ -54,7 +54,6 @@
 #include "python_to_octave.h"
 
 using namespace boost::python;
-using namespace std;
 
 namespace pytave { /* {{{ */
 
@@ -126,10 +125,10 @@ namespace pytave { /* {{{ */
                                   variable_name_exception::excclass)));
    }
 
-   string make_error_message (const octave_map& map) {
-      ostringstream exceptionmsg;
-      string message = map(0).getfield("message").string_value();
-      string identifier = map(0).getfield("identifier").string_value();
+   std::string make_error_message (const octave_map& map) {
+      std::ostringstream exceptionmsg;
+      std::string message = map(0).getfield("message").string_value();
+      std::string identifier = map(0).getfield("identifier").string_value();
       Cell stackCell = map.contents("stack");
 
       // Trim trailing new lines
@@ -139,8 +138,8 @@ namespace pytave { /* {{{ */
          // The struct element is called "stack" but only contain
          // info about the top frame.
          octave_map stack = stackCell(0).map_value();
-         string file = stack(0).getfield("file").string_value();
-         string name = stack(0).getfield("name").string_value();
+         std::string file = stack(0).getfield("file").string_value();
+         std::string name = stack(0).getfield("name").string_value();
          int line = stack(0).getfield("line").int_value();
          int column = stack(0).getfield("column").int_value();
 
@@ -158,7 +157,7 @@ namespace pytave { /* {{{ */
    }
 
    boost::python::tuple func_eval(const int nargout,
-                                  const string &funcname,
+                                  const std::string &funcname,
                                   const boost::python::tuple &arguments) {
 
       octave_value_list octave_args, retval;
@@ -180,7 +179,7 @@ namespace pytave { /* {{{ */
       Py_BEGIN_ALLOW_THREADS
       try {
          retval = feval(funcname, octave_args, (nargout >= 0) ? nargout : 0);
-      } catch (bad_alloc) {
+      } catch (std::bad_alloc) {
          bad_alloc_state = true;
       }
       Py_END_ALLOW_THREADS
@@ -191,7 +190,7 @@ namespace pytave { /* {{{ */
 #endif
 
       if (bad_alloc_state)
-         throw bad_alloc (); // Translated to MemoryError by boost::python
+         throw std::bad_alloc (); // Translated to MemoryError by boost::python
 
       else if (error_state != 0) {
 // error_state values:
@@ -203,7 +202,7 @@ namespace pytave { /* {{{ */
          octave_value_list lasterror = eval_string("lasterror",
                                                    true, parse_status, 1);
          if (!lasterror.empty() && lasterror(0).is_map()) {
-            string exceptionmsg = make_error_message(lasterror(0).map_value ());
+            std::string exceptionmsg = make_error_message(lasterror(0).map_value ());
             throw octave_error_exception(exceptionmsg);
          } else
             throw octave_error_exception("No Octave error available");
@@ -220,7 +219,7 @@ namespace pytave { /* {{{ */
    }
 
    boost::python::tuple str_eval(int nargout,
-                                 const string &code,
+                                 const std::string &code,
                                  bool silent) {
 
       octave_value_list retval;
@@ -242,7 +241,7 @@ namespace pytave { /* {{{ */
       try {
          retval = eval_string(code, silent, parse_status,
             (nargout >= 0) ? nargout : 0);
-      } catch (bad_alloc) {
+      } catch (std::bad_alloc) {
          bad_alloc_state = true;
       }
       Py_END_ALLOW_THREADS
@@ -253,7 +252,7 @@ namespace pytave { /* {{{ */
 #endif
 
       if (bad_alloc_state)
-         throw bad_alloc (); // Translated to MemoryError by boost::python
+         throw std::bad_alloc (); // Translated to MemoryError by boost::python
 
       if (parse_status != 0 || error_state != 0) {
 // error_state values:
@@ -265,7 +264,7 @@ namespace pytave { /* {{{ */
          octave_value_list lasterror = eval_string("lasterror",
                                                    true, parse_status1, 1);
          if (!lasterror.empty() && lasterror(0).is_map()) {
-            string exceptionmsg = make_error_message (lasterror(0).map_value ());
+            std::string exceptionmsg = make_error_message (lasterror(0).map_value ());
 
             if (parse_status != 0)
                throw octave_parse_exception(exceptionmsg);
@@ -285,7 +284,7 @@ namespace pytave { /* {{{ */
       }
    }
 
-   boost::python::object getvar(const string& name,
+   boost::python::object getvar(const std::string& name,
                                 bool global) {
       octave_value val;
 
@@ -304,7 +303,7 @@ namespace pytave { /* {{{ */
       return pyobject;
    }
 
-   void setvar(const string& name, 
+   void setvar(const std::string& name,
                const boost::python::object& pyobject,
                bool global) {
       octave_value val;
@@ -321,7 +320,7 @@ namespace pytave { /* {{{ */
          symbol_table::assign (name, val);
    }
 
-   bool isvar(const string& name, bool global) {
+   bool isvar(const std::string& name, bool global) {
       bool retval;
 
       if (global)
@@ -332,7 +331,7 @@ namespace pytave { /* {{{ */
       return retval;
    }
 
-   void delvar(const string& name, bool global) {
+   void delvar(const std::string& name, bool global) {
 
       if (global) {
 
