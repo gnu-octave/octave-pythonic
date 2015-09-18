@@ -19,7 +19,6 @@
  */
 
 #include <boost/python.hpp>
-#include <boost/python/numeric.hpp>
 #include <boost/type_traits/integral_constant.hpp>
 
 /* Both boost::python and octave define HAVE_STAT and HAVE_FSTAT.  Ideally,
@@ -44,7 +43,7 @@
  *  types, not the Python data types. A Python int is equivalent to a C long,
  *  and a Python float corresponds to a C double . Many of the element types
  *  listed above do not have corresponding Python scalar types
- *  (e.g. PyArray_INT ).
+ *  (e.g. NPY_INT ).
  */
 
 using namespace boost::python;
@@ -59,22 +58,22 @@ namespace pytave {
                                   const unsigned int matstride,
                                   const int dimension,
                                   const unsigned int offset) {
-      unsigned char *ptr = (unsigned char*) pyarr->data;
-      if (dimension == pyarr->nd - 1) {
+      unsigned char *ptr = (unsigned char*) PyArray_DATA (pyarr);
+      if (dimension == PyArray_NDIM (pyarr) - 1) {
          // Last dimension, base case
-         for (int i = 0; i < pyarr->dimensions[dimension]; i++) {
-            *(PythonPrimitive *)&ptr[offset + i*pyarr->strides[dimension]]
+         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
+            *(PythonPrimitive *)&ptr[offset + i*PyArray_STRIDE (pyarr, dimension)]
                = matrix.elem(matindex + i*matstride);
          }
       } else {
-         for (int i = 0; i < pyarr->dimensions[dimension]; i++) {
+         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
             copy_octarray_to_pyarrobj<PythonPrimitive, OctaveBase>(
                pyarr,
                matrix,
                matindex + i*matstride,
-               matstride * pyarr->dimensions[dimension],
+               matstride * PyArray_DIM (pyarr, dimension),
                dimension + 1,
-               offset + i*pyarr->strides[dimension]);
+               offset + i*PyArray_STRIDE (pyarr, dimension));
          }
       }
    }
@@ -87,25 +86,25 @@ namespace pytave {
                                   const unsigned int matstride,
                                   const int dimension,
                                   const unsigned int offset) {
-      unsigned char *ptr = (unsigned char*) pyarr->data;
-      if (dimension == pyarr->nd - 1) {
+      unsigned char *ptr = (unsigned char*) PyArray_DATA (pyarr);
+      if (dimension == PyArray_NDIM (pyarr) - 1) {
          // Last dimension, base case
-         for (int i = 0; i < pyarr->dimensions[dimension]; i++) {
+         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
             object pyobj;
             octvalue_to_pyobj (pyobj, matrix.elem(matindex + i*matstride));
             Py_INCREF (pyobj.ptr());
-            *(PyObject **)&ptr[offset + i*pyarr->strides[dimension]]
+            *(PyObject **)&ptr[offset + i*PyArray_STRIDE (pyarr, dimension)]
                = pyobj.ptr();
          }
       } else {
-         for (int i = 0; i < pyarr->dimensions[dimension]; i++) {
+         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
             copy_octarray_to_pyarrobj<PyObject *, Cell>(
                pyarr,
                matrix,
                matindex + i*matstride,
-               matstride * pyarr->dimensions[dimension],
+               matstride * PyArray_DIM (pyarr, dimension),
                dimension + 1,
-               offset + i*pyarr->strides[dimension]);
+               offset + i*PyArray_STRIDE (pyarr, dimension));
          }
       }
    }
@@ -153,17 +152,17 @@ namespace pytave {
    inline static PyArrayObject *create_uint_array(CLASS value) {
       if (bytes == sizeof(int)) {
          boost::integral_constant<bool, bytes == sizeof(int)> inst;
-         return create_array<unsigned int, CLASS>(value, PyArray_UINT, inst);
+         return create_array<unsigned int, CLASS>(value, NPY_UINT, inst);
       } else if (bytes == sizeof(char)) {
          boost::integral_constant<bool, bytes == sizeof(char)> inst;
-         return create_array<unsigned char, CLASS>(value, PyArray_UBYTE, inst);
+         return create_array<unsigned char, CLASS>(value, NPY_UBYTE, inst);
       } else if (bytes == sizeof(short)) {
          boost::integral_constant<bool,
             bytes == sizeof(short) && bytes != sizeof(int)> inst;
-         return create_array<unsigned short, CLASS>(value, PyArray_USHORT, inst);
+         return create_array<unsigned short, CLASS>(value, NPY_USHORT, inst);
       } else {
          std::ostringstream os;
-         os << "Numeric arrays does not support unsigned " << (bytes*8)
+         os << "NumPy arrays do not support unsigned " << (bytes*8)
             << "-bit values on this architecture.";
          throw value_convert_exception(os.str());
       }
@@ -175,27 +174,25 @@ namespace pytave {
          // We test int first since we prefer int to other datatypes of the
          // same size.
          boost::integral_constant<bool, bytes == sizeof(int)> inst;
-         return create_array<signed int, CLASS>(value, PyArray_INT, inst);
+         return create_array<signed int, CLASS>(value, NPY_INT, inst);
       }
-      // PyArray_LONGLONG does not exist (AFAIR) in legacy Numeric arrays, but
-      // Numpy is kind enough to provide us with the old-style defines.
       else if (bytes == sizeof(long long)) {
          boost::integral_constant<bool, bytes == sizeof(long long) && bytes != sizeof(int)> inst;
-         return create_array<long, CLASS>(value, PyArray_LONGLONG, inst);
+         return create_array<long, CLASS>(value, NPY_LONGLONG, inst);
       }
       else if (bytes == sizeof(long)) {
          boost::integral_constant<bool, bytes == sizeof(long) && bytes != sizeof(int) && bytes != sizeof(long long)> inst;
-         return create_array<long, CLASS>(value, PyArray_LONG, inst);
+         return create_array<long, CLASS>(value, NPY_LONG, inst);
       } else if (bytes == sizeof(char)) {
          boost::integral_constant<bool, bytes == sizeof(char)> inst;
-         return create_array<signed char, CLASS>(value, PyArray_SBYTE, inst);
+         return create_array<signed char, CLASS>(value, NPY_BYTE, inst);
       } else if (bytes == sizeof(short)) {
          boost::integral_constant<bool,
             bytes==sizeof(short) && bytes != sizeof(int)> inst;
-         return create_array<signed short, CLASS>(value, PyArray_SHORT, inst);
+         return create_array<signed short, CLASS>(value, NPY_SHORT, inst);
       } else {
          std::ostringstream os;
-         os << "Numeric arrays doesn't support signed " << (bytes*8)
+         os << "NumPy arrays do not support signed " << (bytes*8)
             << "-bit values on this architecture.";
          throw value_convert_exception(os.str());
       }
@@ -205,10 +202,10 @@ namespace pytave {
       if (matrix.is_double_type ()) {
          if (matrix.is_complex_type ()) {
             return create_array<Complex, ComplexNDArray>
-               (matrix.complex_array_value(), PyArray_CDOUBLE);
+               (matrix.complex_array_value(), NPY_CDOUBLE);
          } else if (matrix.is_real_type()) {
             return create_array<double, NDArray>(matrix.array_value(),
-                                                 PyArray_DOUBLE);
+                                                 NPY_DOUBLE);
          } else
             throw value_convert_exception("Unknown double matrix type");
       }
@@ -216,10 +213,10 @@ namespace pytave {
       if (matrix.is_single_type ()) {
          if (matrix.is_complex_type ()) {
             return create_array<FloatComplex, FloatComplexNDArray>
-               (matrix.float_complex_array_value(), PyArray_CFLOAT);
+               (matrix.float_complex_array_value(), NPY_CFLOAT);
          } else if (matrix.is_real_type()) {
             return create_array<float, FloatNDArray>(
-               matrix.float_array_value(), PyArray_FLOAT);
+               matrix.float_array_value(), NPY_FLOAT);
          } else
             throw value_convert_exception("Unknown float matrix type");
       }
@@ -253,21 +250,16 @@ namespace pytave {
             matrix.int8_array_value());
       }
       if (matrix.is_bool_type()) {
-         // NumPY has logical arrays, and even provides an old-style #define.
          return create_array<bool, boolNDArray>(
-            matrix.bool_array_value(), PyArray_BOOL);
-         // Numeric does not support bools, and we used to have uint8 as a
-         // fallback, back when we had support for Numeric.
-         // return create_uint_array<uint8NDArray, sizeof(uint8_t)>(
-         //    matrix.uint8_array_value());
+            matrix.bool_array_value(), NPY_BOOL);
       }
       if (matrix.is_string()) {
          return create_array<char, charNDArray>(
-            matrix.char_array_value(), PyArray_CHAR);
+            matrix.char_array_value(), NPY_CHAR);
       }
       if (matrix.is_cell()) {
          return create_array<PyObject *, Cell>(
-            matrix.cell_value(), PyArray_OBJECT);
+            matrix.cell_value(), NPY_OBJECT);
       }
 
       throw value_convert_exception("Octave matrix type not known, "

@@ -49,70 +49,70 @@ namespace pytave {
 
    template <class PythonPrimitive, class OctaveBase>
    static void copy_pyarrobj_to_octarray(OctaveBase &matrix,
-                                  const PyArrayObject* const pyarr,
+                                  PyArrayObject* pyarr,
                                   const int unsigned matindex,
                                   const unsigned int matstride,
                                   const int dimension,
                                   const unsigned int offset) {
-      unsigned char *ptr = (unsigned char*) pyarr->data;
-      if (dimension == pyarr->nd - 1) {
+      unsigned char *ptr = (unsigned char*) PyArray_DATA (pyarr);
+      if (dimension == PyArray_NDIM (pyarr) - 1) {
          // Last dimension, base case
-         for (int i = 0; i < pyarr->dimensions[dimension]; i++) {
+         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
             matrix.elem(matindex + i*matstride)
                = *(PythonPrimitive*)
-               &ptr[offset + i*pyarr->strides[dimension]];
+               &ptr[offset + i*PyArray_STRIDE (pyarr, dimension)];
          }
-      } else if (pyarr->nd == 0) {
+      } else if (PyArray_NDIM (pyarr) == 0) {
          matrix.elem(0) = *(PythonPrimitive*) ptr;
       } else {
-         for (int i = 0; i < pyarr->dimensions[dimension]; i++) {
+         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
             copy_pyarrobj_to_octarray<PythonPrimitive, OctaveBase>(
                matrix,
                pyarr,
                matindex + i*matstride,
-               matstride * pyarr->dimensions[dimension],
+               matstride * PyArray_DIM (pyarr, dimension),
                dimension + 1,
-               offset + i*pyarr->strides[dimension]);
+               offset + i*PyArray_STRIDE (pyarr, dimension));
          }
       }
    }
 
    template <>
    void copy_pyarrobj_to_octarray<PyObject *, Cell>(Cell &matrix,
-                                  const PyArrayObject* const pyarr,
+                                  PyArrayObject* pyarr,
                                   const int unsigned matindex,
                                   const unsigned int matstride,
                                   const int dimension,
                                   const unsigned int offset) {
-      unsigned char *ptr = (unsigned char*) pyarr->data;
-      if (dimension == pyarr->nd - 1) {
+      unsigned char *ptr = (unsigned char*) PyArray_DATA (pyarr);
+      if (dimension == PyArray_NDIM (pyarr) - 1) {
          // Last dimension, base case
-         for (int i = 0; i < pyarr->dimensions[dimension]; i++) {
+         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
             PyObject *pobj = *(PyObject **)
-               &ptr[offset + i*pyarr->strides[dimension]];
+               &ptr[offset + i*PyArray_STRIDE (pyarr, dimension)];
             pyobj_to_octvalue (matrix.elem(matindex + i*matstride),
                                object(handle<PyObject> (borrowed (pobj))));
          }
-      } else if (pyarr->nd == 0) {
+      } else if (PyArray_NDIM (pyarr) == 0) {
             PyObject *pobj = *(PyObject **) ptr;
             pyobj_to_octvalue (matrix.elem(0),
                                object(handle<PyObject> (borrowed (pobj))));
       } else {
-         for (int i = 0; i < pyarr->dimensions[dimension]; i++) {
+         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
             copy_pyarrobj_to_octarray<PyObject *, Cell>(
                matrix,
                pyarr,
                matindex + i*matstride,
-               matstride * pyarr->dimensions[dimension],
+               matstride * PyArray_DIM (pyarr, dimension),
                dimension + 1,
-               offset + i*pyarr->strides[dimension]);
+               offset + i*PyArray_STRIDE (pyarr, dimension));
          }
       }
    }
 
    template <class PythonPrimitive, class OctaveBase>
    static void copy_pyarrobj_to_octarray_dispatch(OctaveBase &matrix,
-                                       const PyArrayObject* const pyarr,
+                                       PyArrayObject* pyarr,
                                        const boost::true_type&) {
       copy_pyarrobj_to_octarray<PythonPrimitive, OctaveBase>
          (matrix, pyarr, 0, 1, 0, 0);
@@ -120,7 +120,7 @@ namespace pytave {
 
    template <class PythonPrimitive, class OctaveBase>
    static void copy_pyarrobj_to_octarray_dispatch(OctaveBase &matrix,
-                                       const PyArrayObject* const pyarr,
+                                       PyArrayObject* pyarr,
                                        const boost::false_type&) {
       assert(0);
    }
@@ -134,14 +134,14 @@ namespace pytave {
 
    template <class PythonPrimitive, class OctaveBase>
    static void copy_pyarrobj_to_octarray_dispatch(OctaveBase &matrix,
-                                       const PyArrayObject* const pyarr) {
+                                       PyArrayObject* pyarr) {
       matching_type<PythonPrimitive, typename OctaveBase::element_type> inst;
       copy_pyarrobj_to_octarray_dispatch<PythonPrimitive, OctaveBase> (matrix, pyarr, inst);
    }
 
    template <class OctaveBase>
    static void copy_pyarrobj_to_octarray_boot(OctaveBase &matrix,
-                                       const PyArrayObject* const pyarr) {
+                                       PyArrayObject* pyarr) {
 
 #define ARRAYCASE(AC_pyarrtype, AC_primitive) case AC_pyarrtype: \
          copy_pyarrobj_to_octarray_dispatch<AC_primitive, OctaveBase>\
@@ -150,52 +150,42 @@ namespace pytave {
 
       // Prefer int to other types of the same size.
       // E.g. on 32-bit x86 architectures: sizeof(long) == sizeof(int).
-      int type_num = pyarr->descr->type_num;
+      int type_num = PyArray_TYPE (pyarr);
       switch (type_num) {
-         case PyArray_LONG:
+         case NPY_LONG:
             if (sizeof(long) == sizeof(int)) {
-               type_num = PyArray_INT;
+               type_num = NPY_INT;
             }
             break;
-         case PyArray_SHORT:
+         case NPY_SHORT:
             if (sizeof(short) == sizeof(int)) {
-               type_num = PyArray_INT;
+               type_num = NPY_INT;
             }
             break;
-         case PyArray_USHORT:
+         case NPY_USHORT:
             if (sizeof(unsigned short) == sizeof(unsigned int)) {
-               type_num = PyArray_UINT;
+               type_num = NPY_UINT;
             }
             break;
       }
 
       switch (type_num) {
-         ARRAYCASE(PyArray_CHAR,              char)
-         ARRAYCASE(PyArray_UBYTE,    unsigned char)
-         ARRAYCASE(PyArray_SBYTE,    signed   char)
-         ARRAYCASE(PyArray_SHORT,    signed   short)
-         ARRAYCASE(PyArray_USHORT,   unsigned short)
-         ARRAYCASE(PyArray_INT,      signed   int)
-         ARRAYCASE(PyArray_UINT,     unsigned int)
-         ARRAYCASE(PyArray_LONG,     signed   long)
-         ARRAYCASE(PyArray_LONGLONG, signed   long long)
-
-         /* Commonly Numeric.array(..., Numeric.Float32) */
-         ARRAYCASE(PyArray_FLOAT,  float)
-
-         /* Commonly Numeric.array(..., Numeric.Float) */
-         ARRAYCASE(PyArray_DOUBLE, double)
-
-         /* Commonly Numeric.array(..., Numeric.Complex32) */
-         ARRAYCASE(PyArray_CFLOAT, FloatComplex)
-
-         /* Commonly Numeric.array(..., Numeric.Complex) */
-         ARRAYCASE(PyArray_CDOUBLE, Complex)
-
-         ARRAYCASE(PyArray_BOOL, bool)
-         ARRAYCASE(PyArray_STRING, char)
-
-         ARRAYCASE(PyArray_OBJECT, PyObject *)
+         ARRAYCASE(NPY_CHAR,              char)
+         ARRAYCASE(NPY_BYTE,     signed   char)
+         ARRAYCASE(NPY_UBYTE,    unsigned char)
+         ARRAYCASE(NPY_SHORT,    signed   short)
+         ARRAYCASE(NPY_USHORT,   unsigned short)
+         ARRAYCASE(NPY_INT,      signed   int)
+         ARRAYCASE(NPY_UINT,     unsigned int)
+         ARRAYCASE(NPY_LONG,     signed   long)
+         ARRAYCASE(NPY_LONGLONG, signed   long long)
+         ARRAYCASE(NPY_FLOAT,    float)
+         ARRAYCASE(NPY_DOUBLE,   double)
+         ARRAYCASE(NPY_CFLOAT,   FloatComplex)
+         ARRAYCASE(NPY_CDOUBLE,  Complex)
+         ARRAYCASE(NPY_BOOL,     bool)
+         ARRAYCASE(NPY_STRING,   char)
+         ARRAYCASE(NPY_OBJECT,   PyObject *)
 
          default:
             throw object_convert_exception(
@@ -207,7 +197,7 @@ namespace pytave {
 
    template <class OctaveBase>
    static void pyarrobj_to_octvalueNd(octave_value &octvalue,
-                               const PyArrayObject* const pyarr,
+                               PyArrayObject* pyarr,
                                dim_vector dims) {
       OctaveBase array(dims);
       copy_pyarrobj_to_octarray_boot<OctaveBase>(array, pyarr);
@@ -217,27 +207,27 @@ namespace pytave {
    static void pyarr_to_octvalue(octave_value &octvalue,
                                  PyArrayObject *pyarr) {
       dim_vector dims;
-      switch (pyarr->nd) {
+      switch (PyArray_NDIM (pyarr)) {
          case 0:
             dims = dim_vector (1, 1);
             break;
          case 1:
             // Always make PyArray vectors row vectors.
-            dims = dim_vector(1, pyarr->dimensions[0]);
+            dims = dim_vector(1, PyArray_DIM (pyarr, 0));
             break;
          default:
-            dims.resize(pyarr->nd);
-            for (int d = 0; d < pyarr->nd; d++) {
-               dims(d) = pyarr->dimensions[d];
+            dims.resize(PyArray_NDIM (pyarr));
+            for (int d = 0; d < PyArray_NDIM (pyarr); d++) {
+               dims(d) = PyArray_DIM (pyarr, d);
             }
             break;
       }
 
-      switch (pyarr->descr->type_num) {
-         case PyArray_UBYTE:
-         case PyArray_USHORT:
-         case PyArray_UINT:
-            switch (pyarr->descr->elsize) {
+      switch (PyArray_TYPE (pyarr)) {
+         case NPY_UBYTE:
+         case NPY_USHORT:
+         case NPY_UINT:
+            switch (PyArray_ITEMSIZE (pyarr)) {
                case 1:
                   pyarrobj_to_octvalueNd<uint8NDArray>(octvalue, pyarr, dims);
                   break;
@@ -250,12 +240,12 @@ namespace pytave {
                default:
                   throw object_convert_exception("Unknown unsigned integer.");
             }
-         case PyArray_SBYTE:
-         case PyArray_SHORT:
-         case PyArray_INT:
-         case PyArray_LONG:
-         case PyArray_LONGLONG:
-            switch (pyarr->descr->elsize) {
+         case NPY_BYTE:
+         case NPY_SHORT:
+         case NPY_INT:
+         case NPY_LONG:
+         case NPY_LONGLONG:
+            switch (PyArray_ITEMSIZE (pyarr)) {
                case 1:
                   pyarrobj_to_octvalueNd<int8NDArray>(octvalue, pyarr, dims);
                   break;
@@ -272,38 +262,34 @@ namespace pytave {
                   throw object_convert_exception("Unknown integer.");
             }
             break;
-         case PyArray_FLOAT:
+         case NPY_FLOAT:
             pyarrobj_to_octvalueNd<FloatNDArray>(octvalue, pyarr, dims);
             break;
-         case PyArray_DOUBLE:
+         case NPY_DOUBLE:
             pyarrobj_to_octvalueNd<NDArray>(octvalue, pyarr, dims);
             break;
-         case PyArray_CFLOAT:
+         case NPY_CFLOAT:
             pyarrobj_to_octvalueNd<FloatComplexNDArray>(octvalue, pyarr, dims);
             break;
-         case PyArray_CDOUBLE:
+         case NPY_CDOUBLE:
             pyarrobj_to_octvalueNd<ComplexNDArray>(octvalue, pyarr, dims);
             break;
-         case PyArray_CHAR:
-         case_PyArray_CHAR:
+         case NPY_CHAR:
+         case_NPY_CHAR:
             pyarrobj_to_octvalueNd<charNDArray>(octvalue, pyarr, dims);
             // FIXME: is the following needed?
             octvalue = octvalue.convert_to_str(true, true, '"');
             break;
-         case PyArray_BOOL:
-            // PyArray_BOOL is an NumPy-ism (was not part of origin Numeric
-            // interface.)
+         case NPY_BOOL:
             pyarrobj_to_octvalueNd<boolNDArray>(octvalue, pyarr, dims);
             break;
-         case PyArray_STRING:
+         case NPY_STRING:
             {
-               // PyArray_STRING is an NumPy-ism (was not part of origin Numeric
-               // interface.)
-               if (pyarr->descr->elsize == 1)
-                  goto case_PyArray_CHAR;
+               if (PyArray_ITEMSIZE (pyarr) == 1)
+                  goto case_NPY_CHAR;
                else {
                   // Create a new descriptor of the data.
-                  PyArray_Descr *view_descr = PyArray_DescrFromType(PyArray_CHAR);
+                  PyArray_Descr *view_descr = PyArray_DescrFromType(NPY_CHAR);
                   // Create a new view of the NumPy array.
                   PyArrayObject *view = (PyArrayObject *)PyArray_View (pyarr, view_descr, NULL);
                   // Store in a handle to ensure proper destruction.
@@ -313,7 +299,7 @@ namespace pytave {
                }
             }
             break;
-         case PyArray_OBJECT:
+         case NPY_OBJECT:
             pyarrobj_to_octvalueNd<Cell>(octvalue, pyarr, dims);
             break;
          default:

@@ -102,10 +102,10 @@ namespace pytave { /* {{{ */
       uselocale(old_locale);
 #endif
 
-      // Initialize Python Numeric Array
+      // Initialize NumPy Array
 
       // This is actually a macro that becomes a block expression. If an error
-      // occurs, e.g. Numeric Array not installed, an exception is set.
+      // occurs, e.g. NumPy not installed, an exception is set.
       import_array()
 
       // Let boost use numpy
