@@ -41,133 +41,133 @@ _pytave.init(interactive)
 from numpy import oldnumeric as Numeric
 
 def _atexit():
-	_pytave.atexit()
+    _pytave.atexit()
 
 atexit.register(_atexit)
 
 def feval(nargout, funcname, *arguments):
 
-	"""Executes an Octave function called funcname.
+    """Executes an Octave function called funcname.
 
-	The function is set to return nargout values. Returned values
-	are stored in a tuple. If the nargout argument is less than 0,
-	an empty tuple is returned.
+    The function is set to return nargout values. Returned values
+    are stored in a tuple. If the nargout argument is less than 0,
+    an empty tuple is returned.
 
-	M-files are searched for in the Octave path.
+    M-files are searched for in the Octave path.
 
-	See also the Octave documentation for the builtin Octave function
-	feval.
+    See also the Octave documentation for the builtin Octave function
+    feval.
 
-	Type conversions
-	****************
-	
-	The following type conversions are supported:
+    Type conversions
+    ****************
 
-	Python to Octave
-	================
-	
-	Objects:
-		int (32-bit)        int32
-		float (64-bit)      double
-		str                 character array
-		dict                struct
-		list                cell array
-		
-	Numeric Array:
-		UBYTE, SBYTE,       matrix of correct type
-		USHORT, SHORT,      -''-
-		UINT, SINT,         -''-
-		LONG,               -''-
-		DOUBLE              -''-
-		CHAR                character array
-		OBJECT              cell array
+    The following type conversions are supported:
 
-	All other objects causes a pytave.ObjectConvertError to be
-	raised. This exception inherits TypeError.
+    Python to Octave
+    ================
 
-	When dicts are converted, all keys must be strings and
-	constitute valid Octave identifiers. The behavior is
-	analogical to the Octave "struct" function: values that
-	evaluate to cells must have matching dimensions, singleton
-	cells and non-cell values are expanded.
-	
-	Octave to Python
-	================
-	
+    Objects:
+        int (32-bit)        int32
+        float (64-bit)      double
+        str                 character array
+        dict                struct
+        list                cell array
+
+    Numeric Array:
+        UBYTE, SBYTE,       matrix of correct type
+        USHORT, SHORT,      -''-
+        UINT, SINT,         -''-
+        LONG,               -''-
+        DOUBLE              -''-
+        CHAR                character array
+        OBJECT              cell array
+
+    All other objects causes a pytave.ObjectConvertError to be
+    raised. This exception inherits TypeError.
+
+    When dicts are converted, all keys must be strings and
+    constitute valid Octave identifiers. The behavior is
+    analogical to the Octave "struct" function: values that
+    evaluate to cells must have matching dimensions, singleton
+    cells and non-cell values are expanded.
+
+    Octave to Python
+    ================
+
         All scalar values are regarded as 1x1 matrices, as they are in
-	Octave.
+    Octave.
 
-	Matrix values to Numeric arrays:
-	   	double              DOUBLE
-		single              FLOAT
-		logical             DOUBLE
-		int64               LONG
-		int32, uint32       INT, UINT
-		int16, uint16       SHORT, USHORT
-		int8, unint8        SBYTE, UBYTE
-		char                CHAR
-		cell                OBJECT
+    Matrix values to Numeric arrays:
+           double              DOUBLE
+        single              FLOAT
+        logical             DOUBLE
+        int64               LONG
+        int32, uint32       INT, UINT
+        int16, uint16       SHORT, USHORT
+        int8, unint8        SBYTE, UBYTE
+        char                CHAR
+        cell                OBJECT
 
-	Structs are converted to dicts, where each value is an OBJECT
-	array.
+    Structs are converted to dicts, where each value is an OBJECT
+    array.
 
-	All other values causes a pytave.ValueConvertError to be
-	raised. This exception inherits TypeError.
+    All other values causes a pytave.ValueConvertError to be
+    raised. This exception inherits TypeError.
 
-	Errors
-	******
+    Errors
+    ******
 
-	Octave runtime errors are encapsulated into
-	pytave.OctaveError exceptions, base class RuntimeError.
+    Octave runtime errors are encapsulated into
+    pytave.OctaveError exceptions, base class RuntimeError.
 
-	"""
+    """
 
-	return _pytave.feval(nargout, funcname, arguments)
+    return _pytave.feval(nargout, funcname, arguments)
 
 def eval(nargout, code, silent=True):
 
-	"""Executes a given Octave code.
+    """Executes a given Octave code.
 
-	The expression is expected to return nargout values. Returned
-	values are stored in a tuple. If the nargout argument is less
-	than 0, an empty tuple is returned.
+    The expression is expected to return nargout values. Returned
+    values are stored in a tuple. If the nargout argument is less
+    than 0, an empty tuple is returned.
 
-	All normal scope and function search rules apply. If silent is
-	true (default), the result is not auto-printed, as if a
-	semicolon was appended. Otherwise, auto-printing is enabled.
+    All normal scope and function search rules apply. If silent is
+    true (default), the result is not auto-printed, as if a
+    semicolon was appended. Otherwise, auto-printing is enabled.
 
-	See also the Octave documentation for the builtin Octave
-	function eval.
+    See also the Octave documentation for the builtin Octave
+    function eval.
 
-	For information about returned value conversion, see
-	pytave.feval.
+    For information about returned value conversion, see
+    pytave.feval.
 
-	Errors
-	******
+    Errors
+    ******
 
-	If the code cannot be parsed, a pytave.ParseError exception
-	occurs.
+    If the code cannot be parsed, a pytave.ParseError exception
+    occurs.
 
-	Octave runtime errors are encapsulated into pytave.OctaveError
-	exceptions, base class RuntimeError.
+    Octave runtime errors are encapsulated into pytave.OctaveError
+    exceptions, base class RuntimeError.
 
-	If the resulting values cannot be converted, a
-	pytave.ValueConvertError is raised. This exception inherits
-	TypeError.
+    If the resulting values cannot be converted, a
+    pytave.ValueConvertError is raised. This exception inherits
+    TypeError.
 
-	"""
+    """
 
-	return _pytave.eval(nargout, code, silent)
+    return _pytave.eval(nargout, code, silent)
 
 def stripdict(dictarray):
     """A helper function to convert structures obtained from Octave.
     Because in Octave, all structs are also arrays, they are returned
-    as dicts of object arrays. In the common case of a 1x1 struct, 
+    as dicts of object arrays. In the common case of a 1x1 struct,
     stripdict strips the values."""
-    
+
     sdict = {}
     for key in dictarray:
-	sdict[key] = dictarray[key][0,0]
+        sdict[key] = dictarray[key][0,0]
     return sdict
 
 def narrowlist(objarray):
@@ -184,57 +184,57 @@ def simplify(obj):
     arrays to lists, and strip scalar dicts. It will work recursively."""
 
     def get_typecode(array):
-	"""gets the typecode from both Numeric and NumPy array"""
-	try:
-	    tc = array.typecode()
-	except:
-	    tc = array.dtype.char
-	return tc
+        """gets the typecode from both Numeric and NumPy array"""
+        try:
+            tc = array.typecode()
+        except:
+            tc = array.dtype.char
+        return tc
 
     def vectordims(dims,column_allowed = True):
-	return (len(dims) == 2 and 
-		((dims[0] == 1 or (column_allowed and dims[1] == 1)) or
-		(dims[0] == 0 and dims[1] == 0)))
+        return (len(dims) == 2 and
+                ((dims[0] == 1 or (column_allowed and dims[1] == 1)) or
+                (dims[0] == 0 and dims[1] == 0)))
 
     if isinstance(obj,Numeric.ArrayType):
-	tc = get_typecode(obj)
-	if tc == 'O':
-	    if vectordims(Numeric.shape(obj)):
-		return map(simplify,narrowlist(obj))
-	elif tc == 'c':
-	    if vectordims(Numeric.shape(obj), False):
-		return obj.tostring()
-	else:
-	    dims = Numeric.shape(obj)
-	    if dims == (1,1):
-		return obj[0,0]
-	    elif vectordims(dims):
-		return Numeric.ravel(obj)
+        tc = get_typecode(obj)
+        if tc == 'O':
+            if vectordims(Numeric.shape(obj)):
+                return map(simplify,narrowlist(obj))
+        elif tc == 'c':
+            if vectordims(Numeric.shape(obj), False):
+                return obj.tostring()
+        else:
+            dims = Numeric.shape(obj)
+            if dims == (1,1):
+                return obj[0,0]
+            elif vectordims(dims):
+                return Numeric.ravel(obj)
     elif isinstance(obj,dict):
-	sobj = {}
-	for key in obj:
-	    sval = simplify(obj[key])
-	    if isinstance(sval,list) and len(sval) == 1:
-		sval = sval[0]
-	    sobj[key] = sval
-	return sobj
+        sobj = {}
+        for key in obj:
+            sval = simplify(obj[key])
+            if isinstance(sval,list) and len(sval) == 1:
+                sval = sval[0]
+            sobj[key] = sval
+        return sobj
     elif isinstance(obj,tuple):
-	return tuple(map(simplify,obj))
+        return tuple(map(simplify,obj))
     ## default.
     return obj
 
 
 def addpath(*arguments):
-	"""See Octave documentation"""
-	return _pytave.feval(1, "addpath", arguments)[0]
+    """See Octave documentation"""
+    return _pytave.feval(1, "addpath", arguments)[0]
 
 def rmpath(*paths):
-	"""See Octave documentation"""
-	return _pytave.feval(1, "rmpath", paths)[0]
+    """See Octave documentation"""
+    return _pytave.feval(1, "rmpath", paths)[0]
 
 def path(*paths):
-	"""See Octave documentation"""
-	return _pytave.feval(1, "path", paths)[0]
+    """See Octave documentation"""
+    return _pytave.feval(1, "path", paths)[0]
 
 def load_package(pkg_name):
     """Equivalent to pkg load. See Octave documentation."""
@@ -245,102 +245,92 @@ def unload_package(pkg_name):
     return _pytave.feval(0, "pkg", ("unload", pkg_name))
 
 class _VariablesDict(UserDict.DictMixin):
-	def __init__(self, global_variables, native=False):
-		self.global_variables = global_variables
-		self.native = native
+    def __init__(self, global_variables, native=False):
+        self.global_variables = global_variables
+        self.native = native
 
-	def __getitem__(self, name):
-		if not isinstance(name, basestring):
-			raise TypeError('Expected a string, not a ' + repr(type(name)))
-		try:
-			return _pytave.getvar(name, self.global_variables)
-		except VarNameError:
-			raise KeyError('No Octave variable named ' + name)
+    def __getitem__(self, name):
+        if not isinstance(name, basestring):
+            raise TypeError('Expected a string, not a ' + repr(type(name)))
+        try:
+            return _pytave.getvar(name, self.global_variables)
+        except VarNameError:
+            raise KeyError('No Octave variable named ' + name)
 
-	def __setitem__(self, name, value):
-		if not isinstance(name, basestring):
-			raise TypeError('Expected a string, not a ' + repr(type(name)))
-		_pytave.setvar(name, value, self.global_variables)
+    def __setitem__(self, name, value):
+        if not isinstance(name, basestring):
+            raise TypeError('Expected a string, not a ' + repr(type(name)))
+        _pytave.setvar(name, value, self.global_variables)
 
-	def __contains__(self, name):
-		if not isinstance(name, basestring):
-			raise TypeError('Expected a string, not a ' + repr(type(name)))
-		return _pytave.isvar(name, self.global_variables)
+    def __contains__(self, name):
+        if not isinstance(name, basestring):
+            raise TypeError('Expected a string, not a ' + repr(type(name)))
+        return _pytave.isvar(name, self.global_variables)
 
-	def __delitem__(self, name):
-		if not isinstance(name, basestring):
-			raise TypeError('Expected a string, not a ' + repr(type(name)))
-		# Octave does not gripe when clearing non-existent
-		# variables. To be consistent with Python dict
-		# behavior, we shall do so.
-		if self.__contains__(name):
-			_pytave.delvar(name, self.global_variables)
-		else:
-			raise KeyError('No Octave variable named ' + name)
+    def __delitem__(self, name):
+        if not isinstance(name, basestring):
+            raise TypeError('Expected a string, not a ' + repr(type(name)))
+        # Octave does not gripe when clearing non-existent
+        # variables. To be consistent with Python dict
+        # behavior, we shall do so.
+        if self.__contains__(name):
+            _pytave.delvar(name, self.global_variables)
+        else:
+            raise KeyError('No Octave variable named ' + name)
 
 
 locals = _VariablesDict(global_variables=False)
 globals = _VariablesDict(global_variables=True)
 
 def push_scope():
-	 """Creates a new anonymous local variable scope on the Octave call
-	 stack and sets it as the current Octave scope. Subsequent eval,
-	 getvar and setvar calls will affect variables within this scope.
+    """Creates a new anonymous local variable scope on the Octave call
+    stack and sets it as the current Octave scope. Subsequent eval,
+    getvar and setvar calls will affect variables within this scope.
 
-	 This is useful to do if you call the Octave engine from within
-	 multiple Python functions, to prevent them from hampering each
-	 other's data. As such, it is advisable to always create a local
-	 scope in a production code.
-	 """
-	 return _pytave.push_scope()
+    This is useful to do if you call the Octave engine from within
+    multiple Python functions, to prevent them from hampering each
+    other's data. As such, it is advisable to always create a local
+    scope in a production code.
+    """
+    return _pytave.push_scope()
 
 def pop_scope():
-	 """Pops the current active scope (created previously by
-	 push_scope) off the Octave call stack. The previous scope
-	 will become the active scope.
+    """Pops the current active scope (created previously by
+    push_scope) off the Octave call stack. The previous scope
+    will become the active scope.
 
-	 If already at the top-level scope, this function does nothing.
-	 """
-	 _pytave.pop_scope()
- 
+    If already at the top-level scope, this function does nothing.
+    """
+    _pytave.pop_scope()
+
 class _LocalScope:
-	 def __init__(self, func):
-		  self.func = func
-		  self.__name__ = func.__name__
-		  self.__doc__ = func.__doc__
+    def __init__(self, func):
+        self.func = func
+        self.__name__ = func.__name__
+        self.__doc__ = func.__doc__
 
-	 def __call__(self, *args, **kwargs):
-		  try:
-				_pytave.push_scope()
-				return self.func(*args, **kwargs)
-		  finally:
-				_pytave.pop_scope()
+    def __call__(self, *args, **kwargs):
+        try:
+            _pytave.push_scope()
+            return self.func(*args, **kwargs)
+        finally:
+            _pytave.pop_scope()
 
 def local_scope(func):
-	 """Decorates a function to use local Octave scope.
-	 Example:
+    """Decorates a function to use local Octave scope.
+    Example:
 
-	 @pytave.local_scope
-	 def myfunc(a,b):
-		  <function body>
+    @pytave.local_scope
+    def myfunc(a,b):
+        <function body>
 
-	 is equivalent to:
+    is equivalent to:
 
-	 def myfunc(a,b):
-		  try:
-				pytave.push_scope()
-				<function body>
-		  finally:
-			  pytave.pop_scope()
-	 """
-	 return _LocalScope(func)
-
-# Emacs
-#	Local Variables:
-#	fill-column:70
-#	coding:utf-8
-#	indent-tabs-mode:t
-#	tab-width:8
-#	python-indent:8
-#	End:
-# vim: set textwidth=70 noexpandtab tabstop=8 :
+    def myfunc(a,b):
+        try:
+            pytave.push_scope()
+            <function body>
+        finally:
+            pytave.pop_scope()
+    """
+    return _LocalScope(func)
