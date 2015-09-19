@@ -61,7 +61,7 @@ namespace pytave { /* {{{ */
    locale_t c_locale;
 #endif
 
-   void init(bool silent = true) {
+   PyMODINIT_FUNC init(bool silent = true) {
 #ifdef HAVE_USELOCALE
       c_locale = newlocale(LC_ALL, "C", 0);
 #endif
@@ -72,7 +72,7 @@ namespace pytave { /* {{{ */
           || !octave_parse_exception::init()
           || !variable_name_exception::init ()) {
          PyErr_SetString(PyExc_ImportError, "_pytave: init failed");
-         return;
+         return NULL;
       }
 
       // Initialize Octave.
@@ -104,12 +104,12 @@ namespace pytave { /* {{{ */
 
       // Initialize NumPy Array
 
+      // Let boost use numpy
+      numeric::array::set_module_and_type ("numpy", "ndarray");
+
       // This is actually a macro that becomes a block expression. If an error
       // occurs, e.g. NumPy not installed, an exception is set.
       import_array()
-
-      // Let boost use numpy
-      numeric::array::set_module_and_type ("numpy", "ndarray");
    }
 
    boost::python::tuple get_exceptions() {
