@@ -61,7 +61,12 @@ namespace pytave { /* {{{ */
    locale_t c_locale;
 #endif
 
-   PyMODINIT_FUNC init(bool silent = true) {
+#if defined (PYTHON_ABI_VERSION)
+   PyObject*
+#else
+   void
+#endif
+   init(bool silent = true) {
 #ifdef HAVE_USELOCALE
       c_locale = newlocale(LC_ALL, "C", 0);
 #endif
@@ -72,7 +77,11 @@ namespace pytave { /* {{{ */
           || !octave_parse_exception::init()
           || !variable_name_exception::init ()) {
          PyErr_SetString(PyExc_ImportError, "_pytave: init failed");
-         return NULL;
+#if defined (PYTHON_ABI_VERSION)
+         return 0;
+#else
+         return;
+#endif
       }
 
       // Initialize Octave.
