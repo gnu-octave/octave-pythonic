@@ -80,6 +80,8 @@ AC_DEFUN([AX_OCTAVE],[
 	ax_octave_config="[$]$1"
 	ax_octave_ok=
 
+        AC_CHECK_TOOLS([MKOCTFILE], [mkoctfile])
+
 	AC_MSG_CHECKING([for octave-config filename])
 	AS_IF([test -z "$ax_octave_config"], [
 		AC_MSG_RESULT([determined from path])

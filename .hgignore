@@ -26,6 +26,7 @@ syntax: regexp
 ^Makefile.in$
 ^missing$
 ^project-root.jam$
+^py\.oct$
 ^_pytave?la*$
 ^setup.py$
 ^stamp-h1$

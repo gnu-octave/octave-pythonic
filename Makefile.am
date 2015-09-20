@@ -14,3 +14,10 @@ _pytave_la_LDFLAGS = -module -L@OCTAVE_LIBRARYDIR@ @OCTAVE_LIBS@  \
 _pytave_la_SOURCES = octave_to_python.cc pytave.cc python_to_octave.cc \
 arrayobjectdefs.h octave_to_python.h pytavedefs.h exceptions.h   \
 exceptions.cc python_to_octave.h config.h
+
+all-am: py.oct
+
+.cc.oct:
+	$(MKOCTFILE) $(DEFS) $(_pytave_la_CPPFLAGS) $< exceptions.cc octave_to_python.cc python_to_octave.cc -l$(BOOST_PYTHON_LIB) $(PYTHON_LIBS) -o $@
+
+SUFFIXES = .oct
