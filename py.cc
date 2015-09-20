@@ -65,6 +65,7 @@ DEFUN_DLD (py, args, nargout,
   if (idx != std::string::npos)
     {
       module = func.substr (0, idx);
+      func = func.substr (idx + 1);
     }
 
   Py_Initialize ();
@@ -74,13 +75,9 @@ DEFUN_DLD (py, args, nargout,
       object main_module = import ("__main__");
       object main_namespace = main_module.attr ("__dict__");
 
-      if (! module.empty ())
-        {
-          std::string cmd = "import " + module;
-          exec (cmd.c_str (), main_namespace, main_namespace);
-        }
-
-      object res = eval (func.c_str (), main_namespace, main_namespace);
+      object mod = (module.empty ()) ? main_module : import (module.c_str ());
+      object callable = mod.attr (func.c_str ());
+      object res = callable ();
 
       if (! res.is_none ())
         {
