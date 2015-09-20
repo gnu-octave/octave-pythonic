@@ -20,10 +20,10 @@
 
 """Python to Octave bridge"""
 
-import UserDict
 import _pytave
 import atexit
 import sys
+import collections
 
 arg0 = sys.argv[0]
 # Some web application packages, such as mod_wsgi for Apache,
@@ -244,7 +244,7 @@ def unload_package(pkg_name):
     """Equivalent to pkg unload. See Octave documentation."""
     return _pytave.feval(0, "pkg", ("unload", pkg_name))
 
-class _VariablesDict(UserDict.DictMixin):
+class _VariablesDict(collections.MutableMapping):
     def __init__(self, global_variables, native=False):
         self.global_variables = global_variables
         self.native = native
