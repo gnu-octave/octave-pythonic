@@ -23,7 +23,11 @@
 import _pytave
 import atexit
 import sys
-import collections
+
+try:
+    from collections.abc import MutableMapping
+except:
+    from UserDict import DictMixin as MutableMapping
 
 arg0 = sys.argv[0]
 # Some web application packages, such as mod_wsgi for Apache,
@@ -244,7 +248,7 @@ def unload_package(pkg_name):
     """Equivalent to pkg unload. See Octave documentation."""
     return _pytave.feval(0, "pkg", ("unload", pkg_name))
 
-class _VariablesDict(collections.MutableMapping):
+class _VariablesDict(MutableMapping):
     def __init__(self, global_variables, native=False):
         self.global_variables = global_variables
         self.native = native
