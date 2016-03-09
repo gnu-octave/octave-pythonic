@@ -38,8 +38,28 @@ using namespace boost::python;
 
 DEFUN_DLD (py, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} py (@var{func})\n\
-@enddeftypefn")
+@deftypefn  {Loadable Function} py (@var{func})\n\
+@deftypefnx {Loadable Function} {@var{x} =} py (@var{func})\n\
+@deftypefnx {Loadable Function} {@var{x} =} py (@var{func}, @var{arg1}, @var{arg2}, @dots{})\n\
+Execute method of a Python module.\n\
+\n\
+Examples:\n\
+@example\n\
+@group\n\
+y = py('__builtin__.int(6)')\n\
+  @result{} y =  6\n\
+py('sys.version')\n\
+  @result{} ans = ...\n\
+py('__builtin__.eval(\"4+5\")')\n\
+  @result{} ans =  9\n\
+py('__builtin__.dict(one=1,two=2)')\n\
+  @result{} ans =\n\
+    scalar structure containing the fields:\n\
+      two =  2\n\
+      one =  1\n\
+@end group\n\
+@end example\n\
+@end deftypefn")
 {
   octave_value_list retval;
 
