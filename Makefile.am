@@ -34,7 +34,9 @@ DOC_FILES = \
   README.md
 
 OCT_FILES = \
-  py.oct
+  py.oct \
+  pyeval.oct \
+  pyexec.oct
 
 PYTAVE_HEADER_FILES = \
   arrayobjectdefs.h \
