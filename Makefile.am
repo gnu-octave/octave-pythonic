@@ -17,8 +17,8 @@ exceptions.cc python_to_octave.h config.h
 
 all-am: py.oct
 
-.cc.oct:
-	$(MKOCTFILE) $(DEFS) $(_pytave_la_CPPFLAGS) $< exceptions.cc octave_to_python.cc python_to_octave.cc -l$(BOOST_PYTHON_LIB) $(PYTHON_LIBS) -o $@
+%.oct: %.cc arrayobjectdefs.h config.h exceptions.h octave_to_python.h python_to_octave.h
+	$(MKOCTFILE) $(DEFS) $(DEFAULT_INCLUDES) $(_pytave_la_CPPFLAGS) $< exceptions.cc octave_to_python.cc python_to_octave.cc -l$(BOOST_PYTHON_LIB) $(PYTHON_LIBS) -o $@
 
 CLEANFILES = *.oct
 
