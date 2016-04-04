@@ -12,7 +12,7 @@ _pytave_la_LDFLAGS = -module -L@OCTAVE_LIBRARYDIR@ @OCTAVE_LIBS@  \
 -l@BOOST_PYTHON_LIB@ -R @PYTAVE_OCTAVE_RPATH@
 
 _pytave_la_SOURCES = octave_to_python.cc pytave.cc python_to_octave.cc \
-arrayobjectdefs.h octave_to_python.h pytavedefs.h exceptions.h   \
+arrayobjectdefs.h octave_to_python.h exceptions.h   \
 exceptions.cc python_to_octave.h config.h
 
 all-am: py.oct

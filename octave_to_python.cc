@@ -18,22 +18,18 @@
  *  along with Pytave.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined (HAVE_CONFIG_H)
+#  include <config.h>
+#endif
+
 #include <boost/python.hpp>
 #include <boost/type_traits/integral_constant.hpp>
 
-/* Both boost::python and octave define HAVE_STAT and HAVE_FSTAT.  Ideally,
-   they shouldn't expose their configuration in the header files, but they do.
-   This silences the compiler warning. */
-#undef HAVE_STAT
-#undef HAVE_FSTAT
-
-#include <octave/config.h>
 #include <octave/oct.h>
 #include <octave/ov.h>
 #include <octave/oct-map.h>
 
 #include <iostream>
-#include "pytavedefs.h"
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "octave_to_python.h"

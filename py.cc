@@ -20,23 +20,16 @@ along with Pytave; see the file COPYING.  If not, see
 
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
+#if defined (HAVE_CONFIG_H)
+#  include <config.h>
 #endif
 
 #include <boost/python.hpp>
 #include <boost/python/numeric.hpp>
 
-/* Both boost::python and octave define HAVE_STAT and HAVE_FSTAT.  Ideally,
-   they shouldn't expose their configuration in the header files, but they do.
-   This silences the compiler warning. */
-#undef HAVE_STAT
-#undef HAVE_FSTAT
-
 #include <oct.h>
 
 #define PYTAVE_DO_DECLARE_SYMBOL
-#include "pytavedefs.h"
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "python_to_octave.h"
