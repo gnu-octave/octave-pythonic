@@ -15,10 +15,15 @@ _pytave_la_SOURCES = octave_to_python.cc pytave.cc python_to_octave.cc \
 arrayobjectdefs.h octave_to_python.h exceptions.h   \
 exceptions.cc python_to_octave.h config.h
 
+AM_V_MKOCTFILE = $(am__v_MKOCTFILE_$(V))
+am__v_MKOCTFILE_ = $(am__v_MKOCTFILE_$(AM_DEFAULT_VERBOSITY))
+am__v_MKOCTFILE_0 = @echo "  MKOCTFIL" $@;
+am__v_MKOCTFILE_1 =
+
 all-am: py.oct
 
 %.oct: %.cc arrayobjectdefs.h config.h exceptions.h octave_to_python.h python_to_octave.h
-	$(MKOCTFILE) $(DEFS) $(DEFAULT_INCLUDES) $(_pytave_la_CPPFLAGS) $< exceptions.cc octave_to_python.cc python_to_octave.cc -l$(BOOST_PYTHON_LIB) $(PYTHON_LIBS) -o $@
+	$(AM_V_MKOCTFILE)$(MKOCTFILE) $(DEFS) $(DEFAULT_INCLUDES) $(_pytave_la_CPPFLAGS) $< exceptions.cc octave_to_python.cc python_to_octave.cc -l$(BOOST_PYTHON_LIB) $(PYTHON_LIBS) -o $@
 
 CLEANFILES = *.oct
 
