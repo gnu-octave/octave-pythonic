@@ -117,20 +117,9 @@ AS_IF(test "x${prefix}" == "xNONE",
    PYTAVE_MODULE_INSTALL_PATH=${prefix}
 ])
 
-# Substitutes for the Makefile/Jamfile
-#AC_SUBST(OCTAVE_INCLUDEDIR)
-#AC_SUBST(OCTAVE_LIBRARYDIR)
 PYTAVE_OCTAVE_RPATH="$OCTAVE_LIBRARYDIR"
 AC_SUBST(PYTAVE_OCTAVE_RPATH)
 AC_SUBST(PYTAVE_MODULE_INSTALL_PATH)
-
-# Substitutes for the Jamfile. XXX: Replace lib*.so with OS independent name.
-AC_SUBST(JAM_LIBOCTAVE, $OCTAVE_LIBRARYDIR/liboctave.so)
-AC_SUBST(JAM_LIBCRUFT, $OCTAVE_LIBRARYDIR/libcruft.so)
-AC_SUBST(JAM_LIBOCTINTERP, $OCTAVE_LIBRARYDIR/liboctinterp.so)
-
-# setup.py
-AC_SUBST(PYTHON)
 
 msg="One or more library dependencies could not be resolved.
 
@@ -140,10 +129,8 @@ Configuration failed. Halt."
 
 AS_IF(test -z "$pytave_missing_libs",
 [
-# Substitute in these files, copy project-root.jam to VPATH too
-AC_OUTPUT([Makefile Jamfile setup.py project-root.jam])
+AC_OUTPUT([Makefile])
 
-chmod u+x "setup.py"
 msg='Pytave is configured with the following setup'
 ])
 

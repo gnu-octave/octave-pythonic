@@ -16,7 +16,6 @@ syntax: regexp
 ^depcomp$
 ^.deps$
 ^install-sh$
-^Jamfile$
 ^.libs$
 ^libtool$
 ^ltmain.sh$
@@ -25,8 +24,6 @@ syntax: regexp
 ^Makefile$
 ^Makefile.in$
 ^missing$
-^project-root.jam$
 ^py\.oct$
 ^_pytave?la*$
-^setup.py$
 ^stamp-h1$
