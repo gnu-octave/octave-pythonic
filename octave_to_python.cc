@@ -273,7 +273,7 @@ namespace pytave {
       py_object = boost::python::dict();
       string_vector keys = map.keys();
 
-      for(octave_idx_type i = 0 ; i < keys.length(); i++) {
+      for(octave_idx_type i = 0 ; i < keys.numel(); i++) {
          boost::python::object py_val;
 
          const Cell c = map.contents(keys[i]);
