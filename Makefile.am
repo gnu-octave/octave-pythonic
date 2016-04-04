@@ -20,4 +20,6 @@ all-am: py.oct
 .cc.oct:
 	$(MKOCTFILE) $(DEFS) $(_pytave_la_CPPFLAGS) $< exceptions.cc octave_to_python.cc python_to_octave.cc -l$(BOOST_PYTHON_LIB) $(PYTHON_LIBS) -o $@
 
+CLEANFILES = *.oct
+
 SUFFIXES = .oct
