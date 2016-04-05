@@ -164,11 +164,10 @@ This could be a sign that the Octave development package is missing.
 			LIBS="$OCTAVE_LIBS $ax_octave_old_libs"
 
 			AC_LANG_ASSERT(C++)
-			AC_LINK_IFELSE(
-			AC_LANG_PROGRAM(
+			AC_LINK_IFELSE([AC_LANG_PROGRAM(
 				[[#include <octave/oct.h>
 				#include <octave/Matrix.h> ]],
-				[[MatrixType()]]),
+				[[MatrixType()]])],
 				[ax_octave_cv_lib_octave=yes],
 				[ax_octave_cv_lib_octave=no])
 

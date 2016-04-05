@@ -74,15 +74,14 @@ except:
 			LDFLAGS="$LDFLAGS $PYTHON_LDFLAGS $PYTHON_LIBS"
 			
 			AC_LANG_ASSERT(C++)
-			AC_LINK_IFELSE(
-			AC_LANG_PROGRAM(
+			AC_LINK_IFELSE([AC_LANG_PROGRAM(
 				[[
 #define PY_ARRAY_UNIQUE_SYMBOL my_array_symbol
 #include <Python.h>
 #include <numpy/oldnumeric.h>
 #include <numpy/old_defines.h>
 ]],
-				[[ &PyArray_FromDims; ]]),
+				[[ &PyArray_FromDims; ]])],
 				[ax_python_numpy_cv_check=yes],
 				[ax_python_numpy_cv_check=no])
 			CPPFLAGS="$ax_python_numpy_cppflags"
