@@ -28,3 +28,7 @@ all-am: py.oct
 CLEANFILES = *.oct
 
 SUFFIXES = .oct
+
+check-local:
+	PYTHONPATH="$$(pwd)/package:$$(pwd)/.libs" $(PYTHON) test/exceptions.py
+	PYTHONPATH="$$(pwd)/package:$$(pwd)/.libs" $(PYTHON) test/test.py
