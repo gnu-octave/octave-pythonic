@@ -62,7 +62,7 @@ def testequal(value):
         nvalue, = pytave.feval(1, "test_return", value)
         if not equals(value, nvalue):
             fail("as %s != %s" % (value, nvalue))
-    except TypeError, e:
+    except Exception, e:
         fail(value, e)
 
 
@@ -71,7 +71,7 @@ def testexpect(value, expected):
         nvalue, = pytave.feval(1, "test_return", value)
         if not equals(value, nvalue):
             fail("sent in %s, expecting %s, got %s", (value, expected, nvalue))
-    except TypeError, e:
+    except Exception, e:
         fail(value, e)
 
 
@@ -90,7 +90,7 @@ def testmatrix(value):
         if class1 != class2:
             fail("Type check failed for: %s. Expected %s. Got %s."
                  % (value, class1, class2))
-    except TypeError, e:
+    except Exception, e:
         fail("Execute failed: %s" % value, e)
 
 
