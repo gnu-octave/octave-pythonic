@@ -317,13 +317,3 @@ testexception(KeyError, lambda: pytave.globals["globalvariable"])
 def func():
 	del pytave.globals["globalvariable"]
 testexception(KeyError, lambda: func())
-
-# Emacs
-#	Local Variables:
-#	fill-column:70
-#	coding:utf-8
-#	indent-tabs-mode:t
-#	tab-width:8
-#	python-indent:8
-#	End:
-# vim: set textwidth=70 noexpandtab tabstop=8 :
