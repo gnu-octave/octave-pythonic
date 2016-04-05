@@ -38,6 +38,7 @@ along with Pytave; see the file COPYING.  If not, see
 
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
+#include "python_to_octave.h"
 
 using namespace boost::python;
 
