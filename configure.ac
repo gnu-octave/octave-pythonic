@@ -47,8 +47,7 @@ AX_OCTAVE([OCTAVE_CONFIG], [], [addmissing([Octave development files])])
 AX_PYTHON_DEVEL([], [], [addmissing([Python development files])])
 
 # Look for numpy headers
-AX_PYTHON_NUMPY([AC_DEFINE([HAVE_NUMPY], 1, [Define if using NumPy])],
-                [addmissing([NumPy development files])])
+AX_PYTHON_NUMPY([], [addmissing([NumPy development files])])
 
 # Look for boost::python
 pytave_old_libs="$LIBS"
