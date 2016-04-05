@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 #
+# Copyright (C) 2015-2016 Mike Miller
 # Copyright (C) 2008 David Grundberg, Håkan Fors Nilsson
 # Copyright (C) 2009 Jaroslav Hajek, VZLU Prague
 #

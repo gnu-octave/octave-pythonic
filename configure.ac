@@ -1,5 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
+dnl Copyright (C) 2015-2016 Mike Miller
 dnl Copyright (C) 2008 David Grundberg, Håkan Fors Nilsson
 dnl Copyright (C) 2009 Jaroslav Hajek, VZLU Prague
 ###

@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 Mike Miller
+Copyright (C) 2015-2016 Mike Miller
 
 This file is part of Pytave.
 
