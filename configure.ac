@@ -55,18 +55,8 @@ if test -z "$BOOST_PYTHON_LIB"; then
   addmissing([Boost Python development files])
 fi
 
-# Do some more initializations
-
-AM_INIT_AUTOMAKE()
-
-# Checks for programs.
-AC_PROG_LIBTOOL
-AC_PROG_RANLIB
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-
-# Checks for libraries.
+AM_INIT_AUTOMAKE([-Wno-portability])
+LT_INIT
 
 # Checks for header files.
 AC_CHECK_HEADERS([locale.h])
