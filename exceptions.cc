@@ -27,12 +27,13 @@ along with Pytave; see the file COPYING.  If not, see
 #include <boost/python.hpp>
 #include "exceptions.h"
 
-namespace pytave {
+namespace pytave
+{
 
-	PyObject *octave_error_exception::excclass = NULL;
-	PyObject *value_convert_exception::excclass = NULL;
-	PyObject *object_convert_exception::excclass = NULL;
-	PyObject *octave_parse_exception::excclass = NULL;
-	PyObject *variable_name_exception::excclass = NULL;
+  PyObject *octave_error_exception::excclass = 0;
+  PyObject *value_convert_exception::excclass = 0;
+  PyObject *object_convert_exception::excclass = 0;
+  PyObject *octave_parse_exception::excclass = 0;
+  PyObject *variable_name_exception::excclass = 0;
 
 }

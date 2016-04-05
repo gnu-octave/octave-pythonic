@@ -1,23 +1,24 @@
 #!/usr/bin/python
+
 import pytave
 
 try:
- pytave.feval(1,"",)
+    pytave.feval(1, "")
 except pytave.OctaveError, e:
- print "test ok"
+    print "test ok"
 except:
- print "test fail"
+    print "test fail"
 
 try:
- pytave.feval(1,"cell",)
+    pytave.feval(1, "cell")
 except pytave.ValueConvertError, e:
- print "test ok"
+    print "test ok"
 except:
- print "test fail"
+    print "test fail"
 
 try:
- pytave.feval(1,"sin",{"asdf":"asdf"})
+    pytave.feval(1, "sin", {"asdf": "asdf"})
 except pytave.ObjectConvertError, e:
- print "test ok"
+    print "test ok"
 except:
- print "test fail"
+    print "test fail"

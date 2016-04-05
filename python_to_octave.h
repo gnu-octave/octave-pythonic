@@ -27,11 +27,12 @@ along with Pytave; see the file COPYING.  If not, see
 #include <ov.h>
 #include <ovl.h>
 
-namespace pytave {
-   void pyobj_to_octvalue(octave_value &oct_value,
-                          const boost::python::object &py_object);
-   void pytuple_to_octlist(octave_value_list &octave_list,
-                           const boost::python::tuple &python_tuple);
+namespace pytave
+{
+  void pyobj_to_octvalue (octave_value& oct_value,
+                          const boost::python::object& py_object);
+  void pytuple_to_octlist (octave_value_list& octave_list,
+                           const boost::python::tuple& python_tuple);
 }
 
 #endif

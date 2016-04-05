@@ -38,220 +38,212 @@ along with Pytave; see the file COPYING.  If not, see
 
 using namespace boost::python;
 
-namespace pytave {
+namespace pytave
+{
 
-   template <class PythonPrimitive, class OctaveBase>
-   static void copy_octarray_to_pyarrobj(
-                                  PyArrayObject *pyarr,
-                                  const OctaveBase &matrix,
-                                  const unsigned int matindex,
-                                  const unsigned int matstride,
-                                  const int dimension,
-                                  const unsigned int offset) {
-      unsigned char *ptr = (unsigned char*) PyArray_DATA (pyarr);
-      if (dimension == PyArray_NDIM (pyarr) - 1) {
-         // Last dimension, base case
-         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
+  template <class PythonPrimitive, class OctaveBase>
+  static void
+  copy_octarray_to_pyarrobj (PyArrayObject *pyarr, const OctaveBase& matrix,
+                             const unsigned int matindex,
+                             const unsigned int matstride,
+                             const int dimension, const unsigned int offset)
+  {
+    unsigned char *ptr = (unsigned char*) PyArray_DATA (pyarr);
+    if (dimension == PyArray_NDIM (pyarr) - 1)
+      {
+        // Last dimension, base case
+        for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++)
+          {
             *(PythonPrimitive *)&ptr[offset + i*PyArray_STRIDE (pyarr, dimension)]
-               = matrix.elem(matindex + i*matstride);
-         }
-      } else {
-         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
-            copy_octarray_to_pyarrobj<PythonPrimitive, OctaveBase>(
-               pyarr,
-               matrix,
-               matindex + i*matstride,
-               matstride * PyArray_DIM (pyarr, dimension),
-               dimension + 1,
-               offset + i*PyArray_STRIDE (pyarr, dimension));
-         }
+                = matrix.elem (matindex + i*matstride);
+          }
       }
-   }
+    else
+      {
+        for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++)
+          {
+            copy_octarray_to_pyarrobj<PythonPrimitive, OctaveBase> (
+              pyarr,
+              matrix,
+              matindex + i*matstride,
+              matstride * PyArray_DIM (pyarr, dimension),
+              dimension + 1,
+              offset + i*PyArray_STRIDE (pyarr, dimension));
+          }
+      }
+  }
 
-   template <>
-   void copy_octarray_to_pyarrobj<PyObject *, Cell>(
-                                  PyArrayObject *pyarr,
-                                  const Cell &matrix,
-                                  const unsigned int matindex,
-                                  const unsigned int matstride,
-                                  const int dimension,
-                                  const unsigned int offset) {
-      unsigned char *ptr = (unsigned char*) PyArray_DATA (pyarr);
-      if (dimension == PyArray_NDIM (pyarr) - 1) {
-         // Last dimension, base case
-         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
+  template <>
+  void
+  copy_octarray_to_pyarrobj<PyObject *, Cell> (PyArrayObject *pyarr,
+                                               const Cell& matrix,
+                                               const unsigned int matindex,
+                                               const unsigned int matstride,
+                                               const int dimension,
+                                               const unsigned int offset)
+  {
+    unsigned char *ptr = (unsigned char*) PyArray_DATA (pyarr);
+    if (dimension == PyArray_NDIM (pyarr) - 1)
+      {
+        // Last dimension, base case
+        for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++)
+          {
             object pyobj;
-            octvalue_to_pyobj (pyobj, matrix.elem(matindex + i*matstride));
-            Py_INCREF (pyobj.ptr());
+            octvalue_to_pyobj (pyobj, matrix.elem (matindex + i*matstride));
+            Py_INCREF (pyobj.ptr ());
             *(PyObject **)&ptr[offset + i*PyArray_STRIDE (pyarr, dimension)]
-               = pyobj.ptr();
-         }
-      } else {
-         for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++) {
-            copy_octarray_to_pyarrobj<PyObject *, Cell>(
-               pyarr,
-               matrix,
-               matindex + i*matstride,
-               matstride * PyArray_DIM (pyarr, dimension),
-               dimension + 1,
-               offset + i*PyArray_STRIDE (pyarr, dimension));
-         }
+                = pyobj.ptr ();
+          }
       }
-   }
+    else
+      {
+        for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++)
+          {
+            copy_octarray_to_pyarrobj<PyObject *, Cell> (
+              pyarr,
+              matrix,
+              matindex + i*matstride,
+              matstride * PyArray_DIM (pyarr, dimension),
+              dimension + 1,
+              offset + i*PyArray_STRIDE (pyarr, dimension));
+          }
+      }
+  }
 
-   static PyArrayObject *createPyArr(const dim_vector &dims,
-                                     int pyarrtype) {
-      int len = dims.length();
-      npy_intp dimensions[len];
-      for (int i = 0; i < dims.length(); i++) {
-         dimensions[i] = dims(i);
+  static PyArrayObject *
+  createPyArr (const dim_vector& dims, int pyarrtype)
+  {
+    int len = dims.length ();
+    npy_intp dimensions[len];
+    for (int i = 0; i < dims.length (); i++)
+      dimensions[i] = dims(i);
+
+    return (PyArrayObject *)PyArray_SimpleNew (len, dimensions, pyarrtype);
+  }
+
+  template <class PythonPrimitive, class OctaveBase>
+  static PyArrayObject *
+  create_array (const OctaveBase& octarr, int pyarraytype)
+  {
+    PyArrayObject *pyarr = createPyArr (octarr.dims (), pyarraytype);
+    try
+      {
+        copy_octarray_to_pyarrobj<PythonPrimitive, OctaveBase> (pyarr, octarr, 0, 1, 0, 0);
+      }
+    catch (const value_convert_exception&)
+      {
+        Py_DECREF (pyarr);
+        throw;
+      }
+    return pyarr;
+  }
+
+  static PyArrayObject *
+  octvalue_to_pyarrobj (const octave_value& matrix)
+  {
+    if (matrix.is_double_type ())
+      if (matrix.is_complex_type ())
+        return create_array<Complex, ComplexNDArray> (matrix.complex_array_value (), NPY_CDOUBLE);
+      else if (matrix.is_real_type ())
+        return create_array<double, NDArray> (matrix.array_value (), NPY_DOUBLE);
+      else
+        throw value_convert_exception ("Unknown double matrix type");
+
+    if (matrix.is_single_type ())
+      if (matrix.is_complex_type ())
+        return create_array<FloatComplex, FloatComplexNDArray> (matrix.float_complex_array_value (), NPY_CFLOAT);
+      else if (matrix.is_real_type ())
+        return create_array<float, FloatNDArray> (matrix.float_array_value (), NPY_FLOAT);
+      else
+        throw value_convert_exception ("Unknown float matrix type");
+
+    if (matrix.is_int8_type ())
+      return create_array<int8_t, int8NDArray> (matrix.int8_array_value (), NPY_INT8);
+    if (matrix.is_int16_type ())
+      return create_array<int16_t, int16NDArray> (matrix.int16_array_value (), NPY_INT16);
+    if (matrix.is_int32_type ())
+      return create_array<int32_t, int32NDArray> (matrix.int32_array_value (), NPY_INT32);
+    if (matrix.is_int64_type ())
+      return create_array<int64_t, int64NDArray> (matrix.int64_array_value (), NPY_INT64);
+
+    if (matrix.is_uint8_type ())
+      return create_array<uint8_t, uint8NDArray> (matrix.uint8_array_value (), NPY_UINT8);
+    if (matrix.is_uint16_type ())
+      return create_array<uint16_t, uint16NDArray> (matrix.uint16_array_value (), NPY_UINT16);
+    if (matrix.is_uint32_type ())
+      return create_array<uint32_t, uint32NDArray> (matrix.uint32_array_value (), NPY_UINT32);
+    if (matrix.is_uint64_type ())
+      return create_array<uint64_t, uint64NDArray> (matrix.uint64_array_value (), NPY_UINT64);
+
+    if (matrix.is_bool_type ())
+      return create_array<bool, boolNDArray> (matrix.bool_array_value (), NPY_BOOL);
+    if (matrix.is_string ())
+      return create_array<char, charNDArray> (matrix.char_array_value (), NPY_CHAR);
+    if (matrix.is_cell ())
+      return create_array<PyObject *, Cell> (matrix.cell_value (), NPY_OBJECT);
+
+    throw value_convert_exception ("Octave matrix type not known, conversion not implemented");
+  }
+
+  static void
+  octvalue_to_pyarr (boost::python::object& py_object,
+                     const octave_value& octvalue)
+  {
+    PyArrayObject *pyarr = octvalue_to_pyarrobj (octvalue);
+    py_object = object (handle<PyObject> ((PyObject *)pyarr));
+  }
+
+  static void
+  octmap_to_pyobject (boost::python::object& py_object,
+                      const octave_map& map)
+  {
+    py_object = boost::python::dict ();
+    string_vector keys = map.keys ();
+
+    for (octave_idx_type i = 0 ; i < keys.numel (); i++)
+      {
+        boost::python::object py_val;
+        const Cell c = map.contents (keys[i]);
+        octvalue_to_pyarr (py_val, c);
+        py_object[keys[i]] = py_val;
+      }
+  }
+
+  void octvalue_to_pyobj (boost::python::object& py_object,
+                          const octave_value& octvalue)
+  {
+    if (octvalue.is_undefined ())
+      throw value_convert_exception (
+        "Octave value `undefined'. Can not convert to a Python object");
+    else if (octvalue.is_numeric_type () || octvalue.is_string ()
+             || octvalue.is_cell ())
+      octvalue_to_pyarr (py_object, octvalue);
+    else if (octvalue.is_map ())
+      octmap_to_pyobject (py_object, octvalue.map_value ());
+    else
+      throw value_convert_exception (
+        "Conversion from Octave value not implemented");
+  }
+
+  void octlist_to_pytuple (boost::python::tuple& python_tuple,
+                           const octave_value_list& octave_list)
+  {
+    boost::python::list seq;
+    int length = octave_list.length ();
+
+    // FIXME: due to bugs in Octave 3.2.3 and earlier, lists returned from
+    // eval_string and feval may be padded by trailing undefined values.
+    // Fix is already upstream, so this may be eventually removed.
+    while (length > 0 && octave_list(length-1).is_undefined ())
+      length--;
+
+    for (int i = 0; i < length; i++)
+      {
+        boost::python::object py_object;
+        octvalue_to_pyobj (py_object, octave_list(i));
+        seq.append (py_object);
       }
 
-      return (PyArrayObject *)PyArray_SimpleNew(
-         len, dimensions, pyarrtype);
-   }
-
-   template <class PythonPrimitive, class OctaveBase>
-   static PyArrayObject *create_array(const OctaveBase &octarr,
-                                      int pyarraytype) {
-      PyArrayObject *pyarr = createPyArr(octarr.dims(), pyarraytype);
-      try {
-         copy_octarray_to_pyarrobj
-            <PythonPrimitive, OctaveBase>(pyarr, octarr, 0, 1, 0, 0);
-      } catch (value_convert_exception &pe) {
-         Py_DECREF(pyarr);
-         throw;
-      }
-      return pyarr;
-   }
-
-   static PyArrayObject *octvalue_to_pyarrobj(const octave_value &matrix) {
-      if (matrix.is_double_type ()) {
-         if (matrix.is_complex_type ()) {
-            return create_array<Complex, ComplexNDArray>
-               (matrix.complex_array_value(), NPY_CDOUBLE);
-         } else if (matrix.is_real_type()) {
-            return create_array<double, NDArray>(matrix.array_value(),
-                                                 NPY_DOUBLE);
-         } else
-            throw value_convert_exception("Unknown double matrix type");
-      }
-
-      if (matrix.is_single_type ()) {
-         if (matrix.is_complex_type ()) {
-            return create_array<FloatComplex, FloatComplexNDArray>
-               (matrix.float_complex_array_value(), NPY_CFLOAT);
-         } else if (matrix.is_real_type()) {
-            return create_array<float, FloatNDArray>(
-               matrix.float_array_value(), NPY_FLOAT);
-         } else
-            throw value_convert_exception("Unknown float matrix type");
-      }
-
-      if (matrix.is_int8_type()) {
-         return create_array<int8_t, int8NDArray>(
-            matrix.int8_array_value(), NPY_INT8);
-      }
-      if (matrix.is_int16_type()) {
-         return create_array<int16_t, int16NDArray>(
-            matrix.int16_array_value(), NPY_INT16);
-      }
-      if (matrix.is_int32_type()) {
-         return create_array<int32_t, int32NDArray>(
-            matrix.int32_array_value(), NPY_INT32);
-      }
-      if (matrix.is_int64_type()) {
-         return create_array<int64_t, int64NDArray>(
-            matrix.int64_array_value(), NPY_INT64);
-      }
-
-      if (matrix.is_uint8_type()) {
-         return create_array<uint8_t, uint8NDArray>(
-            matrix.uint8_array_value(), NPY_UINT8);
-      }
-      if (matrix.is_uint16_type()) {
-         return create_array<uint16_t, uint16NDArray>(
-            matrix.uint16_array_value(), NPY_UINT16);
-      }
-      if (matrix.is_uint32_type()) {
-         return create_array<uint32_t, uint32NDArray>(
-            matrix.uint32_array_value(), NPY_UINT32);
-      }
-      if (matrix.is_uint64_type()) {
-         return create_array<uint64_t, uint64NDArray>(
-            matrix.uint64_array_value(), NPY_UINT64);
-      }
-
-      if (matrix.is_bool_type()) {
-         return create_array<bool, boolNDArray>(
-            matrix.bool_array_value(), NPY_BOOL);
-      }
-      if (matrix.is_string()) {
-         return create_array<char, charNDArray>(
-            matrix.char_array_value(), NPY_CHAR);
-      }
-      if (matrix.is_cell()) {
-         return create_array<PyObject *, Cell>(
-            matrix.cell_value(), NPY_OBJECT);
-      }
-
-      throw value_convert_exception("Octave matrix type not known, "
-                                    "conversion not implemented");
-   }
-
-   static void octvalue_to_pyarr(boost::python::object &py_object,
-                          const octave_value& octvalue) {
-      PyArrayObject *pyarr = octvalue_to_pyarrobj(octvalue);
-      py_object = object(handle<PyObject>((PyObject *)pyarr));
-   }
-
-   static void octmap_to_pyobject(boost::python::object &py_object,
-                                  const octave_map& map) {
-      py_object = boost::python::dict();
-      string_vector keys = map.keys();
-
-      for(octave_idx_type i = 0 ; i < keys.numel(); i++) {
-         boost::python::object py_val;
-
-         const Cell c = map.contents(keys[i]);
-
-         octvalue_to_pyarr(py_val, c);
-
-         py_object[keys[i]] = py_val;
-      }
-   }
-
-   void octvalue_to_pyobj(boost::python::object &py_object,
-                          const octave_value& octvalue) {
-      if (octvalue.is_undefined()) {
-         throw value_convert_exception(
-            "Octave value `undefined'. Can not convert to a Python object");
-      } else if (octvalue.is_numeric_type() || octvalue.is_string()
-                 || octvalue.is_cell()) {
-         octvalue_to_pyarr(py_object, octvalue);
-      } else if (octvalue.is_map()) {
-         octmap_to_pyobject(py_object, octvalue.map_value());
-      } else
-         throw value_convert_exception(
-            "Conversion from Octave value not implemented");
-   }
-
-   void octlist_to_pytuple(boost::python::tuple &python_tuple,
-                           const octave_value_list &octave_list) {
-      boost::python::list seq;
-      int length = octave_list.length();
-
-      // FIXME: due to bugs in Octave 3.2.3 and earlier, lists returned from
-      // eval_string and feval may be padded by trailing undefined values.
-      // Fix is already upstream, so this may be eventually removed.
-      while (length > 0 && octave_list(length-1).is_undefined())
-         length--;
-
-      for (int i = 0; i < length; i++) {
-         boost::python::object py_object;
-         octvalue_to_pyobj(py_object, octave_list(i));
-         seq.append(py_object);
-      }
-      python_tuple = tuple(seq);
-   }
+    python_tuple = tuple (seq);
+  }
 }

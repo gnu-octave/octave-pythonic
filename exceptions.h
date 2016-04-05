@@ -26,119 +26,136 @@ along with Pytave; see the file COPYING.  If not, see
 #include <Python.h>
 #include <string>
 
-namespace pytave {
+namespace pytave
+{
+  class pytave_exception
+  {
+  public:
+    static void translate_exception (const pytave_exception& py_ex)
+    {
+      PyErr_SetString (PyExc_Exception, py_ex.error.c_str ());
+    }
 
-   class pytave_exception {
-      public:
-         static void translate_exception(pytave_exception const &py_ex) {
-            PyErr_SetString(PyExc_Exception, py_ex.error.c_str());
-         }
+    pytave_exception (const std::string& err) { error = err; };
 
-         pytave_exception(std::string err) { error = err; };
+  private:
+    std::string error;
+  };
 
-      private:
-         std::string error;
+  class octave_error_exception
+  {
+  public:
+    static bool init ()
+    {
+      excclass = PyErr_NewException (const_cast<char*> ("pytave.OctaveError"),
+                                     PyExc_RuntimeError, 0);
+      return (excclass != 0);
+    };
 
-   };
+    static void translate_exception (const octave_error_exception& py_ex)
+    {
+      PyErr_SetString (excclass, py_ex.error.c_str ());
+    }
 
-   class octave_error_exception {
-      public:
-         static bool init() {
-            excclass = PyErr_NewException(
-               const_cast<char*>("pytave.OctaveError"),
-               PyExc_RuntimeError, NULL);
-            return excclass != NULL;
-         };
-         static void translate_exception(octave_error_exception const &py_ex) {
-            PyErr_SetString(excclass, py_ex.error.c_str());
-         }
-         static PyObject *excclass;
+    static PyObject *excclass;
 
-         octave_error_exception(std::string err) { error = err; };
+    octave_error_exception (const std::string& err) { error = err; };
 
-      private:
-         std::string error;
+  private:
+    std::string error;
+  };
 
-   };
+  class octave_parse_exception
+  {
+  public:
+    static bool init ()
+    {
+      excclass = PyErr_NewException (const_cast<char*> ("pytave.ParseError"),
+                                     PyExc_RuntimeError, 0);
+      return (excclass != 0);
+    };
 
-   class octave_parse_exception {
-      public:
-         static bool init() {
-            excclass = PyErr_NewException(
-               const_cast<char*>("pytave.ParseError"),
-               PyExc_RuntimeError, NULL);
-            return excclass != NULL;
-         };
-         static void translate_exception(octave_parse_exception const &py_ex) {
-            PyErr_SetString(excclass, py_ex.error.c_str());
-         }
-         static PyObject *excclass;
+    static void translate_exception (const octave_parse_exception& py_ex)
+    {
+      PyErr_SetString (excclass, py_ex.error.c_str ());
+    }
 
-         octave_parse_exception(std::string err) { error = err; };
+    static PyObject *excclass;
 
-      private:
-         std::string error;
-   };
+    octave_parse_exception (const std::string& err) { error = err; };
 
-   class value_convert_exception {
-      public:
-         static bool init() {
-            excclass = PyErr_NewException(
-               const_cast<char*>("pytave.ValueConvertError"),
-               PyExc_TypeError, NULL);
-            return excclass != NULL;
-         };
-         static void translate_exception(value_convert_exception const &py_ex) {
-            PyErr_SetString(excclass, py_ex.error.c_str());
-         }
-         static PyObject *excclass;
+  private:
+    std::string error;
+  };
 
-         value_convert_exception(std::string err) { error = err; };
+  class value_convert_exception
+  {
+  public:
+    static bool init ()
+    {
+      excclass = PyErr_NewException (const_cast<char*> ("pytave.ValueConvertError"),
+                                     PyExc_TypeError, 0);
+      return (excclass != 0);
+    };
 
-      private:
-         std::string error;
-   };
+    static void translate_exception (const value_convert_exception& py_ex)
+    {
+      PyErr_SetString (excclass, py_ex.error.c_str ());
+    }
 
-   class object_convert_exception {
-      public:
-         static bool init() {
-            excclass = PyErr_NewException(
-               const_cast<char*>("pytave.ObjectConvertError"),
-               PyExc_TypeError, NULL);
-            return excclass != NULL;
-         };
-         static void translate_exception(
-               object_convert_exception const &py_ex) {
-            PyErr_SetString(excclass, py_ex.error.c_str());
-         }
-         static PyObject *excclass;
+    static PyObject *excclass;
 
-         object_convert_exception(std::string err) { error = err; };
+    value_convert_exception (const std::string& err) { error = err; };
 
-      private:
-         std::string error;
-   };
+  private:
+    std::string error;
+  };
 
-   class variable_name_exception {
-      public:
-         static bool init() {
-            excclass = PyErr_NewException(
-               const_cast<char*>("pytave.VarNameError"),
-               PyExc_RuntimeError, NULL);
-            return excclass != NULL;
-         };
-         static void translate_exception(variable_name_exception const &py_ex) {
-            PyErr_SetString(excclass, py_ex.error.c_str());
-         }
-         static PyObject *excclass;
+  class object_convert_exception
+  {
+  public:
+    static bool init ()
+    {
+      excclass = PyErr_NewException (const_cast<char*> ("pytave.ObjectConvertError"),
+                                     PyExc_TypeError, 0);
+      return (excclass != 0);
+    };
 
-         variable_name_exception(std::string err) { error = err; };
+    static void translate_exception (const object_convert_exception& py_ex)
+    {
+      PyErr_SetString (excclass, py_ex.error.c_str ());
+    }
 
-      private:
-         std::string error;
+    static PyObject *excclass;
 
-   };
+    object_convert_exception (const std::string& err) { error = err; };
 
+  private:
+    std::string error;
+  };
+
+  class variable_name_exception
+  {
+  public:
+    static bool init ()
+    {
+      excclass = PyErr_NewException (const_cast<char*> ("pytave.VarNameError"),
+                                     PyExc_RuntimeError, 0);
+      return (excclass != 0);
+    };
+
+    static void translate_exception (const variable_name_exception& py_ex)
+    {
+      PyErr_SetString (excclass, py_ex.error.c_str ());
+    }
+
+    static PyObject *excclass;
+
+    variable_name_exception (const std::string& err) { error = err; };
+
+  private:
+    std::string error;
+  };
 }
 
 #endif

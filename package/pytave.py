@@ -23,6 +23,7 @@
 
 import _pytave
 import atexit
+import numpy
 import sys
 
 try:
@@ -40,15 +41,15 @@ except IOError:
     interactive = False
 
 _pytave.init(interactive)
-(OctaveError, ValueConvertError, ObjectConvertError, ParseError, \
- VarNameError) = _pytave.get_exceptions();
+(OctaveError, ValueConvertError, ObjectConvertError, ParseError,
+ VarNameError) = _pytave.get_exceptions()
 
-import numpy
 
 def _atexit():
     _pytave.atexit()
 
 atexit.register(_atexit)
+
 
 def feval(nargout, funcname, *arguments):
 
@@ -129,6 +130,7 @@ def feval(nargout, funcname, *arguments):
 
     return _pytave.feval(nargout, funcname, arguments)
 
+
 def eval(nargout, code, silent=True):
 
     """Executes a given Octave code.
@@ -164,6 +166,7 @@ def eval(nargout, code, silent=True):
 
     return _pytave.eval(nargout, code, silent)
 
+
 def stripdict(dictarray):
     """A helper function to convert structures obtained from Octave.
     Because in Octave, all structs are also arrays, they are returned
@@ -172,8 +175,9 @@ def stripdict(dictarray):
 
     sdict = {}
     for key in dictarray:
-        sdict[key] = dictarray[key][0,0]
+        sdict[key] = dictarray[key][0, 0]
     return sdict
+
 
 def narrowlist(objarray):
     """A helper function to convert cell arrays obtained from Octave.
@@ -182,42 +186,42 @@ def narrowlist(objarray):
 
     return numpy.ravel(objarray).tolist()
 
+
 def simplify(obj):
     """A helper function to convert results obtained from Octave.
     This will convert all 1x1 arrays to scalars, vectors to 1D arrays,
     1xN and 0x0 character arrays to strings, 1xN, Nx1 and 0x0 cell
     arrays to lists, and strip scalar dicts. It will work recursively."""
 
-    def vectordims(dims,column_allowed = True):
+    def vectordims(dims, column_allowed=True):
         return (len(dims) == 2 and
                 ((dims[0] == 1 or (column_allowed and dims[1] == 1)) or
                 (dims[0] == 0 and dims[1] == 0)))
 
-    if isinstance(obj,numpy.ndarray):
+    if isinstance(obj, numpy.ndarray):
         tc = obj.dtype.char
         if tc == 'O':
             if vectordims(numpy.shape(obj)):
-                return map(simplify,narrowlist(obj))
+                return map(simplify, narrowlist(obj))
         elif tc == 'c':
             if vectordims(numpy.shape(obj), False):
                 return obj.tostring()
         else:
             dims = numpy.shape(obj)
-            if dims == (1,1):
-                return obj[0,0]
+            if dims == (1, 1):
+                return obj[0, 0]
             elif vectordims(dims):
                 return numpy.ravel(obj)
-    elif isinstance(obj,dict):
+    elif isinstance(obj, dict):
         sobj = {}
         for key in obj:
             sval = simplify(obj[key])
-            if isinstance(sval,list) and len(sval) == 1:
+            if isinstance(sval, list) and len(sval) == 1:
                 sval = sval[0]
             sobj[key] = sval
         return sobj
-    elif isinstance(obj,tuple):
-        return tuple(map(simplify,obj))
-    ## default.
+    elif isinstance(obj, tuple):
+        return tuple(map(simplify, obj))
     return obj
 
 
@@ -225,21 +229,26 @@ def addpath(*arguments):
     """See Octave documentation"""
     return _pytave.feval(1, "addpath", arguments)[0]
 
+
 def rmpath(*paths):
     """See Octave documentation"""
     return _pytave.feval(1, "rmpath", paths)[0]
+
 
 def path(*paths):
     """See Octave documentation"""
     return _pytave.feval(1, "path", paths)[0]
 
+
 def load_package(pkg_name):
     """Equivalent to pkg load. See Octave documentation."""
     return _pytave.feval(0, "pkg", ("load", pkg_name))
 
+
 def unload_package(pkg_name):
     """Equivalent to pkg unload. See Octave documentation."""
     return _pytave.feval(0, "pkg", ("unload", pkg_name))
+
 
 class _VariablesDict(MutableMapping):
     def __init__(self, global_variables, native=False):
@@ -279,6 +288,7 @@ class _VariablesDict(MutableMapping):
 locals = _VariablesDict(global_variables=False)
 globals = _VariablesDict(global_variables=True)
 
+
 def push_scope():
     """Creates a new anonymous local variable scope on the Octave call
     stack and sets it as the current Octave scope. Subsequent eval,
@@ -291,6 +301,7 @@ def push_scope():
     """
     return _pytave.push_scope()
 
+
 def pop_scope():
     """Pops the current active scope (created previously by
     push_scope) off the Octave call stack. The previous scope
@@ -299,6 +310,7 @@ def pop_scope():
     If already at the top-level scope, this function does nothing.
     """
     _pytave.pop_scope()
+
 
 class _LocalScope:
     def __init__(self, func):
@@ -313,17 +325,18 @@ class _LocalScope:
         finally:
             _pytave.pop_scope()
 
+
 def local_scope(func):
     """Decorates a function to use local Octave scope.
     Example:
 
     @pytave.local_scope
-    def myfunc(a,b):
+    def myfunc(a, b):
         <function body>
 
     is equivalent to:
 
-    def myfunc(a,b):
+    def myfunc(a, b):
         try:
             pytave.push_scope()
             <function body>
