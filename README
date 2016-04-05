@@ -55,15 +55,15 @@ A short list of what Pytave is capable of
 Project homepage
 ================
 
-https://launchpad.net/pytave
+https://bitbucket.org/mtmiller/pytave
 
 Using/hacking
 =============
 
-You need the Bazaar version control software (bzr).  Branch from trunk
+You need the Mercurial version control software (hg).  Clone the repo
 with:
 
-  $ bzr branch lp:pytave
+  $ hg clone https://bitbucket.org/mtmiller/pytave
 
    You will now have a directory called `pytave' with source code for
 the module.  Read the INSTALL file for building instructions.

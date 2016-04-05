@@ -21,7 +21,7 @@ dnl Copyright (C) 2009 Jaroslav Hajek, VZLU Prague
 ### <http://www.gnu.org/licenses/>.
 
 AC_PREREQ(2.61)
-AC_INIT(pytave, dev, [[https://bugs.launchpad.net/pytave]])
+AC_INIT(pytave, dev, [[https://bitbucket.org/mtmiller/pytave/issues]])
 
 # Some important programs.
 AC_LANG(C++)
