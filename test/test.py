@@ -1,40 +1,39 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
-import pytave
-from pytave import Numeric
 import numpy
+import pytave
 import traceback
 
 print "No messages indicates test pass."
 
-arr0_0 = Numeric.zeros((0,0));
-arr0_1 = Numeric.zeros((0,1));
-arr1_0 = Numeric.zeros((1,0));
-number = Numeric.array([[1.32]], Numeric.Float32)
-arr1fT = Numeric.array([[1.32], [2], [3], [4]], Numeric.Float32)
-arr1fT2 = Numeric.array([[1.32, 2, 3, 4]], Numeric.Float32)
-arr1f = Numeric.array([[1.32, 2, 3, 4]], Numeric.Float32)
-arr1b = Numeric.array([[8, 2, 3, 256]], Numeric.Int8)
-arr1i = Numeric.array([[17, 2, 3, 4]], Numeric.Int)
-arr1i32 = Numeric.array([[32, 2, 3, 4]], Numeric.Int32)
+arr0_0 = numpy.zeros((0,0));
+arr0_1 = numpy.zeros((0,1));
+arr1_0 = numpy.zeros((1,0));
+number = numpy.array([[1.32]], numpy.float32)
+arr1fT = numpy.array([[1.32], [2], [3], [4]], numpy.float32)
+arr1fT2 = numpy.array([[1.32, 2, 3, 4]], numpy.float32)
+arr1f = numpy.array([[1.32, 2, 3, 4]], numpy.float32)
+arr1b = numpy.array([[8, 2, 3, 256]], numpy.int8)
+arr1i = numpy.array([[17, 2, 3, 4]], numpy.int)
+arr1i32 = numpy.array([[32, 2, 3, 4]], numpy.int32)
 arr1i64 = numpy.array([[32, 2, 3, 4]], dtype=numpy.int64)
-arr1a = Numeric.array([[1, 2, 3, 4]])
-arr2f = Numeric.array([[1.32, 2, 3, 4],[5,6,7,8]], Numeric.Float32)
-arr2d = Numeric.array([[1.17, 2, 3, 4],[5,6,7,8]], Numeric.Float)
-arr3f = Numeric.array([[[1.32, 2, 3, 4],[5,6,7,8]],[[9, 10, 11, 12],[13,14,15,16]]], Numeric.Float32)
-arr1c = Numeric.array([[1+2j, 3+4j, 5+6j, 7+0.5j]], Numeric.Complex)
-arr1fc = Numeric.array([[1+2j, 3+4j, 5+6j, 7+0.5j]], Numeric.Complex32)
-arr1ch = Numeric.array(["abc"],Numeric.Character)
-arr2ch = Numeric.array(["abc","def"],Numeric.Character)
-arr1o = Numeric.array([[1.0,"abc",2+3j]],Numeric.PyObject)
-arr2o = Numeric.array([[1.0,"abc",2+3j],[4.0,arr1i,"def"]],Numeric.PyObject)
+arr1a = numpy.array([[1, 2, 3, 4]])
+arr2f = numpy.array([[1.32, 2, 3, 4],[5,6,7,8]], numpy.float32)
+arr2d = numpy.array([[1.17, 2, 3, 4],[5,6,7,8]], numpy.float)
+arr3f = numpy.array([[[1.32, 2, 3, 4],[5,6,7,8]],[[9, 10, 11, 12],[13,14,15,16]]], numpy.float32)
+arr1c = numpy.array([[1+2j, 3+4j, 5+6j, 7+0.5j]], numpy.complex)
+arr1fc = numpy.array([[1+2j, 3+4j, 5+6j, 7+0.5j]], numpy.complex64)
+arr1ch = numpy.array([["abc"]],numpy.character)
+arr2ch = numpy.array([["abc"],["def"]],numpy.character)
+arr1o = numpy.array([[1.0,"abc",2+3j]],numpy.object)
+arr2o = numpy.array([[1.0,"abc",2+3j],[4.0,arr1i,"def"]],numpy.object)
 
 alimit_int64 = numpy.array([[-9223372036854775808L, 9223372036854775807L]], dtype=numpy.int64);
-alimit_int32 = Numeric.array([[-2147483648, 2147483647]], Numeric.Int32);
-alimit_int16 = Numeric.array([[-32768, 32767, -32769, 32768]], Numeric.Int16);
-alimit_int8 = Numeric.array([[-128, 127, -129, 128]], Numeric.Int8);
-alimit_uint8 = Numeric.array([[0, 255, -1, 256]], Numeric.UnsignedInt8);
+alimit_int32 = numpy.array([[-2147483648, 2147483647]], numpy.int32);
+alimit_int16 = numpy.array([[-32768, 32767, -32769, 32768]], numpy.int16);
+alimit_int8 = numpy.array([[-128, 127, -129, 128]], numpy.int8);
+alimit_uint8 = numpy.array([[0, 255, -1, 256]], numpy.uint8);
 
 
 # This eval call is not to be seen as a encouragement to use Pytave
@@ -44,7 +43,7 @@ pytave.eval(0, "function [result] = test_return(arg); result = arg; endfunction"
 pytave.feval(1, "test_return", 1)
 
 def equals(a,b):
-    return Numeric.alltrue(Numeric.ravel(a == b))
+    return numpy.alltrue(numpy.ravel(a == b))
 
 def fail(msg, exc=None):
 	print "FAIL:", msg
@@ -153,14 +152,14 @@ def testlocalscope(x):
     def sloppy_factorial(x):
 	pytave.locals["x"] = x
 	xm1, = pytave.eval(1,"x-1")
-	xm1 = xm1.toscalar()
+	xm1 = xm1[0][0]
 	if xm1 > 0:
 	    fxm1 = sloppy_factorial(xm1)
 	else:
 	    fxm1 = 1
 	pytave.locals["fxm1"] = fxm1
 	fx, = pytave.eval(1,"x * fxm1")
-	fx = fx.toscalar()
+	fx = fx[0][0]
 	return fx
 
     try:
@@ -174,10 +173,10 @@ def testlocalscope(x):
 	fail("testlocalscope: %s" % (x,), e)
 
 def objarray(obj):
-    return Numeric.array(obj,Numeric.PyObject)
+    return numpy.array(obj,numpy.object)
 
 def charray(obj):
-    return Numeric.array(obj,Numeric.Character)
+    return numpy.array(obj,numpy.character)
 
 
 testmatrix(alimit_int64)
@@ -191,8 +190,8 @@ testmatrix(alimit_int8)
 #testequal(["mystring"])
 #testequal(["mystringåäöÅÄÖ"])
 
-testexpect(1,Numeric.array([[1]],Numeric.Int))
-testexpect(1.0,Numeric.array([[1]],Numeric.Float))
+testexpect(1,numpy.array([[1]],numpy.int))
+testexpect(1.0,numpy.array([[1]],numpy.float))
 
 # Vector arrays
 testmatrix(arr1a)

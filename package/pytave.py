@@ -43,7 +43,7 @@ _pytave.init(interactive)
 (OctaveError, ValueConvertError, ObjectConvertError, ParseError, \
  VarNameError) = _pytave.get_exceptions();
 
-from numpy import oldnumeric as Numeric
+import numpy
 
 def _atexit():
     _pytave.atexit()
@@ -78,7 +78,7 @@ def feval(nargout, funcname, *arguments):
         dict                struct
         list                cell array
 
-    Numeric Array:
+    NumPy Array:
         UBYTE, SBYTE,       matrix of correct type
         USHORT, SHORT,      -''-
         UINT, SINT,         -''-
@@ -102,8 +102,8 @@ def feval(nargout, funcname, *arguments):
         All scalar values are regarded as 1x1 matrices, as they are in
     Octave.
 
-    Matrix values to Numeric arrays:
-           double              DOUBLE
+    Matrix values to NumPy arrays:
+        double              DOUBLE
         single              FLOAT
         logical             DOUBLE
         int64               LONG
@@ -177,10 +177,10 @@ def stripdict(dictarray):
 
 def narrowlist(objarray):
     """A helper function to convert cell arrays obtained from Octave.
-    Octave cells are returned as Numeric object arrays. This function
+    Octave cells are returned as NumPy object arrays. This function
     will flatten the array and convert it into a 1D list."""
 
-    return Numeric.ravel(objarray).tolist()
+    return numpy.ravel(objarray).tolist()
 
 def simplify(obj):
     """A helper function to convert results obtained from Octave.
@@ -188,33 +188,25 @@ def simplify(obj):
     1xN and 0x0 character arrays to strings, 1xN, Nx1 and 0x0 cell
     arrays to lists, and strip scalar dicts. It will work recursively."""
 
-    def get_typecode(array):
-        """gets the typecode from both Numeric and NumPy array"""
-        try:
-            tc = array.typecode()
-        except:
-            tc = array.dtype.char
-        return tc
-
     def vectordims(dims,column_allowed = True):
         return (len(dims) == 2 and
                 ((dims[0] == 1 or (column_allowed and dims[1] == 1)) or
                 (dims[0] == 0 and dims[1] == 0)))
 
-    if isinstance(obj,Numeric.ArrayType):
-        tc = get_typecode(obj)
+    if isinstance(obj,numpy.ndarray):
+        tc = obj.dtype.char
         if tc == 'O':
-            if vectordims(Numeric.shape(obj)):
+            if vectordims(numpy.shape(obj)):
                 return map(simplify,narrowlist(obj))
         elif tc == 'c':
-            if vectordims(Numeric.shape(obj), False):
+            if vectordims(numpy.shape(obj), False):
                 return obj.tostring()
         else:
-            dims = Numeric.shape(obj)
+            dims = numpy.shape(obj)
             if dims == (1,1):
                 return obj[0,0]
             elif vectordims(dims):
-                return Numeric.ravel(obj)
+                return numpy.ravel(obj)
     elif isinstance(obj,dict):
         sobj = {}
         for key in obj:
