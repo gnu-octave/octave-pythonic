@@ -20,8 +20,12 @@ along with Pytave; see the file COPYING.  If not, see
 
 */
 
-#ifndef OCTAVE_TO_PYTHON_H
-#define OCTAVE_TO_PYTHON_H
+#if ! defined (pytave_octave_to_python_h)
+#define pytave_octave_to_python_h
+
+#include <boost/python.hpp>
+#include <ov.h>
+#include <ovl.h>
 
 namespace pytave {
    void octvalue_to_pyobj(boost::python::object &py_object,
@@ -30,4 +34,4 @@ namespace pytave {
                            const octave_value_list &octave_list);
 }
 
-#endif /* OCTAVE_TO_PYTHON_H */
+#endif

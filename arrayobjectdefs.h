@@ -20,17 +20,24 @@ along with Pytave; see the file COPYING.  If not, see
 
 */
 
-/* If your extension does not reside in a single file, there is an
- * additional step that is necessary. Be sure to define the symbol
- * PY_ARRAY_UNIQUE_SYMBOL to some name (the same name in all the files
- * comprising the extension), upstream from the include of
- * arrayobject.h. Typically this would be in some header file that is
- * included before arrayobject.h.
- */
-#ifndef PYTAVE_DO_DECLARE_SYMBOL
-#define NO_IMPORT_ARRAY
+#if ! defined (pytave_arrayobjectdefs_h)
+#define pytave_arrayobjectdefs_h 1
+
+// If your extension does not reside in a single file, there is an
+// additional step that is necessary. Be sure to define the symbol
+// PY_ARRAY_UNIQUE_SYMBOL to some name (the same name in all the files
+// comprising the extension), upstream from the include of
+// arrayobject.h. Typically this would be in some header file that is
+// included before arrayobject.h.
+
+#if ! defined (PYTAVE_DO_DECLARE_SYMBOL)
+#  define NO_IMPORT_ARRAY
 #endif
+
 #define PY_ARRAY_UNIQUE_SYMBOL pytave_array_symbol
+
 #include <Python.h>
 #include <numpy/npy_no_deprecated_api.h>
 #include <numpy/arrayobject.h>
+
+#endif

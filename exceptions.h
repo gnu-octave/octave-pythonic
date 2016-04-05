@@ -20,8 +20,11 @@ along with Pytave; see the file COPYING.  If not, see
 
 */
 
-#ifndef PYTAVE_EXCEPTIONS_H
-#define PYTAVE_EXCEPTIONS_H
+#if ! defined (pytave_exceptions_h)
+#define pytave_exceptions_h
+
+#include <Python.h>
+#include <string>
 
 namespace pytave {
 
@@ -138,4 +141,4 @@ namespace pytave {
 
 }
 
-#endif /* PYTAVE_EXCEPTIONS_H */
+#endif
