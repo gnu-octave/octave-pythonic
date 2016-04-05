@@ -44,24 +44,16 @@ pytave_missing_libs=
 AX_OCTAVE([OCTAVE_CONFIG], [], [addmissing([Octave development files])])
 
 # Pick a Python library to use
-AX_PYTHON_DEVEL([], [], [addmissing([Python development files])])
+AX_PYTHON_DEVEL
 
 # Look for numpy headers
 AX_PYTHON_NUMPY([], [addmissing([NumPy development files])])
 
 # Look for boost::python
-pytave_old_libs="$LIBS"
-pytave_old_ldflags="$LDFLAGS"
-pytave_old_cppflags="$CPPFLAGS"
-LIBS="$LIBS $PYTHON_LIBS"
-LDFLAGS="$LDFLAGS $PYTHON_LDFLAGS"
-CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS"
-
-AX_BOOST_PYTHON([], [addmissing([Boost Python development files])])
-
-LIBS="$pytave_old_libs"
-LDFLAGS="$pytave_old_ldflags"
-CPPFLAGS="$pytave_old_cppflags"
+AX_BOOST_PYTHON
+if test -z "$BOOST_PYTHON_LIB"; then
+  addmissing([Boost Python development files])
+fi
 
 # Do some more initializations
 
