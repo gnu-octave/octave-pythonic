@@ -148,44 +148,60 @@ namespace pytave {
          (matrix, pyarr); \
          break; \
 
-      // Prefer int to other types of the same size.
-      // E.g. on 32-bit x86 architectures: sizeof(long) == sizeof(int).
+      // Coerce NumPy's long type into one of two possible sized integer types
       int type_num = PyArray_TYPE (pyarr);
       switch (type_num) {
          case NPY_LONG:
-            if (sizeof(long) == sizeof(int)) {
-               type_num = NPY_INT;
+            if (sizeof(npy_long) == sizeof(int64_t)) {
+               type_num = NPY_INT64;
+            }
+            else if (sizeof(npy_long) == sizeof(int32_t)) {
+               type_num = NPY_INT32;
             }
             break;
-         case NPY_SHORT:
-            if (sizeof(short) == sizeof(int)) {
-               type_num = NPY_INT;
+         case NPY_LONGLONG:
+            if (sizeof(npy_longlong) == sizeof(int64_t)) {
+               type_num = NPY_INT64;
+            }
+            else if (sizeof(npy_longlong) == sizeof(int32_t)) {
+               type_num = NPY_INT32;
             }
             break;
-         case NPY_USHORT:
-            if (sizeof(unsigned short) == sizeof(unsigned int)) {
-               type_num = NPY_UINT;
+         case NPY_ULONG:
+            if (sizeof(npy_ulong) == sizeof(uint64_t)) {
+               type_num = NPY_UINT64;
+            }
+            else if (sizeof(npy_ulong) == sizeof(uint32_t)) {
+               type_num = NPY_UINT32;
+            }
+            break;
+         case NPY_ULONGLONG:
+            if (sizeof(npy_ulonglong) == sizeof(uint64_t)) {
+               type_num = NPY_UINT64;
+            }
+            else if (sizeof(npy_ulonglong) == sizeof(uint32_t)) {
+               type_num = NPY_UINT32;
             }
             break;
       }
 
       switch (type_num) {
-         ARRAYCASE(NPY_CHAR,              char)
-         ARRAYCASE(NPY_BYTE,     signed   char)
-         ARRAYCASE(NPY_UBYTE,    unsigned char)
-         ARRAYCASE(NPY_SHORT,    signed   short)
-         ARRAYCASE(NPY_USHORT,   unsigned short)
-         ARRAYCASE(NPY_INT,      signed   int)
-         ARRAYCASE(NPY_UINT,     unsigned int)
-         ARRAYCASE(NPY_LONG,     signed   long)
-         ARRAYCASE(NPY_LONGLONG, signed   long long)
-         ARRAYCASE(NPY_FLOAT,    float)
-         ARRAYCASE(NPY_DOUBLE,   double)
-         ARRAYCASE(NPY_CFLOAT,   FloatComplex)
-         ARRAYCASE(NPY_CDOUBLE,  Complex)
-         ARRAYCASE(NPY_BOOL,     bool)
-         ARRAYCASE(NPY_STRING,   char)
-         ARRAYCASE(NPY_OBJECT,   PyObject *)
+         ARRAYCASE(NPY_INT8,    int8_t)
+         ARRAYCASE(NPY_INT16,   int16_t)
+         ARRAYCASE(NPY_INT32,   int32_t)
+         ARRAYCASE(NPY_INT64,   int64_t)
+         ARRAYCASE(NPY_UINT8,   uint8_t)
+         ARRAYCASE(NPY_UINT16,  uint16_t)
+         ARRAYCASE(NPY_UINT32,  uint32_t)
+         ARRAYCASE(NPY_UINT64,  uint64_t)
+         ARRAYCASE(NPY_FLOAT,   float)
+         ARRAYCASE(NPY_DOUBLE,  double)
+         ARRAYCASE(NPY_CFLOAT,  FloatComplex)
+         ARRAYCASE(NPY_CDOUBLE, Complex)
+         ARRAYCASE(NPY_BOOL,    bool)
+         ARRAYCASE(NPY_CHAR,    char)
+         ARRAYCASE(NPY_STRING,  char)
+         ARRAYCASE(NPY_OBJECT,  PyObject *)
 
          default:
             throw object_convert_exception(
@@ -224,22 +240,6 @@ namespace pytave {
       }
 
       switch (PyArray_TYPE (pyarr)) {
-         case NPY_UBYTE:
-         case NPY_USHORT:
-         case NPY_UINT:
-            switch (PyArray_ITEMSIZE (pyarr)) {
-               case 1:
-                  pyarrobj_to_octvalueNd<uint8NDArray>(octvalue, pyarr, dims);
-                  break;
-               case 2:
-                  pyarrobj_to_octvalueNd<uint16NDArray>(octvalue, pyarr, dims);
-                  break;
-               case 4:
-                  pyarrobj_to_octvalueNd<uint32NDArray>(octvalue, pyarr, dims);
-                  break;
-               default:
-                  throw object_convert_exception("Unknown unsigned integer.");
-            }
          case NPY_BYTE:
          case NPY_SHORT:
          case NPY_INT:
@@ -262,6 +262,28 @@ namespace pytave {
                   throw object_convert_exception("Unknown integer.");
             }
             break;
+         case NPY_UBYTE:
+         case NPY_USHORT:
+         case NPY_UINT:
+         case NPY_ULONG:
+         case NPY_ULONGLONG:
+            switch (PyArray_ITEMSIZE (pyarr)) {
+               case 1:
+                  pyarrobj_to_octvalueNd<uint8NDArray>(octvalue, pyarr, dims);
+                  break;
+               case 2:
+                  pyarrobj_to_octvalueNd<uint16NDArray>(octvalue, pyarr, dims);
+                  break;
+               case 4:
+                  pyarrobj_to_octvalueNd<uint32NDArray>(octvalue, pyarr, dims);
+                  break;
+               case 8:
+                  pyarrobj_to_octvalueNd<uint64NDArray>(octvalue, pyarr, dims);
+                  break;
+               default:
+                  throw object_convert_exception("Unknown unsigned integer.");
+            }
+            break;
          case NPY_FLOAT:
             pyarrobj_to_octvalueNd<FloatNDArray>(octvalue, pyarr, dims);
             break;
@@ -274,14 +296,14 @@ namespace pytave {
          case NPY_CDOUBLE:
             pyarrobj_to_octvalueNd<ComplexNDArray>(octvalue, pyarr, dims);
             break;
+         case NPY_BOOL:
+            pyarrobj_to_octvalueNd<boolNDArray>(octvalue, pyarr, dims);
+            break;
          case NPY_CHAR:
          case_NPY_CHAR:
             pyarrobj_to_octvalueNd<charNDArray>(octvalue, pyarr, dims);
             // FIXME: is the following needed?
             octvalue = octvalue.convert_to_str(true, true, '"');
-            break;
-         case NPY_BOOL:
-            pyarrobj_to_octvalueNd<boolNDArray>(octvalue, pyarr, dims);
             break;
          case NPY_STRING:
             {

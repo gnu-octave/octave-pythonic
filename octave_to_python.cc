@@ -26,7 +26,6 @@ along with Pytave; see the file COPYING.  If not, see
 #endif
 
 #include <boost/python.hpp>
-#include <boost/type_traits/integral_constant.hpp>
 
 #include <octave/oct.h>
 #include <octave/ov.h>
@@ -36,14 +35,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "octave_to_python.h"
-
-/* From docs:
- *  Note that the names of the element type constants refer to the C data
- *  types, not the Python data types. A Python int is equivalent to a C long,
- *  and a Python float corresponds to a C double . Many of the element types
- *  listed above do not have corresponding Python scalar types
- *  (e.g. NPY_INT ).
- */
 
 using namespace boost::python;
 
@@ -134,69 +125,6 @@ namespace pytave {
       return pyarr;
    }
 
-   template <class PythonPrimitive, class OctaveBase>
-   static PyArrayObject *create_array(const OctaveBase &octarr,
-                                      int pyarraytype, boost::true_type) {
-      return create_array<PythonPrimitive, OctaveBase> (octarr, pyarraytype);
-   }
-
-   template <class PythonPrimitive, class OctaveBase>
-   static PyArrayObject *create_array(const OctaveBase &octarr,
-                                      int pyarraytype, boost::false_type) {
-      assert(0);
-      return 0;
-   }
-
-   template <class CLASS, size_t bytes>
-   inline static PyArrayObject *create_uint_array(CLASS value) {
-      if (bytes == sizeof(int)) {
-         boost::integral_constant<bool, bytes == sizeof(int)> inst;
-         return create_array<unsigned int, CLASS>(value, NPY_UINT, inst);
-      } else if (bytes == sizeof(char)) {
-         boost::integral_constant<bool, bytes == sizeof(char)> inst;
-         return create_array<unsigned char, CLASS>(value, NPY_UBYTE, inst);
-      } else if (bytes == sizeof(short)) {
-         boost::integral_constant<bool,
-            bytes == sizeof(short) && bytes != sizeof(int)> inst;
-         return create_array<unsigned short, CLASS>(value, NPY_USHORT, inst);
-      } else {
-         std::ostringstream os;
-         os << "NumPy arrays do not support unsigned " << (bytes*8)
-            << "-bit values on this architecture.";
-         throw value_convert_exception(os.str());
-      }
-   }
-
-   template <class CLASS, size_t bytes>
-   inline static PyArrayObject *create_sint_array(CLASS value) {
-      if (bytes == sizeof(int)) {
-         // We test int first since we prefer int to other datatypes of the
-         // same size.
-         boost::integral_constant<bool, bytes == sizeof(int)> inst;
-         return create_array<signed int, CLASS>(value, NPY_INT, inst);
-      }
-      else if (bytes == sizeof(long long)) {
-         boost::integral_constant<bool, bytes == sizeof(long long) && bytes != sizeof(int)> inst;
-         return create_array<long, CLASS>(value, NPY_LONGLONG, inst);
-      }
-      else if (bytes == sizeof(long)) {
-         boost::integral_constant<bool, bytes == sizeof(long) && bytes != sizeof(int) && bytes != sizeof(long long)> inst;
-         return create_array<long, CLASS>(value, NPY_LONG, inst);
-      } else if (bytes == sizeof(char)) {
-         boost::integral_constant<bool, bytes == sizeof(char)> inst;
-         return create_array<signed char, CLASS>(value, NPY_BYTE, inst);
-      } else if (bytes == sizeof(short)) {
-         boost::integral_constant<bool,
-            bytes==sizeof(short) && bytes != sizeof(int)> inst;
-         return create_array<signed short, CLASS>(value, NPY_SHORT, inst);
-      } else {
-         std::ostringstream os;
-         os << "NumPy arrays do not support signed " << (bytes*8)
-            << "-bit values on this architecture.";
-         throw value_convert_exception(os.str());
-      }
-   }
-
    static PyArrayObject *octvalue_to_pyarrobj(const octave_value &matrix) {
       if (matrix.is_double_type ()) {
          if (matrix.is_complex_type ()) {
@@ -220,34 +148,40 @@ namespace pytave {
             throw value_convert_exception("Unknown float matrix type");
       }
 
-      if (matrix.is_int64_type()) {
-         return create_sint_array<int64NDArray, sizeof(int64_t)>(
-            matrix.int64_array_value());
-      }
-      if (matrix.is_uint32_type()) {
-         return create_uint_array<uint32NDArray, sizeof(uint32_t)>(
-            matrix.uint32_array_value());
-      }
-      if (matrix.is_int32_type()) {
-         return create_sint_array<int32NDArray, sizeof(int32_t)>(
-            matrix.int32_array_value());
-      }
-      if (matrix.is_uint16_type()) {
-         return create_uint_array<uint16NDArray, sizeof(uint16_t)>(
-            matrix.uint16_array_value());
+      if (matrix.is_int8_type()) {
+         return create_array<int8_t, int8NDArray>(
+            matrix.int8_array_value(), NPY_INT8);
       }
       if (matrix.is_int16_type()) {
-         return create_sint_array<int16NDArray, sizeof(int16_t)>(
-            matrix.int16_array_value());
+         return create_array<int16_t, int16NDArray>(
+            matrix.int16_array_value(), NPY_INT16);
       }
+      if (matrix.is_int32_type()) {
+         return create_array<int32_t, int32NDArray>(
+            matrix.int32_array_value(), NPY_INT32);
+      }
+      if (matrix.is_int64_type()) {
+         return create_array<int64_t, int64NDArray>(
+            matrix.int64_array_value(), NPY_INT64);
+      }
+
       if (matrix.is_uint8_type()) {
-         return create_uint_array<uint8NDArray, sizeof(uint8_t)>(
-            matrix.uint8_array_value());
+         return create_array<uint8_t, uint8NDArray>(
+            matrix.uint8_array_value(), NPY_UINT8);
       }
-      if (matrix.is_int8_type()) {
-         return create_sint_array<int8NDArray, sizeof(int8_t)>(
-            matrix.int8_array_value());
+      if (matrix.is_uint16_type()) {
+         return create_array<uint16_t, uint16NDArray>(
+            matrix.uint16_array_value(), NPY_UINT16);
       }
+      if (matrix.is_uint32_type()) {
+         return create_array<uint32_t, uint32NDArray>(
+            matrix.uint32_array_value(), NPY_UINT32);
+      }
+      if (matrix.is_uint64_type()) {
+         return create_array<uint64_t, uint64NDArray>(
+            matrix.uint64_array_value(), NPY_UINT64);
+      }
+
       if (matrix.is_bool_type()) {
          return create_array<bool, boolNDArray>(
             matrix.bool_array_value(), NPY_BOOL);
