@@ -131,19 +131,18 @@ namespace pytave { /* {{{ */
                                   variable_name_exception::excclass)));
    }
 
-   std::string make_error_message (const octave_map& map) {
+   std::string make_error_message () {
       std::ostringstream exceptionmsg;
-      std::string message = map(0).getfield("message").string_value();
-      std::string identifier = map(0).getfield("identifier").string_value();
-      Cell stackCell = map.contents("stack");
+
+      std::string message = last_error_message ();
+      std::string identifier = last_error_id ();
 
       // Trim trailing new lines
       message = message.substr(0, message.find_last_not_of("\r\n") + 1);
 
-      if (!stackCell.is_empty() && stackCell(0).is_map()) {
-         // The struct element is called "stack" but only contain
-         // info about the top frame.
-         octave_map stack = stackCell(0).map_value();
+      octave_map stack = last_error_stack ();
+
+      if (! stack.is_empty ()) {
          std::string file = stack(0).getfield("file").string_value();
          std::string name = stack(0).getfield("name").string_value();
          int line = stack(0).getfield("line").int_value();
@@ -182,11 +181,15 @@ namespace pytave { /* {{{ */
 #endif
 
       bool bad_alloc_state = false;
+      bool octave_error = false;
+
       Py_BEGIN_ALLOW_THREADS
       try {
          retval = feval(funcname, octave_args, (nargout >= 0) ? nargout : 0);
       } catch (std::bad_alloc) {
          bad_alloc_state = true;
+      } catch (const octave_execution_exception&) {
+         octave_error = true;
       }
       Py_END_ALLOW_THREADS
 
@@ -198,19 +201,11 @@ namespace pytave { /* {{{ */
       if (bad_alloc_state)
          throw std::bad_alloc (); // Translated to MemoryError by boost::python
 
-      else if (error_state != 0) {
-// error_state values:
-// -2 error without traceback
-// -1 traceback
-//  1 general error
-         int parse_status = 0;
-         reset_error_handler();
-         octave_value_list lasterror = eval_string("lasterror",
-                                                   true, parse_status, 1);
-         if (!lasterror.empty() && lasterror(0).is_map()) {
-            std::string exceptionmsg = make_error_message(lasterror(0).map_value ());
+      if (octave_error) {
+         std::string exceptionmsg = make_error_message ();
+         if (! exceptionmsg.empty ())
             throw octave_error_exception(exceptionmsg);
-         } else
+         else
             throw octave_error_exception("No Octave error available");
       }
 
@@ -243,12 +238,16 @@ namespace pytave { /* {{{ */
 #endif
 
       bool bad_alloc_state = false;
+      bool octave_error = false;
+
       Py_BEGIN_ALLOW_THREADS
       try {
          retval = eval_string(code, silent, parse_status,
             (nargout >= 0) ? nargout : 0);
       } catch (std::bad_alloc) {
          bad_alloc_state = true;
+      } catch (const octave_execution_exception&) {
+         octave_error = true;
       }
       Py_END_ALLOW_THREADS
 
@@ -260,18 +259,9 @@ namespace pytave { /* {{{ */
       if (bad_alloc_state)
          throw std::bad_alloc (); // Translated to MemoryError by boost::python
 
-      if (parse_status != 0 || error_state != 0) {
-// error_state values:
-// -2 error without traceback
-// -1 traceback
-//  1 general error
-         int parse_status1 = 0;
-         reset_error_handler();
-         octave_value_list lasterror = eval_string("lasterror",
-                                                   true, parse_status1, 1);
-         if (!lasterror.empty() && lasterror(0).is_map()) {
-            std::string exceptionmsg = make_error_message (lasterror(0).map_value ());
-
+      if (octave_error || parse_status) {
+         std::string exceptionmsg = make_error_message ();
+         if (! exceptionmsg.empty ()) {
             if (parse_status != 0)
                throw octave_parse_exception(exceptionmsg);
             else
