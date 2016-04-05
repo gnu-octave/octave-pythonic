@@ -1,158 +1,78 @@
 Building instructions
 =====================
 
-You can use either Python distutils, GNU Automake or Boost BJam to
-build pytave. The configure script outputs files for all these build
-systems. Autoconf's VPATH is supported on all build systems.
+Pytave is built using GNU autotools.
 
-    Use the configure script to set up Octave and Boost::Python
-paths. Run `./configure --help' for more info.
+Use the configure script to detect Octave and Boost::Python paths.
+
+Run `./configure --help' for more info.
 
 Dependencies
 ============
 
 Configuring:
-	an sh shell capable of running `configure'
+    a shell capable of running `configure'
 
 Building:
-	Python's distutils or
-	make or
-	BJam
+    GNU make
 
 Linked and tested with:
-    Python 2.4
-    Boost::Python 1.33
-    Octave 3.2
+    Python 2.7
+    Boost::Python 1.58
+    Octave 4.1 (development version)
 
-Bootstraping from Bazaar trunk
-==============================
+Bootstrapping from Mercurial
+============================
 
-  1. `bzr branch lp:pytave'
+  1. `hg clone https://bitbucket.org/mtmiller/pytave'
 
   2. `autoreconf --install'
 
-  3. `./configure'
+Building
+========
 
-Hints for Ubuntu 9.10
-=====================
+  1. `./configure'
+     or
+     `./configure --prefix=/directory/where/you/want/the/module/file'
 
-The boost library has changed name since previous versions.  You need
-to tell the Pytave configure script this, i.e.::
-
-   ./configure PYTHON_VERSION=2.6 --with-boost-python=boost_python-mt
-
-Autotools
-=========
-
-Autotools is the recommended development configurator, since it has
-the sanest dependency checking.
-
-The Autotools build system need not be installed to build the
-module. You need `make' and all library dependencies though.
-
-  1. Create the `Makefile' by typing:
-	 `./configure --prefix=/directory/where/you/want/the/module/file'
-
-  2. Type `make' to build the extention module.
+  2. Type `make' to build the extension module.
 
   3. To copy the pytave dynamic library to the prefix, type
      `make install'
-
-BJam
-====
-
-BJam is not recommended.
-
-BJam must be installed in order to build the module. You also need a
-proper `user-config.jam' file in your home directory.
-
-  1. Create `Jamfile' and `project-root.jam' by typing `./configure'
-
-  2. Use your `bjam' command to build the extention module. 
-
-user-config.jam
-===============
-
-For your convenience, here the content of a typical ~/user-config.jam
-on a GNU/Linux system:
-
-using gcc ;
-using python : 2.5 ;
-
-Distutils
-=========
-
-Distutils is recommended only for package installation purposes.
-
-  1. Create the `setup.py' file by typing `./configure'
-
-  2. Run `python setup.py build' to build and package the extention
-     module together with the pure Python files.
 
 Running from build directory
 ============================
 
 Pytave is made up of three parts. The `pytave' package, the
-`pytave/pytave' module and the `pytave/_pytave' extention. When the
+`pytave/pytave' module and the `pytave/_pytave' extension. When the
 user uses `import pytave', the pytave package __init__ script loads
-both the module and the extention. It is important that they both can
+both the module and the extension. It is important that they both can
 be found. 
 
-  1. Follow the Distutils build instructions. A complete Python
-     package directory called `pytave' is created in
-     `build/lib.something'
-
-  2. Start the Python interactive interpreter with
-     `PYTHONPATH=build/lib.linux-i686-2.4/ python' (with appropriate
-     changes for your system.)
-
-  3. In the interpreter you can now access Octave through Python:
-
-import pytave
-import Numeric
-pytave.feval(1, "cos", 0)
-b = pytave.addpath(".")
-pytave.feval(1, "testfile", 42)
-
-     (Observe that there is no testfile.m file in the distribution.
-     You could create one for yourself.)
-
-    Using BJam or Automake instead of Distutils, you load the
-`pytave/pytave' module and the extention instead of the whole
-package. Using `import pytave' now calls the module directly, but the
-difference is transparent to the user.
-
-    Basically all you want to do is load Python with shared library
-for the pytave extention (called `pytave/_pytave') and the native
-`pytave/pytave' module. BJam creates shared library in the
-`bin/something/something' directory, while Autotools hide a working
-shared library in the `.libs' directory. The contents of the `pytave'
-package is stored in the directory `package' of the source
-package. This is an example for an Autotools build.
-
-  1. Follow the Autotools build instructions.
+  1. Follow the build instructions to compile the extension.
 
   2. Start the Python interpreter with a Python path set to a path
      containing `_pytave.so' and the `package' directory. A common way
      to do this with the bash shell is to execute this command:
      `PYTHONPATH=.libs:package python'.
 
-     With BJam that command would be something like:
-     `PYTHONPATH=bin/something/something:package python'.
+  3. In the interpreter you can now access Octave through Python:
+
+     import numpy
+     import pytave
+     pytave.feval(1, "cos", 0)
+     b = pytave.addpath(".")
+     pytave.feval(1, "testfile", 42)
+
+(Observe that there is no testfile.m file in the distribution. You
+could create one for yourself.)
 
 Running test suite in build directory
 =====================================
 
-Read the instructions above, and start the script test/test.py.
+  1. Run `make check'
 
-There are three known errors in the test suite.
-
-Installing
-==========
-
-Installation is done with distutils, not make install.
-
-  1. Run `python setup.py install'
+There are known errors in the test suite.
 
 Creating a source dist
 ======================
@@ -168,6 +88,4 @@ installing the `MinGW' and `MSYS' packages, and build everything
 inside that environment.  This isn't for the faint of hearted though,
 since you need/want to build Octave too.  It is probably easier than
 trying to build without configure scripts, that's all.  There are no
-guarentees that it will build at all, it has not been tested.
-
-EOF.
+guarantees that it will build at all, it has not been tested.
