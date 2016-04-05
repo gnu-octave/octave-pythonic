@@ -20,6 +20,10 @@ along with Pytave; see the file COPYING.  If not, see
 
 */
 
+#if defined (HAVE_CONFIG_H)
+#  include <config.h>
+#endif
+
 #include <boost/python.hpp>
 #include "exceptions.h"
 
