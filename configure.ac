@@ -55,7 +55,7 @@ if test -z "$BOOST_PYTHON_LIB"; then
   addmissing([Boost Python development files])
 fi
 
-AM_INIT_AUTOMAKE([-Wno-portability])
+AM_INIT_AUTOMAKE([foreign -Wno-portability])
 LT_INIT
 
 # Checks for header files.

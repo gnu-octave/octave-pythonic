@@ -29,6 +29,10 @@ COMMON_SOURCE_FILES = \
   octave_to_python.cc \
   python_to_octave.cc
 
+DOC_FILES = \
+  INSTALL.md \
+  README.md
+
 OCT_FILES = \
   py.oct
 
@@ -45,7 +49,7 @@ PY_FILES = \
   test/exceptions.py \
   test/test.py
 
-EXTRA_DIST = $(PY_FILES)
+EXTRA_DIST = $(DOC_FILES) $(PY_FILES)
 
 EXTRA_libdir = $(PYTAVE_MODULE_INSTALL_PATH)
 EXTRA_lib_LTLIBRARIES = _pytave.la
