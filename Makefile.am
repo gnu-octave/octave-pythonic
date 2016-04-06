@@ -82,6 +82,18 @@ OCT_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(AM_V_MKOCTFILE)$(OCT_LINK) $< $(OCT_LIBS)
 
 all-local: $(OCT_FILES)
+	@echo ""
+	@echo "Pytave successfully built.  Now choose from the following:"
+	@echo ""
+	@echo "  * run the test suite"
+	@echo "    make check"
+	@echo ""
+	@echo "  * run an Octave session with py* functions"
+	@echo "    octave --path=\"\$$(pwd)\""
+	@echo ""
+	@echo "  * run a Python session with pytave package"
+	@echo "    PYTHONPATH=\"\$$(pwd)/.libs:\$$(pwd)/package\" python"
+	@echo ""
 
 check-local:
 	PYTHONPATH="$$(pwd)/package:$$(pwd)/.libs" $(PYTHON) test/exceptions.py
