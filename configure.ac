@@ -35,24 +35,20 @@ AC_CONFIG_SRCDIR([pytave.cc])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile])
 
-dnl Define a convenience m4 macro for appending to pytave_missing_libs
-m4_define([addmissing], [pytave_missing_libs="$1
-$pytave_missing_libs"])
-pytave_missing_libs=
-
 # Find Octave
-AX_OCTAVE([OCTAVE_CONFIG], [], [addmissing([Octave development files])])
+AX_OCTAVE([OCTAVE_CONFIG], [],
+          [AC_MSG_FAILURE([unable to find Octave development files])])
 
 # Pick a Python library to use
 AX_PYTHON_DEVEL
 
 # Look for numpy headers
-AX_PYTHON_NUMPY([], [addmissing([NumPy development files])])
+AX_PYTHON_NUMPY([], [AC_MSG_FAILURE([unable to find NumPy development files])])
 
 # Look for boost::python
 AX_BOOST_PYTHON
 if test -z "$BOOST_PYTHON_LIB"; then
-  addmissing([Boost Python development files])
+  AC_MSG_FAILURE([unable to find Boost::Python development files])
 fi
 
 AM_INIT_AUTOMAKE([foreign -Wno-portability])
@@ -85,13 +81,6 @@ AS_IF([test "x${prefix}" == "xNONE"],
       [PYTAVE_MODULE_INSTALL_PATH=${prefix}])
 AC_SUBST(PYTAVE_MODULE_INSTALL_PATH)
 
-AS_IF([test -n "$pytave_missing_libs"],
-      [AC_MSG_ERROR([One or more library dependencies could not be resolved.
-
-Missing dependencies:
-$pytave_missing_libs
-])])
-
 AC_OUTPUT
 
 AC_MSG_NOTICE([
@@ -101,8 +90,9 @@ Pytave is configured with the following setup
 Dependencies
   Octave ............. $OCTAVE_INCLUDEDIR
   Python ............. $PYTHON_CPPFLAGS
+    library .......... $PYTHON_LIBS
     executable ....... $PYTHON
-  Python boost ....... $BOOST_PYTHON_LIB
+  Boost::Python ...... $BOOST_PYTHON_LIB
 
 Features
   uselocale .......... $pytave_have_uselocale
