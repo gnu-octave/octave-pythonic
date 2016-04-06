@@ -20,24 +20,17 @@ along with Pytave; see the file COPYING.  If not, see
 
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
+#if defined (HAVE_CONFIG_H)
+#  include <config.h>
 #endif
 
 #include <dlfcn.h>
 #include <boost/python.hpp>
 #include <boost/python/numeric.hpp>
 
-/* Both boost::python and octave define HAVE_STAT and HAVE_FSTAT.  Ideally,
-   they shouldn't expose their configuration in the header files, but they do.
-   This silences the compiler warning. */
-#undef HAVE_STAT
-#undef HAVE_FSTAT
-
 #include <oct.h>
 
 #define PYTAVE_DO_DECLARE_SYMBOL
-#include "pytavedefs.h"
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "python_to_octave.h"
@@ -48,7 +41,6 @@ DEFUN_DLD (pyeval, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {Loadable Function} pyeval (@var{expr})\n\
 Evaluate a python expression and return result.\n\
-\n\
 @end deftypefn")
 {
   octave_value_list retval;
@@ -57,18 +49,15 @@ Evaluate a python expression and return result.\n\
 
   std::string code = args(0).string_value ();
 
-  dlopen("libpython2.7.so", RTLD_GLOBAL|RTLD_LAZY);
-
-
   Py_Initialize ();
-  std::cerr << "python initialized" << std::endl;
 
   try
     {
       object main_module = import ("__main__");
       object main_namespace = main_module.attr ("__dict__");
       object res = eval (code.c_str (), main_namespace, main_namespace);
-      // currently, we cannot return the raw object to octave...
+
+      // FIXME: currently, we cannot return the raw object to octave...
       if (! res.is_none ())
         {
           octave_value val;
@@ -82,7 +71,6 @@ Evaluate a python expression and return result.\n\
     }
   catch (error_already_set const &)
     {
-      std::cerr << "in here" << std::endl;
       PyObject *ptype, *pvalue, *ptraceback;
       PyErr_Fetch (&ptype, &pvalue, &ptraceback);
 
@@ -96,7 +84,6 @@ Evaluate a python expression and return result.\n\
           PyErr_Restore (ptype, pvalue, ptraceback);
           PyErr_Print ();
         }
-      std::cerr << "leaving" << std::endl;
     }
 
   return retval;
