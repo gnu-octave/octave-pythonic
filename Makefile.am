@@ -58,8 +58,12 @@ EXTRA_lib_LTLIBRARIES = _pytave.la
 
 _pytave_la_CPPFLAGS = $(AM_CPPFLAGS)
 _pytave_la_LDFLAGS = -module -L$(OCTAVE_LIBRARYDIR)
-_pytave_la_LIBADD = -l$(BOOST_PYTHON_LIB) $(OCTAVE_LIBS)
-_pytave_la_SOURCES = pytave.cc $(COMMON_SOURCE_FILES) $(PYTAVE_HEADER_FILES)
+_pytave_la_LIBADD = libpytave.la -l$(BOOST_PYTHON_LIB) $(OCTAVE_LIBS)
+_pytave_la_SOURCES = pytave.cc
+
+noinst_LTLIBRARIES = libpytave.la
+libpytave_la_CPPFLAGS = $(AM_CPPFLAGS)
+libpytave_la_SOURCES = $(COMMON_SOURCE_FILES) $(PYTAVE_HEADER_FILES)
 
 CLEANFILES = *.oct
 SUFFIXES = .oct
@@ -69,12 +73,13 @@ am__v_MKOCTFILE_ = $(am__v_MKOCTFILE_$(AM_DEFAULT_VERBOSITY))
 am__v_MKOCTFILE_0 = @echo "  MKOCTFIL" $@;
 am__v_MKOCTFILE_1 =
 
-OCT_LIBS = -l$(BOOST_PYTHON_LIB) $(PYTHON_LIBS)
-OCT_LINK = $(MKOCTFILE) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+OCT_LIBS = libpytave.la -l$(BOOST_PYTHON_LIB) $(PYTHON_LIBS)
+OCT_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+  --mode=link $(MKOCTFILE) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
   $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
 
-%.oct: %.cc $(PYTAVE_HEADER_FILES)
-	$(AM_V_MKOCTFILE)$(OCT_LINK) $< $(COMMON_SOURCE_FILES) $(OCT_LIBS)
+%.oct: %.cc libpytave.la $(PYTAVE_HEADER_FILES)
+	$(AM_V_MKOCTFILE)$(OCT_LINK) $< $(OCT_LIBS)
 
 all-local: $(OCT_FILES)
 
