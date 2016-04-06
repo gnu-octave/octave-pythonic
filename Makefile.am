@@ -38,6 +38,8 @@ OCT_FILES = \
   pyeval.oct \
   pyexec.oct
 
+OCT_SOURCES = $(patsubst %.oct, %.cc, $(OCT_FILES))
+
 PYTAVE_HEADER_FILES = \
   arrayobjectdefs.h \
   config.h \
@@ -51,7 +53,7 @@ PY_FILES = \
   test/exceptions.py \
   test/test.py
 
-EXTRA_DIST = $(DOC_FILES) $(PY_FILES)
+EXTRA_DIST = $(DOC_FILES) $(OCT_SOURCES) $(PY_FILES)
 
 EXTRA_libdir = $(PYTAVE_MODULE_INSTALL_PATH)
 EXTRA_lib_LTLIBRARIES = _pytave.la
@@ -96,5 +98,5 @@ all-local: $(OCT_FILES)
 	@echo ""
 
 check-local:
-	PYTHONPATH="$$(pwd)/package:$$(pwd)/.libs" $(PYTHON) test/exceptions.py
-	PYTHONPATH="$$(pwd)/package:$$(pwd)/.libs" $(PYTHON) test/test.py
+	PYTHONPATH="$(abs_srcdir)/package:$$(pwd)/package:$$(pwd)/.libs" $(PYTHON) $(srcdir)/test/exceptions.py
+	PYTHONPATH="$(abs_srcdir)/package:$$(pwd)/package:$$(pwd)/.libs" $(PYTHON) $(srcdir)/test/test.py
