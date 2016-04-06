@@ -135,14 +135,8 @@ This could be a sign that the Octave development package is missing.
 	])
 
 	AS_IF([test -z "$ax_octave_ok"], [
-		# After the 3.2 series, the include path ends with
-		# /octave, but that part we don't want.
-		AC_MSG_CHECKING([[if the include directory is 3.3+ style]])
 		if test -f "$OCTAVE_INCLUDEDIR/oct.h" ; then
-			OCTAVE_INCLUDEDIR="$OCTAVE_INCLUDEDIR/.."
-			AC_MSG_RESULT([yes])
-		else
-			AC_MSG_RESULT([no])
+			OCTAVE_INCLUDEDIR=`AS_DIRNAME(["$OCTAVE_INCLUDEDIR"])`
 		fi
 
 		OCTAVE_LDFLAGS="-L$OCTAVE_LIBRARYDIR"

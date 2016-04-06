@@ -356,13 +356,7 @@ namespace pytave
   delvar (const std::string& name, bool global)
   {
     if (global)
-      {
-        // FIXME: workaround a bug in Octave 3.2.0.
-        if (! symbol_table::is_global (name))
-          symbol_table::insert (name).mark_global ();
-
-        symbol_table::clear_global (name);
-      }
+      symbol_table::clear_global (name);
     else
       symbol_table::clear_variable (name);
   }
