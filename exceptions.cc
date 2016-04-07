@@ -37,4 +37,12 @@ namespace pytave
   PyObject *octave_parse_exception::excclass = 0;
   PyObject *variable_name_exception::excclass = 0;
 
+  bool init_exceptions (void)
+  {
+    return (octave_error_exception::init ()
+            && value_convert_exception::init ()
+            && object_convert_exception::init ()
+            && octave_parse_exception::init ()
+            && variable_name_exception::init ());
+  }
 }

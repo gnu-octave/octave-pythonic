@@ -71,11 +71,7 @@ namespace pytave
     c_locale = newlocale (LC_ALL, "C", 0);
 #endif
 
-    if (! octave_error_exception::init ()
-        || ! value_convert_exception::init ()
-        || ! object_convert_exception::init ()
-        || ! octave_parse_exception::init ()
-        || ! variable_name_exception::init ())
+    if (! init_exceptions ())
       {
         PyErr_SetString (PyExc_ImportError, "_pytave: init failed");
 #if defined (PYTHON_ABI_VERSION)

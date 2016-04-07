@@ -157,6 +157,8 @@ namespace pytave
   private:
     std::string error;
   };
+
+  bool init_exceptions (void);
 }
 
 #endif
