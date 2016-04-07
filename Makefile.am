@@ -34,7 +34,7 @@ DOC_FILES = \
   README.md
 
 OCT_FILES = \
-  py.oct \
+  pycall.oct \
   pyeval.oct \
   pyexec.oct
 

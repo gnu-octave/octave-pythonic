@@ -32,27 +32,28 @@ along with Pytave; see the file COPYING.  If not, see
 #define PYTAVE_DO_DECLARE_SYMBOL
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
+#include "octave_to_python.h"
 #include "python_to_octave.h"
 
 using namespace boost::python;
 
-DEFUN_DLD (py, args, nargout,
+DEFUN_DLD (pycall, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn  {Loadable Function} py (@var{func})\n\
-@deftypefnx {Loadable Function} {@var{x} =} py (@var{func})\n\
-@deftypefnx {Loadable Function} {@var{x} =} py (@var{func}, @var{arg1}, @var{arg2}, @dots{})\n\
+@deftypefn  {Loadable Function} pycall (@var{func})\n\
+@deftypefnx {Loadable Function} {@var{x} =} pycall (@var{func})\n\
+@deftypefnx {Loadable Function} {@var{x} =} pycall (@var{func}, @var{arg1}, @var{arg2}, @dots{})\n\
 Execute method of a Python module.\n\
 \n\
 Examples:\n\
 @example\n\
 @group\n\
-y = py('__builtin__.int(6)')\n\
+y = pycall('__builtin__.int(6)')\n\
   @result{} y =  6\n\
-py('sys.version')\n\
+pycall('sys.version')\n\
   @result{} ans = ...\n\
-py('__builtin__.eval(\"4+5\")')\n\
+pycall('__builtin__.eval(\"4+5\")')\n\
   @result{} ans =  9\n\
-py('__builtin__.dict(one=1,two=2)')\n\
+pycall('__builtin__.dict(one=1,two=2)')\n\
   @result{} ans =\n\
     scalar structure containing the fields:\n\
       two =  2\n\
@@ -65,7 +66,7 @@ py('__builtin__.dict(one=1,two=2)')\n\
 
   int nargin = args.length ();
 
-  if (nargin != 1)
+  if (nargin < 1)
     {
       print_usage ();
       return retval;
@@ -83,6 +84,10 @@ py('__builtin__.dict(one=1,two=2)')\n\
 
   Py_Initialize ();
 
+  pytave::init_exceptions ();
+  numeric::array::set_module_and_type ("numpy", "ndarray");
+  _import_array ();
+
   try
     {
       object main_module = import ("__main__");
@@ -90,7 +95,64 @@ py('__builtin__.dict(one=1,two=2)')\n\
 
       object mod = (module.empty ()) ? main_module : import (module.c_str ());
       object callable = mod.attr (func.c_str ());
-      object res = callable ();
+
+      std::vector<object> pyargs;
+      for (int i = 1; i < nargin; i++)
+        {
+          object arg;
+          pytave::octvalue_to_pyobj (arg, args(i));
+          pyargs.push_back (arg);
+        }
+
+      object res;
+
+      switch (nargin - 1)
+        {
+        case 0:
+          res = callable ();
+          break;
+        case 1:
+          res = callable (pyargs[0]);
+          break;
+        case 2:
+          res = callable (pyargs[0], pyargs[1]);
+          break;
+        case 3:
+          res = callable (pyargs[0], pyargs[1], pyargs[2]);
+          break;
+        case 4:
+          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3]);
+          break;
+        case 5:
+          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
+                          pyargs[4]);
+          break;
+        case 6:
+          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
+                          pyargs[4], pyargs[5]);
+          break;
+        case 7:
+          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
+                          pyargs[4], pyargs[5], pyargs[6]);
+          break;
+        case 8:
+          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
+                          pyargs[4], pyargs[5], pyargs[6], pyargs[7]);
+          break;
+        case 9:
+          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
+                          pyargs[4], pyargs[5], pyargs[6], pyargs[7],
+                          pyargs[8]);
+          break;
+        case 10:
+          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
+                          pyargs[4], pyargs[5], pyargs[6], pyargs[7],
+                          pyargs[8], pyargs[9]);
+          break;
+        default:
+          error ("pycall: more than 10 arguments are not yet supported");
+          break;
+        }
 
       if (! res.is_none ())
         {
@@ -101,18 +163,17 @@ py('__builtin__.dict(one=1,two=2)')\n\
     }
   catch (pytave::object_convert_exception const &)
     {
-      error ("py: error in return value type conversion");
+      error ("pycall: error in return value type conversion");
     }
   catch (error_already_set const &)
     {
-      std::cerr << "in here" << std::endl;
       PyObject *ptype, *pvalue, *ptraceback;
       PyErr_Fetch (&ptype, &pvalue, &ptraceback);
 
       try
         {
           std::string message = extract<std::string> (pvalue);
-          error ("py: %s", message.c_str ());
+          error ("pycall: %s", message.c_str ());
         }
       catch (error_already_set const &)
         {
