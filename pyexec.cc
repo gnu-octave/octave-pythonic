@@ -39,8 +39,17 @@ using namespace boost::python;
 
 DEFUN_DLD (pyexec, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn  {Loadable Function} pyexec (@var{func})\n\
-Execute some python code.\n\
+@deftypefn {} {} pyexec (@var{expr})\n\
+Execute a Python expression or block of code.\n\
+\n\
+Examples:\n\
+@example\n\
+@group\n\
+pyexec (\"print(42)\")\n\
+  @print{} 42\n\
+@end group\n\
+@end example\n\
+@seealso{pycall, pyeval}\n\
 @end deftypefn")
 {
   octave_value_list retval;

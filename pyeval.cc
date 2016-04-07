@@ -39,8 +39,22 @@ using namespace boost::python;
 
 DEFUN_DLD (pyeval, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn  {Loadable Function} pyeval (@var{expr})\n\
-Evaluate a python expression and return result.\n\
+@deftypefn  {} {} pyeval (@var{expr})\n\
+@deftypefnx {} {@var{x} =} pyeval (@var{expr})\n\
+Evaluate a Python expression and return the result.\n\
+\n\
+Examples:\n\
+@example\n\
+@group\n\
+pyeval (\"sys.version\")\n\
+  @result{} ...\n\
+pyeval (\"dict(one=1, two=2)\")\n\
+  @result{} scalar structure containing the fields:\n\
+      two =  2\n\
+      one =  1\n\
+@end group\n\
+@end example\n\
+@seealso{pycall, pyexec}\n\
 @end deftypefn")
 {
   octave_value_list retval;

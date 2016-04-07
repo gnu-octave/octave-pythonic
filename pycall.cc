@@ -39,27 +39,23 @@ using namespace boost::python;
 
 DEFUN_DLD (pycall, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn  {Loadable Function} pycall (@var{func})\n\
-@deftypefnx {Loadable Function} {@var{x} =} pycall (@var{func})\n\
-@deftypefnx {Loadable Function} {@var{x} =} pycall (@var{func}, @var{arg1}, @var{arg2}, @dots{})\n\
-Execute method of a Python module.\n\
+@deftypefn  {} {} pycall (@var{func})\n\
+@deftypefnx {} {@var{x} =} pycall (@var{func})\n\
+@deftypefnx {} {@var{x} =} pycall (@var{func}, @var{arg1}, @var{arg2}, @dots{})\n\
+Call a Python function or callable, passing Octave values as arguments.\n\
 \n\
 Examples:\n\
 @example\n\
 @group\n\
-y = pycall('__builtin__.int(6)')\n\
-  @result{} y =  6\n\
-pycall('sys.version')\n\
-  @result{} ans = ...\n\
-pycall('__builtin__.eval(\"4+5\")')\n\
-  @result{} ans =  9\n\
-pycall('__builtin__.dict(one=1,two=2)')\n\
-  @result{} ans =\n\
-    scalar structure containing the fields:\n\
-      two =  2\n\
-      one =  1\n\
+pycall (\"__builtin__.int\", 6)\n\
+  @result{} 6\n\
+pycall (\"os.getuid\")\n\
+  @result{} ...\n\
+pycall (\"__builtin__.eval\", \"4+5\")\n\
+  @result{} 9\n\
 @end group\n\
 @end example\n\
+@seealso{pyeval, pyexec}\n\
 @end deftypefn")
 {
   octave_value_list retval;
