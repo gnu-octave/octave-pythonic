@@ -2,7 +2,7 @@ Pytave README
 =============
 
 For installation instructions specific for Pytave, please see the
-[INSTALL.md]() file.
+[INSTALL.md](INSTALL.md) file.
 
 Contents of this document
 -------------------------
@@ -51,7 +51,7 @@ A short list of what Pytave is capable of
 Project homepage
 ----------------
 
-[https://bitbucket.org/mtmiller/pytave]()
+[https://bitbucket.org/mtmiller/pytave](https://bitbucket.org/mtmiller/pytave)
 
 Using/hacking
 -------------
@@ -62,7 +62,7 @@ with:
     $ hg clone https://bitbucket.org/mtmiller/pytave
 
 You will now have a directory called `pytave` with source code for the
-module. Read the [INSTALL.md]() file for building instructions.
+module. Read the [INSTALL.md](INSTALL.md) file for building instructions.
 
 Gotchas
 =======
