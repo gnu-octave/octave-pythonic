@@ -26,7 +26,6 @@ along with Pytave; see the file COPYING.  If not, see
 
 #include <boost/python.hpp>
 #include <ov.h>
-#include <ovl.h>
 
 namespace pytave
 {
