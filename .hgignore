@@ -1,23 +1,53 @@
 syntax: regexp
+# The recurrent (^|/) idiom in the regexps below should be understood
+# to mean "at any directory" while the ^ idiom means "from the
+# project's top-level directory".
 
-^.+\.oct$
-^Makefile$
-^Makefile\.in$
-^\.deps$
-^\.libs$
-^_pytave?la.*$
-^aclocal\.m4$
-^autom4te\.cache$
-^bin$
-^build$
-^compile$
-^config\..+$
-^configure$
-^depcomp$
-^install-sh$
-^libtool$
-^ltmain\.sh$
-^m4/libtool\.m4$
-^m4/lt.+\.m4$
-^missing$
-^stamp-h1$
+(^|/).*\.pyc$
+(^|/).*\.dvi$
+(^|/).*\.pdf$
+(^|/).*\.o$
+(^|/).*\.oct$
+(^|/).*\.octlink$
+(^|/)octave-core$
+(^|/).*\.tar\.gz$
+(^|/).*\.html
+
+# some common files that the geometry package deals with
+# and are rarely meant to be actually committed
+(^|/).*\.png
+(^|/).*\.svg
+(^|/).*\.eps
+(^|/).*\.fig
+
+(^|/)m4
+(^|/)aclocal\.m4$
+(^|/).*\.in$
+(^|/).*\.guess$
+(^|/).*\.sub$
+(^|/)depcomp
+(^|/)missing
+(^|/)install-sh
+(^|/)ltmain.sh
+
+
+(^|/)configure$
+(^|/)autom4te\.cache($|/)
+
+# e.g. doc/faq/OctaveFAQ.info
+#      doc/interpreter/octave.info-4
+^doc/.*\.info(-\d)?$
+
+^doc/\w*/stamp-vti$
+^doc/\w*/stamp-vti$
+
+^doc/latex
+^doc/html
+^doc/.*\.db$
+
+# Emacs tools create these
+(^|/)TAGS$
+(^|/)semantic.cache$
+
+# Other text editors often create these
+(^|/).*~$

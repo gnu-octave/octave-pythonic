@@ -21,18 +21,51 @@ along with Pytave; see the file COPYING.  If not, see
 
 */
 
+/*! \file octave_to_python.h
+    \brief Conversion of data values from GNU Octave to Python
+
+    The functions in this file define the translation of GNU Octave
+    values to Python objects using the Boost.Python library and
+    the Octave/C++ API.
+
+    This project is currently derived from an earlier project called
+    Pytave that allowed Python to call Octave functions on an
+    embedded Octave interpreter. The bulk of the project is in the
+    code to convert between Octave and Python data types, so most of
+    that is reusable. As a side goal, we may continue to maintain the
+    Python wrapper around Octave and incorporate that into Octave as
+    well, so that Octave can provide its own native Python module.
+*/
+
+
 #if ! defined (pytave_octave_to_python_h)
 #define pytave_octave_to_python_h
 
 #include <boost/python.hpp>
 #include <ov.h>
 
+//! Contains the functions used for conversion.
 namespace pytave
 {
+  //! Conversion from any Octave value object to a Python object.
+  /*!
+    \param py_object a reference to boost::python::object to store the result of the conversion.
+    \param oct_value a constant reference to a octave_value that contains the object to be converted.
+    \see pyobj_to_octvalue
+  */
   void octvalue_to_pyobj (boost::python::object& py_object,
-                          const octave_value& octvalue);
-  void octlist_to_pytuple (boost::python::tuple& python_tuple,
-                           const octave_value_list& octave_list);
+                          const octave_value& oct_value);
+
+  //! Octave value list objects are converted to Python tuples.
+  /*!
+    \param py_tuple a reference to boost::python::tuple to store
+    the result of the conversion.
+    \param oct_list a constant reference to a octave_value_list
+    that contains the tuple to be converted.
+    \see pytuple_to_octlist
+  */
+  void octlist_to_pytuple (boost::python::tuple& py_tuple,
+                           const octave_value_list& oct_list);
 }
 
 #endif

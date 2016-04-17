@@ -25,8 +25,19 @@ along with Pytave; see the file COPYING.  If not, see
     \brief Conversion of data values from Python to GNU Octave
 
     The functions in this file define the translation of Python
-    object to GNU Octave values using the Boost.Python library and
+    objects to GNU Octave values using the Boost.Python library and
     the Octave/C++ API.
+
+    Features and capabilities of Octave's Python interface include:
+
+    - Import and call Python modules and functions from the Octave interpreter
+
+    - Automatically convert basic Octave and Python types seamlessly between the two environments
+
+    - \todo Be able to handle arbitrary unknown Python objects (print their repr, store in a variable, pass back in to a Python function)
+
+    -  \todo Store references to Python functions (and other "callables") and be able to call them as if they were function handles
+
 */
 
 #if ! defined (pytave_python_to_octave_h)
@@ -37,10 +48,24 @@ along with Pytave; see the file COPYING.  If not, see
 
 namespace pytave
 {
+
+  //! Conversion from any Python object to an Octave value object.
+  /*!
+    \param oct_value a reference to octave_value to store the result of the conversion.
+    \param py_object a constant reference to a boost::python::object that contains the object to be converted.
+    \see octvalue_to_pyobj
+  */
   void pyobj_to_octvalue (octave_value& oct_value,
                           const boost::python::object& py_object);
-  void pytuple_to_octlist (octave_value_list& octave_list,
-                           const boost::python::tuple& python_tuple);
+
+  //! Python tuples are converted to Octave value list objects.
+  /*!
+    \param oct_list a reference to octave_value_list to store the result of the conversion.
+    \param py_tuple a constant reference to a boost::python::tuple that contains the tuple to be converted.
+    \see octlist_to_pytuple
+  */
+  void pytuple_to_octlist (octave_value_list& oct_list,
+                           const boost::python::tuple& py_tuple);
 }
 
 #endif
