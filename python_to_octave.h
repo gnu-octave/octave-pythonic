@@ -21,6 +21,14 @@ along with Pytave; see the file COPYING.  If not, see
 
 */
 
+/*! \file python_to_octave.h
+    \brief Conversion of data values from Python to GNU Octave
+
+    The functions in this file define the translation of Python
+    object to GNU Octave values using the Boost.Python library and
+    the Octave/C++ API.
+*/
+
 #if ! defined (pytave_python_to_octave_h)
 #define pytave_python_to_octave_h
 
