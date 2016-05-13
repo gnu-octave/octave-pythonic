@@ -46,6 +46,7 @@ Evaluate a Python expression and return the result.\n\
 Examples:\n\
 @example\n\
 @group\n\
+pyexec (\"import sys\")\n\
 pyeval (\"sys.version\")\n\
   @result{} ...\n\
 pyeval (\"dict(one=1, two=2)\")\n\
