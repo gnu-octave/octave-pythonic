@@ -26,7 +26,7 @@
 %% @example
 %% @group
 %% pyexec('d = dict(one=1, two=2)')
-%% x = pyobj('d')
+%% x = pyobj.fromPythonVarName('d')
 %%   @result{} x =
 %%       [PyObject id ...]
 %%       @{'two': 2, 'one': 1@}
@@ -39,6 +39,39 @@
 %%   @result{} x =
 %%       [PyObject id ...]
 %%       @{'two': 2, 'one': 1@}
+%% @end group
+%% @end example
+%%
+%% @code{pyeval} should return a @@pyobj for things it cannot convert to
+%% Octave-native objects:
+%% @example
+%% @group
+%% pyexec('import sys')             % doctest: +XFAIL
+%% sysmodule = pyeval('sys')
+%%   @result{} sysmodule =
+%%       [PyObject id ...]
+%%       <module 'sys' (built-in)>
+%% @end group
+%% @end example
+%%
+%% But it doesn't work yet, for now you have to do:
+%% @example
+%% @group
+%% pyexec('import sys')
+%% key = pyeval('sys')
+%%   @result{} key = ...
+%% sysmodule = pyobj(key)
+%%   @result{} sysmodule =
+%%       [PyObject id ...]
+%%       <module 'sys' (built-in)>
+%% @end group
+%% @end example
+%%
+%% After you have the object, you can access its properties:
+%% @example
+%% @group
+%% sysmodule.version
+%%   @result{} ans = ...
 %% @end group
 %% @end example
 %%

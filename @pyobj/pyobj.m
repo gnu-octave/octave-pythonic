@@ -53,9 +53,9 @@ classdef pyobj < handle
   properties
     id
   end
-  methods
 
-    function x = pyobj(pyvarname)
+  methods(Static)
+    function x = fromPythonVarName(pyvarname)
       % if @var{pyvarname} is a string, its assumed to be a variable
       % name, e.g., previously created with pyexec.  This must exist
       % at the time of construction but it can disappear later (we
@@ -63,16 +63,23 @@ classdef pyobj < handle
       if (~ ischar(pyvarname))
         error('pyobj: currently we only take variable names as input')
       end
-      % FIXME: check __InOct__ exists
-      % FIXME: ensure id is not in the dict
       cmd = sprintf ([ ...
         'if not ("__InOct__" in vars() or "__InOct__" in globals()):\n' ...
         '  __InOct__ = dict()\n' ...
         '__InOct__[hex(id(%s))] = %s' ], ...
         pyvarname, pyvarname);
       pyexec (cmd);
-      x.id = pyeval (['hex(id(' pyvarname '))']);
-      %x.repr = pyeval (['repr(' x.varname ')']);
+      id = pyeval (['hex(id(' pyvarname '))']);
+      x = pyobj(id);
+    end
+  end
+
+
+  methods
+    function x = pyobj(id)
+      % warning: not intended for casual use: you must also insert
+      % the object into the Python `__InOct__` dict with key `id`.
+      x.id = id;
     end
 
     function delete(x)
@@ -99,6 +106,8 @@ classdef pyobj < handle
       % @end example
       delete(x)
     end
+
+    dummy (x)
 
     function r = getid (x)
       r = x.id;
