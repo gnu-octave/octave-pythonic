@@ -42,6 +42,20 @@
 %% @end group
 %% @end example
 %%
+%% We can accesss ``callables'' (methods) of objects:
+%% @example
+%% @group
+%% % x.keys()   % FIXME: should be this but its broken
+%% ddotkeys = pyobj(x.keys);
+%% ddotkeys()
+%%   @result{} ans =
+%%       @{
+%%         [1,1] = two
+%%         [1,2] = one
+%%       @}
+%% @end group
+%% @end example
+%%
 %% @code{pyeval} should return a @@pyobj for things it cannot convert to
 %% Octave-native objects:
 %% @example
@@ -74,6 +88,7 @@
 %%   @result{} ans = ...
 %% @end group
 %% @end example
+%%
 %%
 %% @seealso{pyobj}
 %% @end defmethod

@@ -135,7 +135,11 @@ classdef pyobj < handle
     function r = subsref(x, idx)
       switch idx.type
         case '()'
-          error('not implemented: () indexing')
+          if ( ~strcmp (idx.subs, ''))
+	    idx
+            error('not implemented: function calls with arguments')
+          end
+          r = pyeval (sprintf ('__InOct__["%s"]()', x.id));
         case '.'
           assert(ischar(idx.subs))
           r = pyeval (sprintf ('__InOct__["%s"].%s', x.id, idx.subs));
