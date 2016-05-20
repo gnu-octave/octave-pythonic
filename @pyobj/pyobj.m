@@ -45,41 +45,82 @@
 %% @end group
 %% @end example
 %%
-%% TODO: this copies the name of the variable back to Octave.  Not
-%% robust.  What is a good mechanism?
-%%
 %%
 %% @seealso{pyexec, pyeval}
 %% @end defun
 
-classdef pyobj
+classdef pyobj < handle
   properties
-    varname
-    repr
+    id
   end
   methods
 
     function x = pyobj(pyvarname)
-      % @var{pyvarname} should be created with pyexec
-      x.varname = pyvarname;
-      x.repr = pyeval(['repr(' x.varname ')']);
+      % if @var{pyvarname} is a string, its assumed to be a variable
+      % name, e.g., previously created with pyexec.  This must exist
+      % at the time of construction but it can disappear later (we
+      % will keep track of the reference).
+      if (~ ischar(pyvarname))
+        error('pyobj: currently we only take variable names as input')
+      end
+      % FIXME: check __InOct__ exists
+      % FIXME: ensure id is not in the dict
+      cmd = sprintf ([ ...
+        'if not ("__InOct__" in vars() or "__InOct__" in globals()):\n' ...
+        '  __InOct__ = dict()\n' ...
+        '__InOct__[hex(id(%s))] = %s' ], ...
+        pyvarname, pyvarname);
+      pyexec (cmd);
+      x.id = pyeval (['hex(id(' pyvarname '))']);
+      %x.repr = pyeval (['repr(' x.varname ')']);
+    end
+
+    function delete(x)
+      % called on clear of the last reference---for subclasses of
+      % handle; not called at all for "value classes".
+      % FIXME: #46497 this is never called!
+      %save('proof_of_delete', 6, x.id)
+      disp ('delete')
+      % throws KeyError if it wasn't in there for some reason
+      cmd = sprintf ('__InOct__.pop("%s")', x.id);
+      pyexec (cmd);
+    end
+
+    function force_delete (x)
+      % Manual workaround for #46497: call right before @code{clear x}.  But
+      % be careful, @code{x} needs to be the last reference: don't do this:
+      % @example
+      % d = pyobj (...);
+      % d2 = d;
+      % force_delete (d)
+      % clear d
+      % d2
+      %   @print{} ... KeyError ...
+      % @end example
+      delete(x)
+    end
+
+    function r = getid (x)
+      r = x.id;
     end
 
     function disp(x)
-      str = sprintf('PyObject with repr:\n  %s\noriginal variable: %s', x.repr, x.varname);
-      disp(str)
+      printf ('[PyObject id %s]\n', x.id);
+      disp (pyeval (sprintf ('str(__InOct__["%s"])', x.id)))
     end
 
     function s = whatclass(x)
-      s = pyeval(['str(' x.varname '.__class__)']);
+      s = pyeval (sprintf ('str(__InOct__["%s"].__class__)', x.id));
     end
 
     function lst = whatmethods(x)
       % filter the output of `dir(x)`
-      cmd = sprintf(['[a for a in dir(%s) if not callable(getattr(%s, a))' ...
-                     ' and not a.startswith("__")]'], ...
-                    x.varname, x.varname);
-      lst = pyeval(cmd);
+      % properties only:
+      % [a for a in dir(x) if not callable(getattr(x, a)) and not a.startswith("__")]
+      cmd = sprintf ( ...
+        '[a for a in dir(__InOct__["%s"]) if not a.startswith("__")]', ...
+        x.id);
+      lst = pyeval (cmd);
     end
 
     function r = subsref(x, idx)
@@ -88,7 +129,7 @@ classdef pyobj
           error('not implemented: () indexing')
         case '.'
           assert(ischar(idx.subs))
-          r = pyeval(sprintf('%s.%s', x.varname, idx.subs));
+          r = pyeval (sprintf ('__InOct__["%s"].%s', x.id, idx.subs));
         otherwise
           idx
           error('not implemented')
