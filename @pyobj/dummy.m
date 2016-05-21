@@ -45,9 +45,7 @@
 %% We can accesss ``callables'' (methods) of objects:
 %% @example
 %% @group
-%% % x.keys()   % FIXME: should be this but its broken
-%% ddotkeys = x.keys;
-%% ddotkeys()
+%% x.keys()
 %%   @result{} ans =
 %%       @{
 %%         [1,1] = two
@@ -76,6 +74,22 @@
 %% @end group
 %% @end example
 %%
+%%
+%% TODO: this should return a cell array with a double, a string,
+%% and an @@pyobj in it:
+%% @example
+%% @group
+%% pyeval('[42, "hello", sys]')         % doctest: +XFAIL
+%%   @result{} ans =
+%%       @{
+%%         [1,1] =  42
+%%         [1,2] = hello
+%%         [1,3] =
+%%           [PyObject id ...]
+%%           <module 'sys' (built-in)>
+%%       @}
+%% @end group
+%% @end example
 %%
 %% @seealso{pyobj}
 %% @end defmethod

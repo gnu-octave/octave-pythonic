@@ -133,20 +133,25 @@ classdef pyobj < handle
     end
 
     function r = subsref(x, idx)
-      switch idx.type
-        case '()'
-          if ( ~strcmp (idx.subs, ''))
-	    idx
-            error('not implemented: function calls with arguments')
-          end
-          r = pyeval (sprintf ('__InOct__["%s"]()', x.id));
-        case '.'
-          assert(ischar(idx.subs))
-          r = pyeval (sprintf ('__InOct__["%s"].%s', x.id, idx.subs));
-        otherwise
-          idx
-          error('not implemented')
+      s = '';
+      for i=1:length(idx)
+        t = idx(i);
+        switch t.type
+          case '()'
+            if ( ! isempty (t.subs))
+              t
+              error('not implemented: function calls with arguments')
+            end
+            s = sprintf ('%s()', s);
+          case '.'
+            assert(ischar(t.subs))
+            s = sprintf ('%s.%s', s, t.subs);
+          otherwise
+            t
+            error('not implemented')
+        end
       end
+      r = pyeval (sprintf ('__InOct__["%s"]%s', x.id, s));
     end
 
   end
