@@ -22,6 +22,31 @@
 %% Does nothing, stores doctests for now.
 %%
 %%
+%% Simple example:
+%% @example
+%% @group
+%% pyexec('g = 6')
+%% g = pyobj.fromPythonVarName('g');
+%%
+%% sort(whatmethods(g))
+%%   @result{} ans =
+%%     @{
+%%       [1,1] = bit_length
+%%       [1,2] = conjugate
+%%       [1,1] = denominator
+%%       [1,2] = imag
+%%       [1,3] = numerator
+%%       [1,4] = real
+%%      @}
+%%
+%% g.numerator
+%%   @result{} ans =  6
+%% g.denominator
+%%   @result{} ans =  1
+%% @end group
+%% @end example
+%%
+%%
 %% You can delete an object in Python and it will persist:
 %% @example
 %% @group

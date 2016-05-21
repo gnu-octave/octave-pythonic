@@ -23,29 +23,6 @@
 %%
 %% TODO: where/how to document classdef classes?
 %%
-%% Example:
-%% @example
-%% @group
-%% pyexec('g = 6')
-%% g = pyobj('g');
-%%
-%% sort(whatmethods(g))
-%%   @result{} ans =
-%%     @{
-%%       [1,1] = denominator
-%%       [1,2] = imag
-%%       [1,3] = numerator
-%%       [1,4] = real
-%%      @}
-%%
-%% g.numerator
-%%   @result{} ans =  6
-%% g.denominator
-%%   @result{} ans =  1
-%% @end group
-%% @end example
-%%
-%%
 %% @seealso{pyexec, pyeval}
 %% @end defun
 
