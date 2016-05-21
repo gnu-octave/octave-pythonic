@@ -29,6 +29,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <boost/python/numeric.hpp>
 
 #include <oct.h>
+#include <octave/parse.h>
 
 #define PYTAVE_DO_DECLARE_SYMBOL
 #include "arrayobjectdefs.h"
@@ -96,9 +97,8 @@ pyeval (\"dict(one=1, two=2)\")\n\
             "  __InOct__ = dict()\n",
             main_namespace, main_namespace);
       main_namespace["__InOct__"][id] = res;
-      //retval(0) = pyobj(id);
-      // FIXME: how to do the above?  For now, just return the string
-      retval(0) = id;
+      // Create @pyobj
+      retval = feval ("pyobj", ovl (id), 1);
     }
   catch (error_already_set const &)
     {

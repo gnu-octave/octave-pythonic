@@ -46,7 +46,7 @@
 %% @example
 %% @group
 %% % x.keys()   % FIXME: should be this but its broken
-%% ddotkeys = pyobj(x.keys);
+%% ddotkeys = x.keys;
 %% ddotkeys()
 %%   @result{} ans =
 %%       @{
@@ -56,25 +56,12 @@
 %% @end group
 %% @end example
 %%
-%% @code{pyeval} should return a @@pyobj for things it cannot convert to
+%% @code{pyeval} returns a @@pyobj for things it cannot convert to
 %% Octave-native objects:
 %% @example
 %% @group
-%% pyexec('import sys')             % doctest: +XFAIL
-%% sysmodule = pyeval('sys')
-%%   @result{} sysmodule =
-%%       [PyObject id ...]
-%%       <module 'sys' (built-in)>
-%% @end group
-%% @end example
-%%
-%% But it doesn't work yet, for now you have to do:
-%% @example
-%% @group
 %% pyexec('import sys')
-%% key = pyeval('sys')
-%%   @result{} key = ...
-%% sysmodule = pyobj(key)
+%% sysmodule = pyeval('sys')
 %%   @result{} sysmodule =
 %%       [PyObject id ...]
 %%       <module 'sys' (built-in)>
