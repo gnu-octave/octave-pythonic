@@ -131,5 +131,15 @@ classdef pyobj < handle
       r = pyeval (sprintf ('__InOct__["%s"]%s', x.id, s));
     end
 
+    function vargout = help(x)
+      idx = struct('type', '.', 'subs', '__doc__');
+      s = subsref(x, idx);
+      if (nargout == 0)
+        disp(s)
+      else
+        vargout = {s};
+      end
+    end
+
   end
 end
