@@ -78,7 +78,7 @@ pyeval (\"dict(one=1, two=2)\")\n\
       object builtins = main_module.attr ("__builtins__");
       // hex(id(res))
       object idtmp = builtins.attr("hex")(builtins.attr("id")(res));
-      id = extract<std::string> (idtmp);
+      id = extrac<std::string> (idtmp);
 
       // FIXME: currently, we cannot return the raw object to octave...
       if (! res.is_none ())
@@ -90,14 +90,14 @@ pyeval (\"dict(one=1, two=2)\")\n\
     }
   catch (pytave::object_convert_exception const &)
     {
-      printf ("pyeval: could not convert return value to Octave-native object, making pyobj...\n");
+      printf ("pyeval: could not convert return value to Octave-native object, making pyobject...\n");
       // Ensure we have a __InOct__ dict, and then put `res` into it
       exec ("if not (\"__InOct__\" in vars() or \"__InOct__\" in globals()):\n"
             "  __InOct__ = dict()\n",
             main_namespace, main_namespace);
       main_namespace["__InOct__"][id] = res;
-      // Create @pyobj
-      retval = feval ("pyobj", ovl (id), 1);
+      // Create @pyobject
+      retval = feval ("pyobject", ovl (id), 1);
     }
   catch (error_already_set const &)
     {
