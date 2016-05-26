@@ -477,7 +477,6 @@ namespace pytave
         + (PyEval_GetFuncDesc (py_object.ptr ())
         + std::string (": Unsupported Python object type, "
                        "cannot convert to Octave value")));
-    
   }
 
   void pytuple_to_octlist (octave_value_list& octave_list,
