@@ -86,8 +86,11 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
 
   try
     {
-      object main_module = import ("__main__");
-      object main_namespace = main_module.attr ("__dict__");
+#if PY_VERSION_HEX >= 0x03000000
+      object main_module = import ("builtins");
+#else
+      object main_module = import ("__builtin__");
+#endif
 
       object mod = (module.empty ()) ? main_module : import (module.c_str ());
       object callable = mod.attr (func.c_str ());

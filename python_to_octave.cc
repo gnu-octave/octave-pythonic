@@ -446,6 +446,16 @@ namespace pytave
     oct_value = map;
   }
 
+  static std::string
+  pyunicode_to_utf8 (PyObject *unicode)
+  {
+    std::string str;
+    PyObject *utf8 = PyUnicode_AsUTF8String (unicode);
+    str.assign (PyBytes_AsString (utf8), PyBytes_Size (utf8));
+    Py_DECREF (utf8);
+    return str;
+  }
+
   void pyobj_to_octvalue (octave_value& oct_value,
                           const boost::python::object& py_object)
   {
@@ -453,6 +463,7 @@ namespace pytave
     extract<double> doublex (py_object);
     extract<Complex> complexx (py_object);
     extract<std::string> stringx (py_object);
+    extract<std::wstring> wstringx (py_object);
     extract<numeric::array> arrayx (py_object);
     extract<boost::python::list> listx (py_object);
     extract<boost::python::dict> dictx (py_object);
@@ -467,6 +478,8 @@ namespace pytave
       pyarr_to_octvalue (oct_value, (PyArrayObject*)py_object.ptr ());
     else if (stringx.check ())
       oct_value = stringx ();
+    else if (wstringx.check ())
+      oct_value = pyunicode_to_utf8 (py_object.ptr ());
     else if (listx.check ())
       pylist_to_cellarray (oct_value, (boost::python::list&)py_object);
     else if (dictx.check ())
