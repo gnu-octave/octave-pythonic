@@ -33,10 +33,10 @@
 %%     @{
 %%       [1,1] = bit_length
 %%       [1,2] = conjugate
-%%       [1,1] = denominator
-%%       [1,2] = imag
-%%       [1,3] = numerator
-%%       [1,4] = real
+%%       [1,3] = denominator
+%%       [1,4] = imag
+%%       [1,5] = numerator
+%%       [1,6] = real
 %%      @}
 %%
 %% g.numerator
