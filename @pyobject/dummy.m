@@ -18,7 +18,7 @@
 
 %% -*- texinfo -*-
 %% @documentencoding UTF-8
-%% @defmethod @@pyobj dummy (@var{x})
+%% @defmethod @@pyobject dummy (@var{x})
 %% Does nothing, stores doctests for now.
 %%
 %%
@@ -26,7 +26,7 @@
 %% @example
 %% @group
 %% pyexec('g = 6')
-%% g = pyobj.fromPythonVarName('g');
+%% g = pyobject.fromPythonVarName('g');
 %%
 %% sort(whatmethods(g))
 %%   @result{} ans =
@@ -51,7 +51,7 @@
 %% @example
 %% @group
 %% pyexec('d = dict(one=1, two=2)')
-%% x = pyobj.fromPythonVarName('d')
+%% x = pyobject.fromPythonVarName('d')
 %%   @result{} x =
 %%       [PyObject id ...]
 %%       @{'two': 2, 'one': 1@}
@@ -79,7 +79,7 @@
 %% @end group
 %% @end example
 %%
-%% @code{pyeval} returns a @@pyobj for things it cannot convert to
+%% @code{pyeval} returns a @@pyobject for things it cannot convert to
 %% Octave-native objects:
 %% @example
 %% @group
@@ -101,7 +101,7 @@
 %%
 %%
 %% TODO: this should return a cell array with a double, a string,
-%% and an @@pyobj in it:
+%% and an @@pyobject in it:
 %% @example
 %% @group
 %% pyeval('[42, "hello", sys]')         % doctest: +XFAIL
@@ -116,7 +116,7 @@
 %% @end group
 %% @end example
 %%
-%% @seealso{pyobj}
+%% @seealso{pyobject}
 %% @end defmethod
 
 function dummy (x)

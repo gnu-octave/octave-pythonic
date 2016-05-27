@@ -18,7 +18,7 @@
 
 %% -*- texinfo -*-
 %% @documentencoding UTF-8
-%% @defun  pyobj (@var{s})
+%% @defun  pyobject (@var{s})
 %% Wrap a Python object.
 %%
 %% TODO: where/how to document classdef classes?
@@ -26,7 +26,7 @@
 %% @seealso{pyexec, pyeval}
 %% @end defun
 
-classdef pyobj < handle
+classdef pyobject < handle
   properties
     id
   end
@@ -38,7 +38,7 @@ classdef pyobj < handle
       % at the time of construction but it can disappear later (we
       % will keep track of the reference).
       if (~ ischar(pyvarname))
-        error('pyobj: currently we only take variable names as input')
+        error('pyobject: currently we only take variable names as input')
       end
       cmd = sprintf ([ ...
         'if not ("__InOct__" in vars() or "__InOct__" in globals()):\n' ...
@@ -47,13 +47,13 @@ classdef pyobj < handle
         pyvarname, pyvarname);
       pyexec (cmd);
       id = pyeval (['hex(id(' pyvarname '))']);
-      x = pyobj(id);
+      x = pyobject(id);
     end
   end
 
 
   methods
-    function x = pyobj(id)
+    function x = pyobject(id)
       % warning: not intended for casual use: you must also insert
       % the object into the Python `__InOct__` dict with key `id`.
       x.id = id;
@@ -74,7 +74,7 @@ classdef pyobj < handle
       % Manual workaround for #46497: call right before @code{clear x}.  But
       % be careful, @code{x} needs to be the last reference: don't do this:
       % @example
-      % d = pyobj (...);
+      % d = pyobject (...);
       % d2 = d;
       % force_delete (d)
       % clear d
