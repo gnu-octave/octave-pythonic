@@ -85,14 +85,19 @@ classdef pyobject < handle
     end
 
     dummy (x)
+    display (x)
 
     function r = getid (x)
       r = x.id;
     end
 
-    function disp(x)
-      printf ('[PyObject id %s]\n', x.id);
-      disp (pyeval (sprintf ('str(__InOct__["%s"])', x.id)))
+    function varargout = disp(x)
+      s = pyeval (sprintf ('str(__InOct__["%s"])', x.id));
+      if (nargout == 0)
+        disp (s)
+      else
+        varargout = {s};
+      end
     end
 
     function s = whatclass(x)

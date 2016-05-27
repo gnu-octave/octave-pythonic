@@ -52,8 +52,7 @@
 %% @group
 %% pyexec('d = dict(one=1, two=2)')
 %% x = pyobject.fromPythonVarName('d')
-%%   @result{} x =
-%%       [PyObject id ...]
+%%   @result{} x = [pyobject ...]
 %%       @{'two': 2, 'one': 1@}
 %%
 %% % oops, overwrote d in Python:
@@ -61,8 +60,7 @@
 %%
 %% % but have no fear, we still have a reference to it:
 %% x
-%%   @result{} x =
-%%       [PyObject id ...]
+%%   @result{} x = [pyobject ...]
 %%       @{'two': 2, 'one': 1@}
 %% @end group
 %% @end example
@@ -85,8 +83,7 @@
 %% @group
 %% pyexec('import sys')
 %% sysmodule = pyeval('sys')
-%%   @result{} sysmodule =
-%%       [PyObject id ...]
+%%   @result{} sysmodule = [pyobject ...]
 %%       <module 'sys' (built-in)>
 %% @end group
 %% @end example
