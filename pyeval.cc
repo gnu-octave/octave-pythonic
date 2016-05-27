@@ -78,7 +78,7 @@ pyeval (\"dict(one=1, two=2)\")\n\
       object builtins = main_module.attr ("__builtins__");
       // hex(id(res))
       object idtmp = builtins.attr("hex")(builtins.attr("id")(res));
-      id = extrac<std::string> (idtmp);
+      id = extract<std::string> (idtmp);
 
       // FIXME: currently, we cannot return the raw object to octave...
       if (! res.is_none ())
