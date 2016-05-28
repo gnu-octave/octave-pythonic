@@ -92,7 +92,10 @@ pyeval (\"dict(one=1, two=2)\")\n\
     {
       // Ensure we have a __InOct__ dict, and then put `res` into it
       exec ("if not (\"__InOct__\" in vars() or \"__InOct__\" in globals()):\n"
-            "  __InOct__ = dict()\n",
+            "    __InOct__ = dict()\n"
+            "    # FIXME: make it accessible elsewhere?\n"
+            "    import __main__\n"
+            "    __main__.__InOct__ = __InOct__\n",
             main_namespace, main_namespace);
       main_namespace["__InOct__"][id] = res;
       // Create @pyobject

@@ -113,6 +113,16 @@
 %% @end group
 %% @end example
 %%
+%% A @@pyobject can be passed back to Python.  This does not make
+%% a copy but rather a reference to the original object.
+%% For example:
+%% @example
+%% @group
+%% pycall('__builtin__.print', sysmodule)
+%%   @print{} <module 'sys' (built-in)>
+%% @end group
+%% @end example
+%%
 %% @seealso{pyobject}
 %% @end defmethod
 
