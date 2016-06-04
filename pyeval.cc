@@ -103,3 +103,24 @@ pyeval (\"dict(one=1, two=2)\")\n\
 
   return retval;
 }
+
+/*
+%!test
+%! q = pyeval ('10.1')
+%! assert (isnumeric(q))
+%! % note: floating-point equality test: usually bad but here we expect the exact same float
+%! assert (q, 10.1)
+
+%!test
+%! q = pyeval ('"I <3 Octave"')
+%! assert (ischar (q))
+%! assert (~strcmp (q, '1 <3 Octave'))
+
+%!test
+%! % This might change if we stop converting lists
+%! z = pyeval ('[1, [21, 22], 3, [41, [421, 422], 43]]');
+%! assert (z{2}{1} == 21)
+%! assert (z{2}{2} == 22)
+%! assert (z{4}{2}{1} == 421)
+%! assert (z{4}{2}{2} == 422)
+*/

@@ -181,3 +181,10 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
   return retval;
 }
 
+/*
+%!test
+%! pyexec (strjoin({'def pyfunc(x):',
+%!                 '    return 2*x'}, '\n'));
+%! z = pycall ('pyfunc', [20 20]);
+%! assert (z == [40 40])
+*/
