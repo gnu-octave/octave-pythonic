@@ -372,6 +372,24 @@ namespace pytave
   }
 
   static void
+  pytuple_to_cellarray (octave_value& oct_value, const boost::python::tuple& tuple)
+  {
+    octave_idx_type length = boost::python::extract<octave_idx_type> (tuple.attr ("__len__") ());
+    octave_value_list values;
+
+    for (octave_idx_type i = 0; i < length; i++)
+      {
+         octave_value val;
+
+         pyobj_to_octvalue (val, tuple[i]);
+         values.append (val);
+
+      }
+
+    oct_value = Cell (values);
+  }
+
+  static void
   pydict_to_octmap (octave_value& oct_value, const boost::python::dict& dict)
   {
     boost::python::list list = dict.items ();
@@ -467,6 +485,7 @@ namespace pytave
     extract<numeric::array> arrayx (py_object);
     extract<boost::python::list> listx (py_object);
     extract<boost::python::dict> dictx (py_object);
+    extract<boost::python::tuple> tuplex (py_object);
 
     if (intx.check ())
       oct_value = intx ();
@@ -484,6 +503,8 @@ namespace pytave
       pylist_to_cellarray (oct_value, (boost::python::list&)py_object);
     else if (dictx.check ())
       pydict_to_octmap (oct_value, (boost::python::dict&)py_object);
+    else if (tuplex.check ())
+      pytuple_to_cellarray (oct_value, (boost::python::tuple&)py_object);
     else
       throw object_convert_exception (
         PyEval_GetFuncName (py_object.ptr ())
