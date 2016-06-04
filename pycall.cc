@@ -186,4 +186,12 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
 %! pyexec ("def pyfunc(x):\n    return 2*x");
 %! z = pycall ("pyfunc", [20 20]);
 %! assert (z, [40 40])
+
+%!test
+%! pyexec (["def pyfunc(x):\n    if x.item((0,0)) is True:\n        return 30", ...
+%!         "\n    elif x.item((0,0)) is False:\n        return 20\n    else:", ...
+%!         "\n        return 10"]);
+%! assert (pycall ("pyfunc", true), 30)
+%! assert (pycall ("pyfunc", false), 20)
+%! assert (pycall ("pyfunc", 10), 10)
 */

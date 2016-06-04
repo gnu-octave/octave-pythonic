@@ -116,6 +116,13 @@ pyeval (\"dict(one=1, two=2)\")\n\
 %! assert (ischar (q))
 %! assert (! strcmp (q, "1 <3 Octave"))
 
+%!assert (islogical (pyeval ("True")))
+%!assert (islogical (pyeval ("False")))
+%!assert (pyeval ("True"))
+%!assert (! pyeval ("False"))
+%!assert (class (pyeval ("True")), "logical")
+%!assert (class (pyeval ("False")), "logical")
+
 %!test
 %! % FIXME: this will change when we stop converting lists
 %! z = pyeval ("[1, [21, 22], 3, [41, [421, 422], 43]]");

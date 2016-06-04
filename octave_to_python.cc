@@ -217,7 +217,7 @@ namespace pytave
       throw value_convert_exception (
         "Octave value `undefined'. Can not convert to a Python object");
     else if (octvalue.is_numeric_type () || octvalue.is_string ()
-             || octvalue.is_cell ())
+             || octvalue.is_cell () || octvalue.is_bool_type ())
       octvalue_to_pyarr (py_object, octvalue);
     else if (octvalue.is_map ())
       octmap_to_pyobject (py_object, octvalue.map_value ());

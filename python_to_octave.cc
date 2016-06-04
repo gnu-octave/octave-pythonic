@@ -478,6 +478,7 @@ namespace pytave
                           const boost::python::object& py_object)
   {
     extract<int> intx (py_object);
+    extract<bool> boolx (py_object);
     extract<double> doublex (py_object);
     extract<Complex> complexx (py_object);
     extract<std::string> stringx (py_object);
@@ -487,7 +488,9 @@ namespace pytave
     extract<boost::python::dict> dictx (py_object);
     extract<boost::python::tuple> tuplex (py_object);
 
-    if (intx.check ())
+    if (boolx.check() && PyBool_Check ((PyArrayObject*)py_object.ptr ()))
+      oct_value = boolx ();
+    else if (intx.check ())
       oct_value = intx ();
     else if (doublex.check ())
       oct_value = doublex ();
