@@ -217,7 +217,7 @@ end
 %! assert (d{6}, 42)
 
 %!xtest
-%! % dict: integer key is broken because
+%! % dict: integer key should not subtract one (FIXME: Issue #10)
 %! pyexec ('d = {5:40, 6:42}')
 %! d = pyobject.fromPythonVarName ('d');
 %! assert (d{6}, 42)
