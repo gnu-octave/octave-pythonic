@@ -31,13 +31,13 @@ classdef pyobject < handle
     id
   end
 
-  methods(Static)
-    function x = fromPythonVarName(pyvarname)
+  methods (Static)
+    function x = fromPythonVarName (pyvarname)
       % if @var{pyvarname} is a string, its assumed to be a variable
       % name, e.g., previously created with pyexec.  This must exist
       % at the time of construction but it can disappear later (we
       % will keep track of the reference).
-      if (~ ischar(pyvarname))
+      if (! ischar(pyvarname))
         error('pyobject: currently we only take variable names as input')
       end
       cmd = sprintf ([ ...
@@ -50,19 +50,19 @@ classdef pyobject < handle
         pyvarname, pyvarname);
       pyexec (cmd);
       id = pyeval (['hex(id(' pyvarname '))']);
-      x = pyobject(id);
+      x = pyobject (id);
     end
   end
 
 
   methods
-    function x = pyobject(id)
+    function x = pyobject (id)
       % warning: not intended for casual use: you must also insert
       % the object into the Python `__InOct__` dict with key `id`.
       x.id = id;
     end
 
-    function delete(x)
+    function delete (x)
       % called on clear of the last reference---for subclasses of
       % handle; not called at all for "value classes".
       % FIXME: #46497 this is never called!
@@ -84,7 +84,7 @@ classdef pyobject < handle
       % d2
       %   @print{} ... KeyError ...
       % @end example
-      delete(x)
+      delete (x)
     end
 
     dummy (x)
@@ -94,7 +94,7 @@ classdef pyobject < handle
       r = x.id;
     end
 
-    function varargout = disp(x)
+    function varargout = disp (x)
       s = pyeval (sprintf ('str(__InOct__["%s"])', x.id));
       if (nargout == 0)
         disp (s)
@@ -103,11 +103,11 @@ classdef pyobject < handle
       end
     end
 
-    function s = whatclass(x)
+    function s = whatclass (x)
       s = pyeval (sprintf ('str(__InOct__["%s"].__class__)', x.id));
     end
 
-    function lst = whatmethods(x)
+    function lst = whatmethods (x)
       % filter the output of `dir(x)`
       % properties only:
       % [a for a in dir(x) if not callable(getattr(x, a)) and not a.startswith("__")]
@@ -117,19 +117,19 @@ classdef pyobject < handle
       lst = pyeval (cmd);
     end
 
-    function r = subsref(x, idx)
+    function r = subsref (x, idx)
       s = '';
-      for i=1:length(idx)
+      for i = 1:length (idx)
         t = idx(i);
         switch t.type
           case '()'
-            if ( ! isempty (t.subs))
+            if (! isempty (t.subs))
               t
               error('not implemented: function calls with arguments')
             end
             s = sprintf ('%s()', s);
           case '.'
-            assert(ischar(t.subs))
+            assert (ischar (t.subs))
             s = sprintf ('%s.%s', s, t.subs);
           otherwise
             t
@@ -139,11 +139,11 @@ classdef pyobject < handle
       r = pyeval (sprintf ('__InOct__["%s"]%s', x.id, s));
     end
 
-    function vargout = help(x)
-      idx = struct('type', '.', 'subs', '__doc__');
-      s = subsref(x, idx);
+    function vargout = help (x)
+      idx = struct ('type', '.', 'subs', '__doc__');
+      s = subsref (x, idx);
       if (nargout == 0)
-        disp(s)
+        disp (s)
       else
         vargout = {s};
       end
