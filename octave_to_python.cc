@@ -210,12 +210,27 @@ namespace pytave
       }
   }
 
+  static void
+  octstring_to_pyobject (boost::python::object& py_object,
+                         const std::string& str)
+  {
+    py_object = object (handle<PyObject> (
+#if PY_VERSION_HEX >= 0x03000000
+      PyUnicode_FromStringAndSize (str.data (), str.size ())
+#else
+      PyString_FromStringAndSize (str.data (), str.size ())
+#endif
+    ));
+  }
+
   void octvalue_to_pyobj (boost::python::object& py_object,
                           const octave_value& octvalue)
   {
     if (octvalue.is_undefined ())
       throw value_convert_exception (
         "Octave value `undefined'. Can not convert to a Python object");
+    else if (octvalue.is_string ())
+      octstring_to_pyobject (py_object, octvalue.string_value ());
     else if (octvalue.is_numeric_type () || octvalue.is_string ()
              || octvalue.is_cell () || octvalue.is_bool_type ())
       octvalue_to_pyarr (py_object, octvalue);
