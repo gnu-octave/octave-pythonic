@@ -488,7 +488,7 @@ namespace pytave
     extract<boost::python::dict> dictx (py_object);
     extract<boost::python::tuple> tuplex (py_object);
 
-    if (boolx.check() && PyBool_Check ((PyArrayObject*)py_object.ptr ()))
+    if (boolx.check () && PyBool_Check ((PyArrayObject*)py_object.ptr ()))
       oct_value = boolx ();
     else if (intx.check ())
       oct_value = intx ();
