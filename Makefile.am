@@ -38,7 +38,7 @@ OCT_FILES = \
   pyeval.oct \
   pyexec.oct
 
-OCT_SOURCES = $(patsubst %.oct, %.cc, $(OCT_FILES))
+OCT_SOURCE_FILES = $(patsubst %.oct, %.cc, $(OCT_FILES))
 
 PYTAVE_HEADER_FILES = \
   arrayobjectdefs.h \
@@ -53,7 +53,7 @@ PY_FILES = \
   test/exceptions.py \
   test/test.py
 
-EXTRA_DIST = $(DOC_FILES) $(OCT_SOURCES) $(PY_FILES)
+EXTRA_DIST = $(DOC_FILES) $(OCT_SOURCE_FILES) $(PY_FILES)
 
 EXTRA_libdir = $(PYTAVE_MODULE_INSTALL_PATH)
 EXTRA_lib_LTLIBRARIES = _pytave.la
