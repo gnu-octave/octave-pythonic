@@ -202,6 +202,13 @@ Can not link with Octave.
 Make sure the Octave development package is installed.
 ========================================================================]])
 	])
+	AS_IF([test -z "$ax_octave_ok"], [
+		AC_DEFINE([HAVE_OCTAVE], [1], [Define to 1 if you have Octave.])
+		AC_DEFINE_UNQUOTED([OCTAVE_INCLUDEDIR], ["$OCTAVE_INCLUDEDIR"],
+				   [Octave include directory.])
+		AC_DEFINE_UNQUOTED([OCTAVE_LIBRARYDIR], ["$OCTAVE_LIBRARYDIR"],
+				   [Octave library directory.])
+	])
 
 	AC_SUBST([OCTAVE_LDFLAGS])
 	AC_SUBST([OCTAVE_CPPFLAGS])
