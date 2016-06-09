@@ -25,21 +25,21 @@ import pytave
 
 try:
     pytave.feval(1, "")
-except pytave.OctaveError, e:
-    print "test ok"
+except pytave.OctaveError as e:
+    print("test ok")
 except:
-    print "test fail"
+    print("test fail")
 
 try:
     pytave.feval(1, "cell")
-except pytave.ValueConvertError, e:
-    print "test ok"
+except pytave.ValueConvertError as e:
+    print("test ok")
 except:
-    print "test fail"
+    print("test fail")
 
 try:
     pytave.feval(1, "sin", {"asdf": "asdf"})
-except pytave.ObjectConvertError, e:
-    print "test ok"
+except pytave.ObjectConvertError as e:
+    print("test ok")
 except:
-    print "test fail"
+    print("test fail")

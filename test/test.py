@@ -26,7 +26,7 @@ import numpy
 import pytave
 import traceback
 
-print "No messages indicates test pass."
+print("No messages indicates test pass.")
 
 arr0_0 = numpy.zeros((0, 0))
 arr0_1 = numpy.zeros((0, 1))
@@ -51,7 +51,7 @@ arr2ch = numpy.array([["abc"], ["def"]], numpy.character)
 arr1o = numpy.array([[1.0, "abc", 2 + 3j]], numpy.object)
 arr2o = numpy.array([[1.0, "abc", 2 + 3j], [4.0, arr1i, "def"]], numpy.object)
 
-alimit_int64 = numpy.array([[-9223372036854775808L, 9223372036854775807L]],
+alimit_int64 = numpy.array([[-9223372036854775808, 9223372036854775807]],
                            numpy.int64)
 alimit_int32 = numpy.array([[-2147483648, 2147483647]], numpy.int32)
 alimit_int16 = numpy.array([[-32768, 32767, -32769, 32768]], numpy.int16)
@@ -71,11 +71,11 @@ def equals(a, b):
 
 
 def fail(msg, exc=None):
-    print "FAIL:", msg
+    print("FAIL:", msg)
     traceback.print_stack()
     if exc is not None:
         traceback.print_exc(exc)
-    print ""
+    print("")
 
 
 def testequal(value):
@@ -83,7 +83,7 @@ def testequal(value):
         nvalue, = pytave.feval(1, "test_return", value)
         if not equals(value, nvalue):
             fail("as %s != %s" % (value, nvalue))
-    except Exception, e:
+    except Exception as e:
         fail(value, e)
 
 
@@ -92,7 +92,7 @@ def testexpect(value, expected):
         nvalue, = pytave.feval(1, "test_return", value)
         if not equals(value, nvalue):
             fail("sent in %s, expecting %s, got %s", (value, expected, nvalue))
-    except Exception, e:
+    except Exception as e:
         fail(value, e)
 
 
@@ -111,18 +111,18 @@ def testmatrix(value):
         if class1 != class2:
             fail("Type check failed for: %s. Expected %s. Got %s."
                  % (value, class1, class2))
-    except Exception, e:
+    except Exception as e:
         fail("Execute failed: %s" % value, e)
 
 
 def testobjecterror(value):
     try:
         pytave.feval(1, "test_return", value)
-        print "FAIL:", (value,)
+        print("FAIL:", (value,))
     except pytave.ObjectConvertError:
         pass
-    except Exception, e:
-        print "FAIL", (value,), e
+    except Exception as e:
+        print("FAIL", (value,), e)
 
 
 def testvalueerror(*value):
@@ -131,25 +131,25 @@ def testvalueerror(*value):
         fail(value)
     except pytave.ValueConvertError:
         pass
-    except Exception, e:
+    except Exception as e:
         fail(value, e)
 
 
 def testparseerror(*value):
     try:
         pytave.eval(*value)
-        print "FAIL:", (value,)
+        print("FAIL:", (value,))
     except pytave.ParseError:
         pass
-    except Exception, e:
-        print "FAIL", (value,), e
+    except Exception as e:
+        print("FAIL", (value,), e)
 
 
 def testvalueok(*value):
     try:
         pytave.feval(1, *value)
-    except Exception, e:
-        print "FAIL", (value,), e
+    except Exception as e:
+        print("FAIL", (value,), e)
 
 
 def testevalexpect(numargout, code, expectations):
@@ -157,7 +157,7 @@ def testevalexpect(numargout, code, expectations):
         results = pytave.eval(numargout, code)
         if not equals(results, expectations):
             fail("eval: %s : because %s != %s" % (code, results, expectations))
-    except Exception, e:
+    except Exception as e:
         fail("eval: %s" % code, e)
 
 
@@ -169,7 +169,7 @@ def testsetget(variables, name, value):
         result, = pytave.feval(1, "isequal", value, variables[name])
         if not result:
             fail("set/get: %s -> %s: results diverged" % (name, value))
-    except Exception, e:
+    except Exception as e:
         fail("set/get: %s" % name, e)
 
 
@@ -177,7 +177,7 @@ def testexception(exception, func):
     try:
         func()
         fail("Expecting %s but nothing was raised." % repr(exception))
-    except Exception, e:
+    except Exception as e:
         if not isinstance(e, exception):
             fail("Expecting %s but got %s instead" % (repr(exception), repr(e)), e)
 
@@ -205,7 +205,7 @@ def testlocalscope(x):
             fx1 = k * fx1
         if fx != fx1:
             fail("testlocalscope: result incorrect")
-    except Exception, e:
+    except Exception as e:
         fail("testlocalscope: %s" % (x,), e)
 
 
@@ -250,7 +250,7 @@ testmatrix(arr3f)
 
 # Note, both arr0_0 == arr0_0 and arr0_0 != arr0_0 are false!
 if (arr0_0 != arr0_0) or (arr0_0 == arr0_0):
-    print "FAIL: Zero test"
+    print("FAIL: Zero test")
 
 testmatrix(arr0_0)
 testmatrix(arr0_1)
@@ -295,11 +295,11 @@ testobjecterror(())
 
 result, = pytave.feval(1, "eval", "[1, 1, 1]")
 if result.shape != (1, 3):
-    print "FAIL: expected length-3 vector"
+    print("FAIL: expected length-3 vector")
 
 result, = pytave.feval(1, "eval", "[1; 2; 3]")
 if result.shape != (3, 1):
-    print "FAIL: expected 3x1 matrix"
+    print("FAIL: expected 3x1 matrix")
 
 testparseerror(1, "endfunction")
 testevalexpect(1, "2 + 2", (4,))
