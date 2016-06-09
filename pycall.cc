@@ -182,6 +182,25 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
 }
 
 /*
+%!assert (ischar (pycall ("os.getcwd")))
+%!assert (isreal (pycall ("random.random")))
+%!assert (pycall ("math.exp", 3), exp (3))
+%!xtest assert (pycall ("math.trunc", pi), fix (pi))
+%!assert (pycall ("math.sqrt", 2), sqrt (2))
+%!xtest assert (pycall ("cmath.sqrt", 2j), sqrt (2j))
+
+## Test argument type conversion of values into Python
+%!test
+%! pyexec ("def typename(x): return type(x).__name__");
+%!xtest assert (pycall ("typename", 0), "double")
+%!xtest assert (pycall ("typename", pi), "double")
+%!xtest assert (pycall ("typename", 2j), "complex")
+%!xtest assert (pycall ("typename", int32 (0)), "int")
+%!xtest assert (pycall ("typename", false), "bool")
+%!xtest assert (pycall ("typename", true), "bool")
+%!assert (pycall ("typename", "Hello world"), "str")
+%!assert (pycall ("typename", char ([1, 2, 3])), "str")
+
 %!test
 %! pyexec ("def pyfunc(x):\n    return 2*x");
 %! z = pycall ("pyfunc", [20 20]);

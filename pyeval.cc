@@ -105,23 +105,32 @@ pyeval (\"dict(one=1, two=2)\")\n\
 }
 
 /*
-%!test
-%! q = pyeval ("10.1");
-%! assert (isnumeric (q))
-%! % note: floating-point equality test: usually bad but here we expect the exact same float
-%! assert (q, 10.1)
+%!assert (isnumeric (pyeval ("0")))
+%!assert (isreal (pyeval ("0")))
+%!assert (pyeval ("0"), 0)
 
-%!test
-%! q = pyeval ("\"I <3 Octave\"");
-%! assert (ischar (q))
-%! assert (! strcmp (q, "1 <3 Octave"))
+%!assert (isnumeric (pyeval ("10.1")))
+%!assert (isreal (pyeval ("10.1")))
+%!assert (pyeval ("10.1"), 10.1)
+
+%!assert (isnumeric (pyeval ("2j")))
+%!assert (iscomplex (pyeval ("2j")))
+%!assert (pyeval ("2j"), 2j)
+
+%!assert (ischar (pyeval ("\"I <3 Octave\"")))
+%!assert (pyeval ("\"I <3 Octave\""), "I <3 Octave")
 
 %!assert (islogical (pyeval ("True")))
 %!assert (islogical (pyeval ("False")))
-%!assert (pyeval ("True"))
-%!assert (! pyeval ("False"))
+%!assert (pyeval ("True"), true)
+%!assert (pyeval ("False"), false)
 %!assert (class (pyeval ("True")), "logical")
 %!assert (class (pyeval ("False")), "logical")
+
+## FIXME: these will change when dict, list, and tuple are not converted
+%!assert (pyeval ("{'x': 1, 'y': 2}"), struct ("x", 1, "y", 2))
+%!assert (pyeval ("[1, 2, 3]"), {1, 2, 3})
+%!assert (pyeval ("(4, 5, 6)"), {4, 5, 6})
 
 %!test
 %! % FIXME: this will change when we stop converting lists
