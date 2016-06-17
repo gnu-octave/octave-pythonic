@@ -108,16 +108,6 @@ classdef pyobject < handle
       s = pyeval (sprintf ('str(__InOct__["%s"].__class__)', x.id));
     end
 
-    function lst = whatmethods (x)
-      % filter the output of `dir(x)`
-      % properties only:
-      % [a for a in dir(x) if not callable(getattr(x, a)) and not a.startswith("__")]
-      cmd = sprintf ( ...
-        '[a for a in dir(__InOct__["%s"]) if not a.startswith("__")]', ...
-        x.id);
-      lst = pyeval (cmd);
-    end
-
     function vargout = help (x)
       idx = struct ('type', '.', 'subs', '__doc__');
       s = subsref (x, idx);
