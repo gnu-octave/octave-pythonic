@@ -63,28 +63,26 @@ classdef pyobject < handle
     end
 
     function delete (x)
-      % called on clear of the last reference---for subclasses of
-      % handle; not called at all for "value classes".
-      % FIXME: #46497 this is never called!
-      %save('proof_of_delete', 6, x.id)
-      disp ('delete')
-      % throws KeyError if it wasn't in there for some reason
-      cmd = sprintf ('__InOct__.pop("%s")', x.id);
-      pyexec (cmd);
-    end
+      # Called on clear of the last reference---for subclasses of
+      # handle; not called at all for "value classes".
+      #
+      # FIXME: #46497 this is never called!
+      # Workaround: call @code{delete(x)} right before @code{clear x}.  But
+      # be careful, @code{x} needs to be the last reference: don't do this:
+      # @example
+      # d = pyobject (...);
+      # d2 = d;
+      # delete (d)
+      # clear d
+      # d2
+      #   @print{} ... KeyError ...
+      # @end example
 
-    function force_delete (x)
-      % Manual workaround for #46497: call right before @code{clear x}.  But
-      % be careful, @code{x} needs to be the last reference: don't do this:
-      % @example
-      % d = pyobject (...);
-      % d2 = d;
-      % force_delete (d)
-      % clear d
-      % d2
-      %   @print{} ... KeyError ...
-      % @end example
-      delete (x)
+      #disp ("delete")
+
+      # throws KeyError if it wasn't in there for some reason
+      cmd = sprintf ("__InOct__.pop('%s')", x.id);
+      pyexec (cmd)
     end
 
     dummy (x)
