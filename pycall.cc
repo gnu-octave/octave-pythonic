@@ -89,8 +89,27 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
       object main_module = import ("__main__");
       object main_namespace = main_module.attr ("__dict__");
 
-      object mod = (module.empty ()) ? main_module : import (module.c_str ());
-      object callable = mod.attr (func.c_str ());
+      object mod, callable;
+
+      if (! module.empty ())
+        {
+          mod = import (module.c_str ());
+        }
+      if (! PyObject_HasAttrString (mod.ptr (), func.c_str ()))
+        {
+          if (! PyObject_HasAttrString (main_module.ptr (), func.c_str ()))
+            {
+#if PY_VERSION_HEX >= 0x03000000
+	      mod = import ("builtins");
+#else
+	      mod = import ("__builtin__");
+#endif
+            }
+          else
+            mod = main_module;
+        }
+
+      callable = mod.attr (func.c_str ());
 
       std::vector<object> pyargs;
       for (int i = 1; i < nargin; i++)
@@ -188,6 +207,7 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
 %!xtest assert (pycall ("math.trunc", pi), fix (pi))
 %!assert (pycall ("math.sqrt", 2), sqrt (2))
 %!xtest assert (pycall ("cmath.sqrt", 2j), sqrt (2j))
+%!assert (pycall ("int", 10.2), 10)
 
 ## Test argument type conversion of values into Python
 %!test
