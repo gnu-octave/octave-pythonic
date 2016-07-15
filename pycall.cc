@@ -87,29 +87,25 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
   try
     {
       object main_module = import ("__main__");
-      object main_namespace = main_module.attr ("__dict__");
-
-      object mod, callable;
-
-      if (! module.empty ())
-        {
-          mod = import (module.c_str ());
-        }
-      if (! PyObject_HasAttrString (mod.ptr (), func.c_str ()))
-        {
-          if (! PyObject_HasAttrString (main_module.ptr (), func.c_str ()))
-            {
 #if PY_VERSION_HEX >= 0x03000000
-	      mod = import ("builtins");
+      object builtins_module = import ("builtins");
 #else
-	      mod = import ("__builtin__");
+      object builtins_module = import ("__builtin__");
 #endif
-            }
-          else
-            mod = main_module;
-        }
 
-      callable = mod.attr (func.c_str ());
+      object mod;
+
+      if (module.empty ())
+        {
+          if (PyObject_HasAttrString (main_module.ptr (), func.c_str ()))
+            mod = main_module;
+          else
+            mod = builtins_module;
+        }
+      else
+        mod = import (module.c_str ());
+
+      object callable = mod.attr (func.c_str ());
 
       std::vector<object> pyargs;
       for (int i = 1; i < nargin; i++)
