@@ -221,6 +221,15 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
 %!assert (pycall ("typename", "Hello world"), "str")
 %!assert (pycall ("typename", char ([1, 2, 3])), "str")
 
+## Test round trip type preservation / conversion
+%!test
+%! pyexec ("def roundtrip(x): return x");
+%! values = { 0, pi, 2j, eps, false, true, version, "Hello world", ...
+%!            [1, 2, 3], eye (4) };
+%! for i = 1:numel (values)
+%!   assert (pycall ("roundtrip", values{i}), values{i});
+%! endfor
+
 %!error <argument type conversion>
 %! pyexec ("def intwrapper(x):\n    return int(x)\n");
 %! pycall ("intwrapper", ftp ());
