@@ -176,6 +176,10 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
     {
       error ("pycall: error in return value type conversion");
     }
+  catch (pytave::value_convert_exception const &)
+    {
+      error ("pycall: error in parameter type conversion");
+    }
   catch (error_already_set const &)
     {
       PyObject *ptype, *pvalue, *ptraceback;
@@ -216,6 +220,10 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
 %!xtest assert (pycall ("typename", true), "bool")
 %!assert (pycall ("typename", "Hello world"), "str")
 %!assert (pycall ("typename", char ([1, 2, 3])), "str")
+
+%!error <parameter type conversion>
+%! pyexec ("def intwrapper(x):\n    return int(x)\n");
+%! pycall ("intwrapper", ftp ());
 
 %!test
 %! pyexec ("def pyfunc(x):\n    return 2*x");
