@@ -178,7 +178,7 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
     }
   catch (pytave::value_convert_exception const &)
     {
-      error ("pycall: error in parameter type conversion");
+      error ("pycall: error in argument type conversion");
     }
   catch (error_already_set const &)
     {
@@ -221,7 +221,7 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
 %!assert (pycall ("typename", "Hello world"), "str")
 %!assert (pycall ("typename", char ([1, 2, 3])), "str")
 
-%!error <parameter type conversion>
+%!error <argument type conversion>
 %! pyexec ("def intwrapper(x):\n    return int(x)\n");
 %! pycall ("intwrapper", ftp ());
 
