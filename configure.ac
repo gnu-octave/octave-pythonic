@@ -38,6 +38,10 @@ AC_CONFIG_FILES([Makefile])
 # Find Octave
 AX_OCTAVE([OCTAVE_CONFIG], [],
           [AC_MSG_FAILURE([unable to find Octave development files])])
+pytave_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS=$OCTAVE_CPPFLAGS
+AC_CHECK_HEADERS([octave/call-stack.h])
+CPPFLAGS=$pytave_save_CPPFLAGS
 
 # Pick a Python library to use
 AX_PYTHON_DEVEL

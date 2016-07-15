@@ -37,6 +37,9 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/symtab.h>
 #include <octave/toplev.h>
 #include <octave/utils.h>
+#if defined (HAVE_OCTAVE_CALL_STACK_H)
+#  include <octave/call-stack.h>
+#endif
 
 #include <iostream>
 #ifdef HAVE_USELOCALE
