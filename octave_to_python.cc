@@ -211,6 +211,45 @@ namespace pytave
   }
 
   static void
+  octscalar_to_pyobject (boost::python::object& py_object,
+                         const octave_value& arg)
+  {
+    PyObject *obj = 0;
+
+    if (arg.is_complex_type ())
+      obj = PyComplex_FromDoubles (arg.real ().double_value (),
+                                   arg.imag ().double_value ());
+    else if (arg.is_float_type ())
+      obj = PyFloat_FromDouble (arg.double_value ());
+
+    else if (arg.is_int8_type ())
+      obj = PyLong_FromLong (arg.int8_scalar_value ().value ());
+    else if (arg.is_int16_type ())
+      obj = PyLong_FromLong (arg.int16_scalar_value ().value ());
+    else if (arg.is_int32_type ())
+      obj = PyLong_FromLong (arg.int32_scalar_value ().value ());
+    else if (arg.is_int64_type ())
+      obj = PyLong_FromLong (arg.int64_scalar_value ().value ());
+
+    else if (arg.is_uint8_type ())
+      obj = PyLong_FromUnsignedLong (arg.uint8_scalar_value ().value ());
+    else if (arg.is_uint16_type ())
+      obj = PyLong_FromUnsignedLong (arg.uint16_scalar_value ().value ());
+    else if (arg.is_uint32_type ())
+      obj = PyLong_FromUnsignedLong (arg.uint32_scalar_value ().value ());
+    else if (arg.is_uint64_type ())
+      obj = PyLong_FromUnsignedLong (arg.uint64_scalar_value ().value ());
+
+    else if (arg.is_bool_type ())
+      obj = PyBool_FromLong (arg.bool_value ());
+
+    if (obj)
+      py_object = object (handle<PyObject> (obj));
+    else
+      throw value_convert_exception ("unhandled scalar type");
+  }
+
+  static void
   octstring_to_pyobject (boost::python::object& py_object,
                          const std::string& str)
   {
@@ -231,6 +270,8 @@ namespace pytave
         "Octave value `undefined'. Can not convert to a Python object");
     else if (octvalue.is_string ())
       octstring_to_pyobject (py_object, octvalue.string_value ());
+    else if (octvalue.is_scalar_type ())
+      octscalar_to_pyobject (py_object, octvalue);
     else if (octvalue.is_numeric_type () || octvalue.is_string ()
              || octvalue.is_cell () || octvalue.is_bool_type ())
       octvalue_to_pyarr (py_object, octvalue);
