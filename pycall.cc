@@ -182,19 +182,8 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
     }
   catch (error_already_set const &)
     {
-      PyObject *ptype, *pvalue, *ptraceback;
-      PyErr_Fetch (&ptype, &pvalue, &ptraceback);
-
-      try
-        {
-          std::string message = extract<std::string> (pvalue);
-          error ("pycall: %s", message.c_str ());
-        }
-      catch (error_already_set const &)
-        {
-          PyErr_Restore (ptype, pvalue, ptraceback);
-          PyErr_Print ();
-        }
+      std::string message = pytave::fetch_exception_message ();
+      error ("pycall: %s", message.c_str ());
     }
 
   return retval;
@@ -247,4 +236,8 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
 %! assert (pycall ("pyfunc", true), 30)
 %! assert (pycall ("pyfunc", false), 20)
 %! assert (pycall ("pyfunc", 10), 10)
+
+%!error <NameError>
+%! pyexec ("def raiseException ():\n  raise NameError ('oops')")
+%! pycall ("raiseException")
 */

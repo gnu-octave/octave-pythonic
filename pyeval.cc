@@ -86,19 +86,8 @@ pyeval (\"dict(one=1, two=2)\")\n\
     }
   catch (error_already_set const &)
     {
-      PyObject *ptype, *pvalue, *ptraceback;
-      PyErr_Fetch (&ptype, &pvalue, &ptraceback);
-
-      try
-        {
-          std::string message = extract<std::string> (pvalue);
-          error ("pyeval: %s", message.c_str ());
-        }
-      catch (error_already_set const &)
-        {
-          PyErr_Restore (ptype, pvalue, ptraceback);
-          PyErr_Print ();
-        }
+      std::string message = pytave::fetch_exception_message ();
+      error ("pyeval: %s", message.c_str ());
     }
 
   return retval;
@@ -139,4 +128,8 @@ pyeval (\"dict(one=1, two=2)\")\n\
 %! assert (z{2}{2}, 22)
 %! assert (z{4}{2}{1}, 421)
 %! assert (z{4}{2}{2}, 422)
+
+%!error <NameError>
+%! pyexec ("def raiseException ():\n  raise NameError ('oops')")
+%! pyeval ("raiseException ()")
 */
