@@ -47,12 +47,12 @@ Call a Python function or callable, passing Octave values as arguments.\n\
 Examples:\n\
 @example\n\
 @group\n\
-pycall (\"__builtin__.int\", 6)\n\
+pycall (\"int\", 6)\n\
   @result{} 6\n\
 pycall (\"os.getuid\")\n\
   @result{} ...\n\
-pycall (\"__builtin__.eval\", \"4+5\")\n\
-  @result{} 9\n\
+pycall (\"math.sqrt\", 2)\n\
+  @result{} 1.4142\n\
 @end group\n\
 @end example\n\
 @seealso{pyeval, pyexec}\n\
