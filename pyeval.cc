@@ -29,6 +29,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <boost/python/numeric.hpp>
 
 #include <oct.h>
+#include <octave/parse.h>
 
 #define PYTAVE_DO_DECLARE_SYMBOL
 #include "arrayobjectdefs.h"
@@ -64,13 +65,21 @@ pyeval (\"dict(one=1, two=2)\")\n\
 
   std::string code = args(0).string_value ();
 
+  std::string id;
+  object res;
+
   Py_Initialize ();
+
+  object main_module = import ("__main__");
+  object main_namespace = main_module.attr ("__dict__");
 
   try
     {
-      object main_module = import ("__main__");
-      object main_namespace = main_module.attr ("__dict__");
-      object res = eval (code.c_str (), main_namespace, main_namespace);
+      res = eval (code.c_str (), main_namespace, main_namespace);
+      object builtins = main_module.attr ("__builtins__");
+      // hex(id(res))
+      object idtmp = builtins.attr("hex")(builtins.attr("id")(res));
+      id = extract<std::string> (idtmp);
 
       // FIXME: currently, we cannot return the raw object to octave...
       if (! res.is_none ())
@@ -82,7 +91,16 @@ pyeval (\"dict(one=1, two=2)\")\n\
     }
   catch (pytave::object_convert_exception const &)
     {
-      error ("pyeval: error in return value type conversion");
+      // Ensure we have a __InOct__ dict, and then put `res` into it
+      exec ("if not (\"__InOct__\" in vars() or \"__InOct__\" in globals()):\n"
+            "    __InOct__ = dict()\n"
+            "    # FIXME: make it accessible elsewhere?\n"
+            "    import __main__\n"
+            "    __main__.__InOct__ = __InOct__\n",
+            main_namespace, main_namespace);
+      main_namespace["__InOct__"][id] = res;
+      // Create @pyobject
+      retval = feval ("pyobject", ovl (id), 1);
     }
   catch (error_already_set const &)
     {
