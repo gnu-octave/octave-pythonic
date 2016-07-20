@@ -24,8 +24,8 @@
 ## Example:
 ## @example
 ## @group
-## pyexec('import sys')
-## sysmodule = pyeval('sys')
+## pyexec ("import sys")
+## sysmodule = pyeval ("sys")
 ##   @result{} sysmodule = [pyobject ...]
 ##
 ##       <module 'sys' (built-in)>
@@ -44,18 +44,18 @@ function display (x)
   printf ("%s = [pyobject %s]\n", inputname (1), getid (x));
   s = disp (x);
   s = make_indented (s);
-  if (loose), printf("\n"); endif
+  if (loose), printf ("\n"); endif
   disp (s)
-  if (loose), printf("\n"); endif
+  if (loose), printf ("\n"); endif
 
 endfunction
 
 
-function s = make_indented(s, n)
+function s = make_indented (s, n)
   if (nargin == 1)
     n = 2;
   endif
-  pad = char (double (" ")*ones (1,n));
+  pad = char (double (" ") * ones (1,n));
   s = strrep (s, "\n", ["\n" pad]);
   s = [pad s];  # first line
 endfunction

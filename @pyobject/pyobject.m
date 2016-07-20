@@ -40,7 +40,7 @@ classdef pyobject < handle
       # at the time of construction but it can disappear later (we
       # will keep track of the reference).
       if (! ischar (pyvarname))
-        error("pyobject: currently we only take variable names as input")
+        error ("pyobject: currently we only take variable names as input")
       endif
       cmd = sprintf ([ ...
         'if not ("__InOct__" in vars() or "__InOct__" in globals()):\n' ...

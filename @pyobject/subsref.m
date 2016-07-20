@@ -40,7 +40,7 @@ function r = subsref (x, idx)
       case "()"
         if (! isempty (t.subs))
           t
-          error("not implemented: function calls with arguments")
+          error ("not implemented: function calls with arguments")
         endif
         s = sprintf ("%s()", s);
       case "."
@@ -65,7 +65,7 @@ function r = subsref (x, idx)
         s = [s "[" strjoin(subsstrs, ", ") "]"];
       otherwise
         t
-        error("@pyobject/subsref: not implemented")
+        error ("@pyobject/subsref: not implemented")
     endswitch
   endfor
   r = pyeval (sprintf ("__InOct__['%s']%s", x.id, s));

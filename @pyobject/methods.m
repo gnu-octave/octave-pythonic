@@ -60,9 +60,8 @@ function L = methods (x)
   # filter the output of `dir(x)`
   # (to get properties only:
   # [a for a in dir(x) if not callable(getattr(x, a)) and not a.startswith('__')]
-  cmd = sprintf ( ...
-    "[a for a in dir(__InOct__['%s']) if not a.startswith('__')]", ...
-    getid(x));
+  cmd = sprintf ("[a for a in dir(__InOct__['%s']) if not a.startswith('__')]",
+                 getid (x));
   # TODO: may need to convert from Python list to Octave list
   L = pyeval (cmd);
 endfunction

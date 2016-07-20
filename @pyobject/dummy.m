@@ -68,7 +68,7 @@
 ## We can accesss ``callables'' (methods) of objects:
 ## @example
 ## @group
-## x.keys()
+## x.keys ()
 ##   @result{} ans =
 ##       @{
 ##         [1,1] = two
