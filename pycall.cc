@@ -27,7 +27,8 @@ along with Pytave; see the file COPYING.  If not, see
 #include <boost/python.hpp>
 #include <boost/python/numeric.hpp>
 
-#include <oct.h>
+#include <octave/oct.h>
+#include <octave/parse.h>
 
 #define PYTAVE_DO_DECLARE_SYMBOL
 #include "arrayobjectdefs.h"
@@ -68,15 +69,14 @@ pycall (\"math.sqrt\", 2)\n\
       return retval;
     }
 
-  std::string module;
-  std::string func = args(0).string_value ();
+  bool func_by_name = false;
 
-  size_t idx = func.rfind (".");
-  if (idx != std::string::npos)
-    {
-      module = func.substr (0, idx);
-      func = func.substr (idx + 1);
-    }
+  if (args(0).is_string ())
+    func_by_name = true;
+  else if (args(0).is_object () && args(0).class_name () == "pyobject")
+    func_by_name = false;
+  else
+    error ("pycall: FUNC must be a string or a Python reference");
 
   Py_Initialize ();
 
@@ -93,19 +93,39 @@ pycall (\"math.sqrt\", 2)\n\
 
   try
     {
-      object mod;
+      object callable;
 
-      if (module.empty ())
+      if (func_by_name)
         {
-          if (PyObject_HasAttrString (main_module.ptr (), func.c_str ()))
-            mod = main_module;
+          std::string module;
+          std::string func = args(0).string_value ();
+
+          size_t idx = func.rfind (".");
+          if (idx != std::string::npos)
+            {
+              module = func.substr (0, idx);
+              func = func.substr (idx + 1);
+            }
+
+          object mod;
+          if (module.empty ())
+            {
+              if (PyObject_HasAttrString (main_module.ptr (), func.c_str ()))
+                mod = main_module;
+              else
+                mod = builtins_module;
+            }
           else
-            mod = builtins_module;
+            mod = import (module.c_str ());
+
+          callable = mod.attr (func.c_str ());
         }
       else
-        mod = import (module.c_str ());
-
-      object callable = mod.attr (func.c_str ());
+        {
+          octave_value_list tmp = feval ("getid", ovl (args(0)), 1);
+          std::string hexid = tmp(0).string_value ();
+          callable = main_module.attr ("__InOct__")[hexid];
+        }
 
       std::vector<object> pyargs;
       for (int i = 1; i < nargin; i++)
