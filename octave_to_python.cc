@@ -278,12 +278,14 @@ namespace pytave
       octvalue_to_pyarr (py_object, octvalue);
     else if (octvalue.is_map ())
       octmap_to_pyobject (py_object, octvalue.map_value ());
-    else if (octvalue.is_object ()) {
-      octave_value_list tmp = feval ("getid", ovl (octvalue), 1);
-      std::string hexid = tmp(0).string_value ();
-      // FIXME: added a messy ref to __InOct__ in __main__, find a better way
-      py_object = boost::python::import ("__main__").attr ("__InOct__")[hexid];
-    } else
+    else if (octvalue.is_object () && octvalue.class_name () == "pyobject")
+      {
+        octave_value_list tmp = feval ("getid", ovl (octvalue), 1);
+        std::string hexid = tmp(0).string_value ();
+        // FIXME: added a messy ref to __InOct__ in __main__, find a better way
+        py_object = boost::python::import ("__main__").attr ("__InOct__")[hexid];
+      }
+    else
       throw value_convert_exception (
         "Conversion from Octave value not implemented");
   }
