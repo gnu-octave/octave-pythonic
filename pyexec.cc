@@ -81,19 +81,17 @@ pyexec (\"print(42)\")\n\
     }
   catch (error_already_set const &)
     {
-      PyObject *ptype, *pvalue, *ptraceback;
-      PyErr_Fetch (&ptype, &pvalue, &ptraceback);
-
-      try
-        {
-          std::string message = extract<std::string> (pvalue);
-          error ("pyexec: %s", message.c_str ());
-        }
-      catch (error_already_set const &)
-        {
-          PyErr_Restore (ptype, pvalue, ptraceback);
-          PyErr_Print ();
-        }
+      std::string message = pytave::fetch_exception_message ();
+      error ("pyexec: %s", message.c_str ());
     }
   return retval;
 }
+
+/*
+%!error <NameError>
+%! pyexec ("raise NameError ('oops')")
+
+%!error <AttributeError>
+%! pyexec ("import sys")
+%! pyexec ("sys.no_such_thing")
+*/

@@ -159,6 +159,7 @@ namespace pytave
   };
 
   bool init_exceptions (void);
+  std::string fetch_exception_message (void);
 }
 
 #endif

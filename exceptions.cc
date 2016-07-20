@@ -45,4 +45,30 @@ namespace pytave
             && octave_parse_exception::init ()
             && variable_name_exception::init ());
   }
+
+  std::string fetch_exception_message (void)
+  {
+    using namespace boost::python;
+    PyObject *ptype, *pvalue, *ptraceback;
+    PyErr_Fetch (&ptype, &pvalue, &ptraceback);
+    std::string message;
+
+    try
+      {
+        object formatted_list, formatted;
+        handle<> htype (ptype), hval (allow_null (pvalue));
+        object traceback (import ("traceback"));
+        object format_exception_only (traceback.attr ("format_exception_only"));
+        formatted_list = format_exception_only (htype, hval);
+        formatted = str ("\n").join (formatted_list);
+        message = extract<std::string> (formatted);
+      }
+    catch (error_already_set const &)
+      {
+        PyErr_Restore (ptype, pvalue, ptraceback);
+        PyErr_Print ();
+        message = std::string ("Something weird happened. See traceback above ^");
+      }
+    return message;
+  }
 }
