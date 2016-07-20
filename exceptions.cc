@@ -49,18 +49,21 @@ namespace pytave
   std::string fetch_exception_message (void)
   {
     using namespace boost::python;
+
     PyObject *ptype, *pvalue, *ptraceback;
     PyErr_Fetch (&ptype, &pvalue, &ptraceback);
     std::string message;
 
     try
       {
-        object formatted_list, formatted;
-        handle<> htype (ptype), hval (allow_null (pvalue));
-        object traceback (import ("traceback"));
-        object format_exception_only (traceback.attr ("format_exception_only"));
-        formatted_list = format_exception_only (htype, hval);
-        formatted = str ("\n").join (formatted_list);
+        handle<> htype (ptype);
+        handle<> hval (allow_null (pvalue));
+
+        object traceback = import ("traceback");
+        object format_exception_only = traceback.attr ("format_exception_only");
+
+        object formatted_list = format_exception_only (htype, hval);
+        object formatted = str ("").join (formatted_list).strip ();
         message = extract<std::string> (formatted);
       }
     catch (error_already_set const &)
