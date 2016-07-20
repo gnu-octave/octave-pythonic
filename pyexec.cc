@@ -66,11 +66,11 @@ pyexec (\"print(42)\")\n\
 
   Py_Initialize ();
 
+  object main_module = import ("__main__");
+  object main_namespace = main_module.attr ("__dict__");
+
   try
     {
-      object main_module = import ("__main__");
-      object main_namespace = main_module.attr ("__dict__");
-
       // FIXME: figure out exec return code:
       // http://www.boost.org/doc/libs/1_38_0/libs/python/doc/v2/exec.html
       exec (code.c_str (), main_namespace, main_namespace);

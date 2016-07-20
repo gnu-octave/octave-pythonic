@@ -84,15 +84,15 @@ pycall (\"__builtin__.eval\", \"4+5\")\n\
   numeric::array::set_module_and_type ("numpy", "ndarray");
   _import_array ();
 
-  try
-    {
-      object main_module = import ("__main__");
+  object main_module = import ("__main__");
 #if PY_VERSION_HEX >= 0x03000000
-      object builtins_module = import ("builtins");
+  object builtins_module = import ("builtins");
 #else
-      object builtins_module = import ("__builtin__");
+  object builtins_module = import ("__builtin__");
 #endif
 
+  try
+    {
       object mod;
 
       if (module.empty ())

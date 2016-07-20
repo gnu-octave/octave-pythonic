@@ -72,13 +72,17 @@ pyeval (\"dict(one=1, two=2)\")\n\
 
   object main_module = import ("__main__");
   object main_namespace = main_module.attr ("__dict__");
+#if PY_VERSION_HEX >= 0x03000000
+  object builtins_module = import ("builtins");
+#else
+  object builtins_module = import ("__builtin__");
+#endif
 
   try
     {
       res = eval (code.c_str (), main_namespace, main_namespace);
-      object builtins = main_module.attr ("__builtins__");
       // hex(id(res))
-      object idtmp = builtins.attr("hex")(builtins.attr("id")(res));
+      object idtmp = builtins_module.attr("hex")(builtins_module.attr("id")(res));
       id = extract<std::string> (idtmp);
 
       // FIXME: currently, we cannot return the raw object to octave...
