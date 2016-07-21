@@ -60,6 +60,8 @@ pycall (\"math.sqrt\", 2)\n\
 @end deftypefn")
 {
   octave_value_list retval;
+  object res;
+  std::string id;
 
   int nargin = args.length ();
 
@@ -85,6 +87,7 @@ pycall (\"math.sqrt\", 2)\n\
   _import_array ();
 
   object main_module = import ("__main__");
+  object main_namespace = main_module.attr ("__dict__");
 #if PY_VERSION_HEX >= 0x03000000
   object builtins_module = import ("builtins");
 #else
@@ -135,8 +138,6 @@ pycall (\"math.sqrt\", 2)\n\
           pyargs.push_back (arg);
         }
 
-      object res;
-
       switch (nargin - 1)
         {
         case 0:
@@ -185,6 +186,11 @@ pycall (\"math.sqrt\", 2)\n\
           break;
         }
 
+      object hex_function = builtins_module.attr ("hex");
+      object id_function = builtins_module.attr ("id");
+      object idtmp = hex_function (id_function (res));
+      id = extract<std::string> (idtmp);
+
       if (! res.is_none ())
         {
           octave_value val;
@@ -194,7 +200,16 @@ pycall (\"math.sqrt\", 2)\n\
     }
   catch (pytave::object_convert_exception const &)
     {
-      error ("pycall: error in return value type conversion");
+      // Ensure we have a __InOct__ dict, and then put `res` into it
+      exec ("if not (\"__InOct__\" in vars() or \"__InOct__\" in globals()):\n"
+            "    __InOct__ = dict()\n"
+            "    # FIXME: make it accessible elsewhere?\n"
+            "    import __main__\n"
+            "    __main__.__InOct__ = __InOct__\n",
+            main_namespace, main_namespace);
+      main_namespace["__InOct__"][id] = res;
+      // Create @pyobject
+      retval = feval ("pyobject", ovl (id), 1);
     }
   catch (pytave::value_convert_exception const &)
     {
@@ -217,6 +232,7 @@ pycall (\"math.sqrt\", 2)\n\
 %!assert (pycall ("math.sqrt", 2), sqrt (2))
 %!assert (pycall ("cmath.sqrt", 2j), sqrt (2j))
 %!assert (pycall ("int", 10.2), 10)
+%!assert (isa (pycall ("object"), "pyobject"))
 
 ## Test argument type conversion of values into Python
 %!test

@@ -140,6 +140,8 @@ pyeval (\"dict(one=1, two=2)\")\n\
 %!assert (class (pyeval ("True")), "logical")
 %!assert (class (pyeval ("False")), "logical")
 
+%!assert (isa (pyeval ("object()"), "pyobject"))
+
 ## FIXME: these will change when dict, list, and tuple are not converted
 %!assert (pyeval ("{'x': 1, 'y': 2}"), struct ("x", 1, "y", 2))
 %!assert (pyeval ("[1, 2, 3]"), {1, 2, 3})
