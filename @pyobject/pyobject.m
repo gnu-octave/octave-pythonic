@@ -118,6 +118,14 @@ classdef pyobject < handle
         vargout = {s};
       endif
     endfunction
+
+    function len = length (x)
+      try
+        len = pycall ("len", x);
+      catch
+        len = 1;
+      end_try_catch
+    endfunction
   endmethods
 endclassdef
 
@@ -126,3 +134,13 @@ endclassdef
 %! pyexec ("import sys")
 %! A = pyeval ("sys");
 %! assert (isa (A, "pyobject"))
+
+%!test
+%! pyobj = pyeval ("{1:2, 2:3, 3:4}");
+%! assert (isa (pyobj, "pyobject"))
+%! assert (length (pyobj), 3)
+
+%!test
+%! pyexec ("import sys");
+%! pyobj = pyeval ("sys");
+%! assert (length (pyobj), 1)
