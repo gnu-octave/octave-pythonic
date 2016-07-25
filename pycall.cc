@@ -56,6 +56,23 @@ pycall (\"math.sqrt\", 2)\n\
   @result{} 1.4142\n\
 @end group\n\
 @end example\n\
+\n\
+If the callable has no return, and an lvalue is specified, it will be set\n\
+to @code{None}.  However, if no lvalue was specified, @code{ans} will not\n\
+be set.  For example:\n\
+@example\n\
+@group\n\
+s = pyeval (\"set([1, 2])\")\n\
+pycall (s.add, 3)\n\
+\n
+r = pycall (s.add, 4)\n\
+  @result{} v = [pyobject ...]\n\
+\n\
+      None\n\
+\n\
+@end group\n\
+@end example\n\
+\n\
 @seealso{pyeval, pyexec}\n\
 @end deftypefn")
 {
