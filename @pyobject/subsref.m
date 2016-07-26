@@ -20,11 +20,11 @@
 ## @documentencoding UTF-8
 ## @defop  Method   @@pyobject subsref (@var{x}, @var{idx})
 ## @defopx Operator @@pyobject {@var{x}.@var{property}} {}
-## @defopx Operator @@pyobject {@var{x}.@var{method}(@var{a}, @dots)} {}
+## @defopx Operator @@pyobject {@var{x}.@var{method}(@var{a}, @dots{})} {}
 ## @defopx Operator @@pyobject {@var{x}@{@var{i}@}} {}
-## @defopx Operator @@pyobject {@var{x}@{@var{i}, @var{j}, @dots@}} {}
+## @defopx Operator @@pyobject {@var{x}@{@var{i}, @var{j}, @dots{}@}} {}
 ## @defopx Operator @@pyobject {@var{x}(@var{a})} {}
-## @defopx Operator @@pyobject {@var{x}(@var{a}, @var{b}, @dots)} {}
+## @defopx Operator @@pyobject {@var{x}(@var{a}, @var{b}, @dots{})} {}
 ## Call methods and access properties of a Python object.
 ##
 ##
