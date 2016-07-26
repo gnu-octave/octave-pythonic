@@ -21,6 +21,8 @@
 ## @defop  Method   @@pyobject subsasgn (@var{x}, @var{idx}, @var{rhs})
 ## @defopx Operator @@pyobject {@var{x}.@var{property} =} {@var{rhs}}
 ## @defopx Operator @@pyobject {@var{x}@{@var{i}@} =} {@var{rhs}}
+## @defopx Operator @@pyobject {@var{x}@{@var{i}, @var{j}, @dots{}@} =} {@var{rhs}}
+## @defopx Operator @@pyobject {@var{x}@{@var{a}@} =} {@var{rhs}}
 ## Indexed assignment to Python objects.
 ##
 ## @seealso{@@pyobject/subsref}
@@ -36,13 +38,22 @@ function r = subsasgn(x, idx, rhs)
 
     case "{}"
       ## XXX: doesn't support slices or anything like that yet
-      assert (length (idx.subs) == 1)
-      assert (isnumeric (idx.subs{1}))
-      ## x.getattr, but for https://github.com/cbm755/octsympy/issues/17
-      xsi = pycall ("getattr", x, "__setitem__");
-      ## 1-based indexing, https://bitbucket.org/mtmiller/pytave/issues/8
-      i = int32 (idx.subs{:}) - 1;
-      pycall (xsi, i, rhs);
+
+      for i = 1:length (idx.subs)
+        j = idx.subs{i};
+        if (isindex (j) && isnumeric (j) && rem (j, 1) == 0)
+          idx.subs{i} = int32 (j) - 1;
+        end
+      end
+
+      if (isscalar (idx.subs))
+        ind = idx.subs{1};
+      else
+        error ("not implemented, waiting on #26, #27")
+      end
+
+      xsi = pycall ("getattr", x, "__setitem__");   # x.__setitem__
+      pycall (xsi, ind, rhs);
       r = x;
 
     otherwise
@@ -67,3 +78,30 @@ end
 %! assert (length (L) == 2)
 %! assert (L{1}, 10)
 %! assert (L{2}, "Octave")
+
+%!test
+%! % dict assignment, adding new keys
+%! pyexec ("d = dict()")
+%! d = pyobject.fromPythonVarName ("d");
+%! d{"a"} = 3;
+%! d{"b"} = 4;
+%! assert (d{"a"}, 3)
+%! assert (d{"b"}, 4)
+
+%!test
+%! % dict assignment, update existing key
+%! pyexec ("d = {'a':1}")
+%! d = pyobject.fromPythonVarName ("d");
+%! d{"a"} = 3;
+%! assert (d{"a"}, 3)
+
+%!xtest
+%! % dict assignment, other keys (e.g., Issue #10).
+%! pyexec ("d = dict()")
+%! d = pyobject.fromPythonVarName ("d");
+%! d{"5"} = 10;
+%! d{5.5} = 11;
+%! d{5} = 12;
+%! assert (d{"5"}, 10)
+%! assert (d{5.5}, 11)
+%! assert (d{5}, 12)
