@@ -32,43 +32,53 @@
 ## @end defop
 
 
-function r = subsref (x, idx)
-  s = "";
-  for i = 1:length (idx)
-    t = idx(i);
-    switch t.type
-      case "()"
-        if (! isempty (t.subs))
-          t
-          error ("not implemented: function calls with arguments")
+function [varargout] = subsref (x, idx)
+
+  t = idx(1);
+  switch t.type
+    case "()"
+      r = pycall (x, t.subs{:});
+
+    case "."
+      assert (ischar (t.subs))
+      r = pycall ("getattr", x, t.subs);
+
+    case "{}"
+      subsstrs = {};
+      for j = 1:length (t.subs)
+        thissub = t.subs{j};
+        if (ischar (thissub) && strcmp (thissub, ":"))
+          subsstrs{j} = ":";
+        elseif (ischar (thissub))
+          subsstrs{j} = ["'" thissub "'"];
+        elseif (isnumeric (thissub) && isscalar (thissub))
+          ## note: python indexed from 0
+          subsstrs{j} = num2str (thissub - 1);
+        else
+          thissub
+          error ("@pyobject/subsref: subs not supported")
         endif
-        s = sprintf ("%s()", s);
-      case "."
-        assert (ischar (t.subs))
-        s = sprintf ("%s.%s", s, t.subs);
-      case "{}"
-        subsstrs = {};
-        for j = 1:length (t.subs)
-	  thissub = t.subs{j};
-          if (ischar (thissub) && strcmp (thissub, ":"))
-            subsstrs{j} = ":";
-          elseif (ischar (thissub))
-            subsstrs{j} = ["'" thissub "'"];
-          elseif (isnumeric (thissub) && isscalar (thissub))
-	    % note: python indexed from 0
-            subsstrs{j} = num2str (thissub - 1);
-          else
-            thissub
-            error ("@pyobject/subsref: subs not supported")
-          endif
-        endfor
-        s = [s "[" strjoin(subsstrs, ", ") "]"];
-      otherwise
-        t
-        error ("@pyobject/subsref: not implemented")
-    endswitch
-  endfor
-  r = pyeval (sprintf ("__InOct__['%s']%s", x.id, s));
+      endfor
+      s = ["[" strjoin(subsstrs, ", ") "]"];
+      ## XXX: can we use .__getitem__ here?
+      r = pyeval (sprintf ("__InOct__['%s']%s", x.id, s));
+
+    otherwise
+      t
+      error ("@pyobject/subsref: not implemented")
+  endswitch
+
+  ## deal with additional indexing (might be recursive)
+  if (length (idx) > 1)
+    r = subsref (r, idx(2:end));
+  end
+
+  ## unpack results, ensure "ans" works (see also pycall)
+  isNone = pyeval ("lambda x: x is None");
+  if (nargout > 0 || ! pycall (isNone, r))
+    varargout{1} = r;
+    assert (nargout <= 1)
+  end
 endfunction
 
 
@@ -123,3 +133,48 @@ endfunction
 %! pyexec ("d = {5:40, 6:42}")
 %! d = pyobject.fromPythonVarName ("d");
 %! assert (d{6}, 42)
+
+%!test
+%! % method call with args
+%! s = pyeval ("set({1, 2})");
+%! s.add (42)
+%! assert (length (s) == 3)
+
+%!test
+%! % get a callable
+%! s = pyeval ("set({1, 2})");
+%! sa = s.add;
+%! assert (isa (sa, "pyobject"))
+%! % and then call it
+%! sa (42)
+%! assert (length (s) == 3)
+
+%!test
+%! % callable can return something
+%! s = pyeval ("set({1, 2})");
+%! v = s.pop ();
+%! assert (length (s) == 1)
+%! assert (v == 1 || v == 2)
+
+%!test
+%! % chain
+%! pyexec ("import sys")
+%! s = pyeval ("set({sys})");
+%! ver = s.pop ().version;
+%! assert (ischar (ver))
+
+%!test
+%! % don't set "ans" if no return value
+%! s = pyeval ("set({1, 2})");
+%! sa = s.add;
+%! clear ans
+%! sa (42)
+%! assert (! exist ("ans", "var"))
+
+%!test
+%! % *do* set "ans" if return value
+%! s = pyeval ("set({1, 2})");
+%! clear ans
+%! s.pop ();
+%! assert (exist ("ans", "var"))
+%! assert (length (s) == 1)

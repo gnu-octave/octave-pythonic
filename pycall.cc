@@ -56,6 +56,23 @@ pycall (\"math.sqrt\", 2)\n\
   @result{} 1.4142\n\
 @end group\n\
 @end example\n\
+\n\
+If the callable has no return, and an lvalue is specified, it will be set\n\
+to @code{None}.  However, if no lvalue was specified, @code{ans} will not\n\
+be set.  For example:\n\
+@example\n\
+@group\n\
+s = pyeval (\"set([1, 2])\");\n\
+pycall (s.add, 3)\n\
+\n\
+r = pycall (s.add, 4)\n\
+  @result{} r = [pyobject ...]\n\
+\n\
+      None\n\
+\n\
+@end group\n\
+@end example\n\
+\n\
 @seealso{pyeval, pyexec}\n\
 @end deftypefn")
 {
@@ -191,7 +208,8 @@ pycall (\"math.sqrt\", 2)\n\
       object idtmp = hex_function (id_function (res));
       id = extract<std::string> (idtmp);
 
-      if (! res.is_none ())
+      // Ensure reasonable "ans" behaviour, consistent with Python's "_".
+      if (nargout > 0 || ! res.is_none ())
         {
           octave_value val;
           pytave::pyobj_to_octvalue (val, res);
@@ -280,4 +298,18 @@ pycall (\"math.sqrt\", 2)\n\
 %!error <NameError>
 %! pyexec ("def raiseException ():\n  raise NameError ('oops')")
 %! pycall ("raiseException")
+
+## None as a return value
+%!test
+%! f = pyeval ("lambda: None");
+%! r = pycall (f);
+%! isNone = pyeval("lambda a: a is None");
+%! assert (isNone (r))
+
+## But returning None will not set "ans"
+%!test
+%! f = pyeval ("lambda: None");
+%! clear ans
+%! pycall (f);
+%! assert (! exist ("ans", "var"))
 */
