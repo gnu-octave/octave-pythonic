@@ -62,11 +62,11 @@ to @code{None}.  However, if no lvalue was specified, @code{ans} will not\n\
 be set.  For example:\n\
 @example\n\
 @group\n\
-s = pyeval (\"set([1, 2])\")\n\
+s = pyeval (\"set([1, 2])\");\n\
 pycall (s.add, 3)\n\
-\n
+\n\
 r = pycall (s.add, 4)\n\
-  @result{} v = [pyobject ...]\n\
+  @result{} r = [pyobject ...]\n\
 \n\
       None\n\
 \n\
