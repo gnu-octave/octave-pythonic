@@ -44,24 +44,34 @@ function varargout = subsref (x, idx)
       r = pycall ("getattr", x, t.subs);
 
     case "{}"
-      subsstrs = {};
-      for j = 1:length (t.subs)
-        thissub = t.subs{j};
-        if (ischar (thissub) && strcmp (thissub, ":"))
-          subsstrs{j} = ":";
-        elseif (ischar (thissub))
-          subsstrs{j} = ["'" thissub "'"];
-        elseif (isnumeric (thissub) && isscalar (thissub))
-          ## note: python indexed from 0
-          subsstrs{j} = num2str (thissub - 1);
-        else
-          thissub
-          error ("@pyobject/subsref: subs not supported")
+      ## Subtract one from index: do this for lists, numpy arrays, etc
+      pyexec ("import collections")
+      pyexec ("import numpy")
+      x_is_list = pycall (pyeval (
+        "lambda (x): isinstance(x, (collections.Sequence, numpy.ndarray))"),
+        x);
+      for i = 1:length(t.subs)
+        j = t.subs{i};
+        if (isindex (j) && isnumeric (j) && x_is_list)
+          t.subs{i} = cast (j, class (sizemax ())) - 1;
         endif
       endfor
-      s = ["[" strjoin(subsstrs, ", ") "]"];
-      ## XXX: can we use .__getitem__ here?
-      r = pyeval (sprintf ("__InOct__['%s']%s", x.id, s));
+
+      if (isscalar (t.subs))
+        ind = t.subs{1};
+      else
+        ## XXX: after #26, #27, I think its just:
+        #ind = pycall ("tuple", t.subs);
+        pyexec (["global _temp\n" ...
+                 "def pystoretemp(x):\n" ...
+                 "    global _temp\n" ...
+                 "    _temp = x"]);
+        pycall ("pystoretemp", t.subs);
+        pyexec ("_temp = tuple(_temp[0])");
+        ind = pyobject.fromPythonVarName ("_temp");
+      endif
+      gi = pycall ("getattr", x, "__getitem__");   # x.__getitem__
+      r = pycall (gi, ind);
 
     otherwise
       t
@@ -88,8 +98,8 @@ endfunction
 %! assert (L{1}, 10)
 %! assert (L{2}, 20)
 
-%!test
-%! % list indexing
+%!xtest
+%! % list indexing, slice
 %! pyexec ("L = [10, 20, [30, 40]]")
 %! L = pyobject.fromPythonVarName ("L");
 %! L2 = L{:};
@@ -127,11 +137,24 @@ endfunction
 %! d = pyobject.fromPythonVarName ("d");
 %! assert (d{6}, 42)
 
-%!xtest
-%! % dict: integer key should not subtract one (FIXME: Issue #10)
+%!test
+%! % dict: integer key should not subtract one
 %! pyexec ("d = {5:40, 6:42}")
 %! d = pyobject.fromPythonVarName ("d");
 %! assert (d{6}, 42)
+
+%!test
+%! % dict: floating point keys should work
+%! pyexec ("d = {5.5:'ok'}")
+%! d = pyobject.fromPythonVarName ("d");
+%! assert (d{5.5}, "ok")
+
+%!test
+%! % dict: make sure key ":" doesn't break anything
+%! pyexec ("d = {'a':1, ':':2}")
+%! d = pyobject.fromPythonVarName ("d");
+%! assert (d{'a'}, 1)
+%! assert (d{':'}, 2)
 
 %!test
 %! % method call with args
