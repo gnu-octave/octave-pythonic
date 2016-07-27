@@ -32,7 +32,7 @@
 ## @end defop
 
 
-function [varargout] = subsref (x, idx)
+function varargout = subsref (x, idx)
 
   t = idx(1);
   switch t.type
@@ -77,7 +77,6 @@ function [varargout] = subsref (x, idx)
   isNone = pyeval ("lambda x: x is None");
   if (nargout > 0 || ! pycall (isNone, r))
     varargout{1} = r;
-    assert (nargout <= 1)
   end
 endfunction
 
