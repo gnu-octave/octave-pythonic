@@ -20,7 +20,7 @@
 ## @deftypefn  {} {} py
 ## @deftypefnx {} {} py.@var{pyname}
 ## Get the value of a Python object or call a Python function.
-## @enddeftypefn
+## @end deftypefn
 
 function p = py ()
   p = class (struct (), "py");
