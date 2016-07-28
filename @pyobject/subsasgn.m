@@ -39,9 +39,15 @@ function r = subsasgn(x, idx, rhs)
     case "{}"
       ## XXX: doesn't support slices or anything like that yet
 
+      ## Subtract one from index: do this for lists, numpy arrays, etc
+      pyexec ("import collections")
+      pyexec ("import numpy")
+      x_is_list = pycall (pyeval (
+        "lambda (x): isinstance(x, (collections.Sequence, numpy.ndarray))"),
+        x);
       for i = 1:length (idx.subs)
         j = idx.subs{i};
-        if (isindex (j) && isnumeric (j))
+        if (x_is_list && isindex (j) && isnumeric (j))
           idx.subs{i} = cast (j, class (sizemax ())) - 1;
         endif
       endfor
@@ -95,7 +101,7 @@ endfunction
 %! d{"a"} = 3;
 %! assert (d{"a"}, 3)
 
-%!xtest
+%!test
 %! % dict assignment, other keys (e.g., Issue #10).
 %! pyexec ("d = dict()")
 %! d = pyobject.fromPythonVarName ("d");
