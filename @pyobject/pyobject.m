@@ -30,7 +30,7 @@
 classdef pyobject < handle
   properties
     id
-  end
+  endproperties
 
   methods (Static)
     function x = fromPythonVarName (pyvarname)

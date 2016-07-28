@@ -128,5 +128,4 @@
 ## @end defmethod
 
 function dummy (x)
-
-end
+endfunction

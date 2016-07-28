@@ -71,13 +71,13 @@ function varargout = subsref (x, idx)
   ## deal with additional indexing (might be recursive)
   if (length (idx) > 1)
     r = subsref (r, idx(2:end));
-  end
+  endif
 
   ## unpack results, ensure "ans" works (see also pycall)
   isNone = pyeval ("lambda x: x is None");
   if (nargout > 0 || ! pycall (isNone, r))
     varargout{1} = r;
-  end
+  endif
 endfunction
 
 
