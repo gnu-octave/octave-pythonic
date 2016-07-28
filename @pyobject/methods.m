@@ -21,8 +21,8 @@
 ## @defmethod @@pyobject methods (@var{x})
 ## List the properties/callables of a Python object.
 ##
-## Returns a cell array of strings, the names of the properties
-## and ``callables'' of @var{x}.
+## Returns a cell array of strings, the names of the ``callables''
+## of @var{x}.
 ##
 ## Example:
 ## @example
@@ -46,6 +46,9 @@
 ## @end group
 ## @end example
 ##
+## To get the properties (non-callables) of an object,
+## @pxref{@@pyobject/fieldnames}.
+##
 ## Note that if you instead want the methods implemented by
 ## the Octave class @code{@@pyobject}, use can always do:
 ## @example
@@ -58,15 +61,13 @@
 ## @end group
 ## @end example
 ##
-## @seealso{methods}
+## @seealso{methods, @@pyobject/fieldnames}
 ## @end defmethod
 
 
 function mtds = methods (x)
 
-  # filter the output of `dir(x)`
-  # (to get callable methods only:
-  # [a for a in dir(x) if callable(getattr(x, a)) and not a.startswith('__')]
+  # filter the output of `dir(x)` to get callable methods only
   cmd = sprintf (["[a for x in (__InOct__['%s'],) for a in dir(x) " ...
                   " if callable(getattr(x, a))" ...
                   " and not a.startswith('__')]"],
