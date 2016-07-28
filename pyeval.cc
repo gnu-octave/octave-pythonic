@@ -87,8 +87,7 @@ pyeval (\"dict(one=1, two=2)\")\n\
       object idtmp = hex_function (id_function (res));
       id = extract<std::string> (idtmp);
 
-      // FIXME: currently, we cannot return the raw object to octave...
-      if (! res.is_none ())
+      if (nargout > 0 || ! res.is_none ())
         {
           octave_value val;
           pytave::pyobj_to_octvalue (val, res);
