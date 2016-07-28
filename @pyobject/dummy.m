@@ -25,8 +25,10 @@
 ## Simple example:
 ## @example
 ## @group
-## pyexec ("g = 6")
-## g = pyobject.fromPythonVarName ("g");
+## g = pyobject (int32 (6))
+##   @result{} g = [pyobject ...]
+##
+##       6
 ##
 ## sort (methods (g))
 ##   @result{} ans =

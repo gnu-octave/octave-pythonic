@@ -52,16 +52,52 @@ classdef pyobject < handle
         pyvarname, pyvarname);
       pyexec (cmd);
       id = pyeval (["hex(id(" pyvarname "))"]);
-      x = pyobject (id);
+      x = pyobject (0, id);
     endfunction
   endmethods
 
 
   methods
-    function x = pyobject (id)
-      % warning: not intended for casual use: you must also insert
-      % the object into the Python `__InOct__` dict with key `id`.
-      x.id = id;
+    function obj = pyobject (x, id)
+      if (nargin == 0)
+        obj = pyeval ("None");
+        return
+      endif
+
+      if (nargin == 1)
+        ## Convert the input to a pyobject
+        if (isa (x, "pyobject"))
+          obj = x;
+        else
+          ## XXX: perhaps not the ideal implementation!
+          vars = pyeval ("__import__('__main__').__dict__");
+          ## this is vars{"_temp"} = x
+          idx = struct ("type", "{}", "subs", {{"_temp"}});
+          vars = subsasgn (vars, idx, x);
+          cmd = [ ...
+            "if not ('__InOct__' in vars() or '__InOct__' in globals()):\n" ...
+            "    __InOct__ = dict()\n" ...
+            "    # FIXME: make it accessible elsewhere?\n" ...
+            "    import __main__\n" ...
+            "    __main__.__InOct__ = __InOct__\n" ...
+            "__InOct__[hex(id(_temp))] = _temp" ];
+          pyexec (cmd);
+          id = pyeval (["hex(id(_temp))"]);
+          obj = pyobject (0, id);
+        endif
+        return
+      endif
+
+      if (nargin == 2)
+        ## The actual constructor.  Nicer to split this off to static method
+        ## like `pyobject.new` but I don't know how to call from pycall.cc.
+        ## Warning: not intended for casual use: you must also insert the
+        ## object into the Python `__InOct__` dict with key `id`.
+        obj.id = id;
+        return
+      endif
+
+      error ("pyobject: unexpected input to the constructor")
     endfunction
 
     function delete (x)
@@ -154,3 +190,9 @@ endclassdef
 %!assert (char (pyeval ("[1, 2, 3, 4, 5]")), "[1, 2, 3, 4, 5]")
 %!assert (char (pyeval ("(1, 2, 3, 4, 5)")), "(1, 2, 3, 4, 5)")
 %!assert (char (pyeval ("__import__('sys')")), "<module 'sys' (built-in)>")
+
+%!assert (isa (pyobject (), "pyobject"))
+%!assert (isa (pyobject ("a string"), "pyobject"))
+%!assert (isa (pyobject (42.2), "pyobject"))
+%!assert (isa (pyobject (int32 (42)), "pyobject"))
+%!assert (isa (pyobject (pyobject ()), "pyobject"))
