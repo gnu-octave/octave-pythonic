@@ -21,8 +21,8 @@
 ## @defmethod @@pyobject methods (@var{x})
 ## List the properties/callables of a Python object.
 ##
-## Returns a cell array of strings, the names of the properties
-## and ``callables'' of @var{x}.
+## Returns a cell array of strings, the names of the ``callables''
+## of @var{x}.
 ##
 ## Example:
 ## @example
@@ -30,7 +30,7 @@
 ## pyexec ("import os")
 ## os = pyeval ("os");
 ## methods (os)
-##   @print{} Methods for module os:
+##   @print{} Methods for Python module 'os':
 ##   @print{} ...
 ##   @print{} chdir ...
 ##   @print{} ...
@@ -38,7 +38,7 @@
 ##   @result{} x =
 ##     @{
 ##       [1,1] = ...
-##       [1,2] = ...
+##       [2,1] = ...
 ##        ...  = chdir
 ##        ...  = getenv
 ##        ...
@@ -46,8 +46,11 @@
 ## @end group
 ## @end example
 ##
+## To get the properties (non-callables) of an object,
+## @pxref{@@pyobject/fieldnames}.
+##
 ## Note that if you instead want the methods implemented by
-## the Octave class @code{@@pyobject}, use can always do:
+## the Octave class @code{@@pyobject}, you can always do:
 ## @example
 ## @group
 ## methods pyobject
@@ -58,15 +61,13 @@
 ## @end group
 ## @end example
 ##
-## @seealso{methods}
+## @seealso{methods, @@pyobject/fieldnames}
 ## @end defmethod
 
 
 function mtds = methods (x)
 
-  # filter the output of `dir(x)`
-  # (to get callable methods only:
-  # [a for a in dir(x) if callable(getattr(x, a)) and not a.startswith('__')]
+  # filter the output of `dir(x)` to get callable methods only
   cmd = sprintf (["[a for x in (__InOct__['%s'],) for a in dir(x) " ...
                   " if callable(getattr(x, a))" ...
                   " and not a.startswith('__')]"],
@@ -81,17 +82,16 @@ function mtds = methods (x)
 
     if (pycall (is_module, x))
       modulename = pycall ("getattr", x, "__name__");
-      printf ("Methods for module %s:\n", modulename);
+      printf ("Methods for Python module '%s':\n", modulename);
     else
       ## FIXME: should be `class (x)`
       classref = pycall ("getattr", x, "__class__");
       classname = pycall ("getattr", classref, "__name__");
-      ## FIXME: indicate that this is a Python class?
-      printf ("Methods for class %s:\n", classname);
+      printf ("Methods for Python class '%s':\n", classname);
     endif
     disp (list_in_columns (mtds_list));
   else
-    mtds = mtds_list;
+    mtds = mtds_list(:);
   endif
 
 endfunction
