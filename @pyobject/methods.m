@@ -27,15 +27,20 @@
 ## Example:
 ## @example
 ## @group
-## pyexec ("import sys")
-## sys = pyeval ("sys");
-## methods (sys)
-##   @result{} ans =
+## pyexec ("import os")
+## os = pyeval ("os");
+## methods (os)
+##   @print{} Methods for module os:
+##   @print{} ...
+##   @print{} chdir ...
+##   @print{} ...
+## x = methods (os)
+##   @result{} x =
 ##     @{
 ##       [1,1] = ...
 ##       [1,2] = ...
-##        ...  = path
-##        ...  = version
+##        ...  = chdir
+##        ...  = getenv
 ##        ...
 ##     @}
 ## @end group
@@ -48,6 +53,7 @@
 ## methods pyobject
 ##   @print{} Methods for class pyobject:
 ##   @print{} display  ...  subsref
+##   @print{} ...
 ## @comment this doctest may need updating as we add methods
 ## @end group
 ## @end example
@@ -56,27 +62,52 @@
 ## @end defmethod
 
 
-function L = methods (x)
+function mtds = methods (x)
+
   # filter the output of `dir(x)`
-  # (to get properties only:
-  # [a for a in dir(x) if not callable(getattr(x, a)) and not a.startswith('__')]
-  cmd = sprintf ("[a for a in dir(__InOct__['%s']) if not a.startswith('__')]",
+  # (to get callable methods only:
+  # [a for a in dir(x) if callable(getattr(x, a)) and not a.startswith('__')]
+  cmd = sprintf (["[a for x in (__InOct__['%s'],) for a in dir(x) " ...
+                  " if callable(getattr(x, a))" ...
+                  " and not a.startswith('__')]"],
                  getid (x));
-  # TODO: may need to convert from Python list to Octave list
-  L = pyeval (cmd);
+
+  # FIXME: may need to convert from Python list to Octave cell array
+  mtds_list = pyeval (cmd);
+
+  if (nargout == 0)
+    ## FIXME: should this be available as @pyobject/ismodule.m ?
+    is_module = pyeval ("lambda x: isinstance(x, __import__('types').ModuleType)");
+
+    if (pycall (is_module, x))
+      modulename = pycall ("getattr", x, "__name__");
+      printf ("Methods for module %s:\n", modulename);
+    else
+      ## FIXME: should be `class (x)`
+      classref = pycall ("getattr", x, "__class__");
+      classname = pycall ("getattr", classref, "__name__");
+      ## FIXME: indicate that this is a Python class?
+      printf ("Methods for class %s:\n", classname);
+    endif
+    disp (list_in_columns (mtds_list));
+  else
+    mtds = mtds_list;
+  endif
+
 endfunction
 
 
 %!test
-%! pyexec ("import sys")
-%! sys = pyeval ("sys");
-%! L = methods (sys);
-%! % sys has lots of methods
-%! assert (length (L) >= 32)
-%! % version is one of them
-%! assert (any (strcmp (L, "version")))
+%! sys = pycall ("__import__", "sys");
+%! m = methods (sys);
+%! assert (iscellstr (m))
+%! assert (any (strcmp (m, "exit")))
 
 %!test
-%! pyexec ("import sys")
-%! L = methods (pyeval ("sys"));
-%! assert (iscell (L))
+%! os = pycall ("__import__", "os");
+%! m = methods (os);
+%! assert (iscellstr (m))
+%! assert (any (strcmp (m, "chdir")))
+%! assert (any (strcmp (m, "getcwd")))
+%! assert (any (strcmp (m, "getenv")))
+%! assert (any (strcmp (m, "getpid")))
