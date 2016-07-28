@@ -50,7 +50,7 @@
 ## @pxref{@@pyobject/fieldnames}.
 ##
 ## Note that if you instead want the methods implemented by
-## the Octave class @code{@@pyobject}, use can always do:
+## the Octave class @code{@@pyobject}, you can always do:
 ## @example
 ## @group
 ## methods pyobject
