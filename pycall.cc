@@ -303,8 +303,8 @@ r = pycall (s.add, 4)\n\
 %!test
 %! f = pyeval ("lambda: None");
 %! r = pycall (f);
-%! isNone = pyeval("lambda a: a is None");
-%! assert (isNone (r))
+%! is_none = pyeval ("lambda x: x is None");
+%! assert (is_none (r))
 
 ## But returning None will not set "ans"
 %!test
