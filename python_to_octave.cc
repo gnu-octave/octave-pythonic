@@ -36,6 +36,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/Cell.h>
 #include <octave/ov.h>
 #include <octave/Array.h>
+#include <octave/parse.h>
 
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
@@ -474,6 +475,34 @@ namespace pytave
     return str;
   }
 
+  static void
+  pyobj_to_oct_pyobject (octave_value& oct_value,
+                         const boost::python::object& py_object)
+  {
+    object main_module = import ("__main__");
+    object main_namespace = main_module.attr ("__dict__");
+#if PY_VERSION_HEX >= 0x03000000
+    object builtins_module = import ("builtins");
+#else
+    object builtins_module = import ("__builtin__");
+#endif
+    object hex_function = builtins_module.attr ("hex");
+    object id_function = builtins_module.attr ("id");
+    object idtmp = hex_function (id_function (py_object));
+    std::string id = extract<std::string> (idtmp);
+
+    // Ensure we have a __InOct__ dict, and then put `res` into it
+    exec ("if not (\"__InOct__\" in vars() or \"__InOct__\" in globals()):\n"
+          "    __InOct__ = dict()\n"
+          "    # FIXME: make it accessible elsewhere?\n"
+          "    import __main__\n"
+          "    __main__.__InOct__ = __InOct__\n",
+          main_namespace, main_namespace);
+    main_namespace["__InOct__"][id] = py_object;
+    // Create @pyobject
+    oct_value = feval ("pyobject", ovl (id), 1);
+  }
+
   void pyobj_to_octvalue (octave_value& oct_value,
                           const boost::python::object& py_object)
   {
@@ -502,18 +531,8 @@ namespace pytave
       oct_value = stringx ();
     else if (wstringx.check ())
       oct_value = pyunicode_to_utf8 (py_object.ptr ());
-    else if (listx.check ())
-      pylist_to_cellarray (oct_value, (boost::python::list&)py_object);
-    else if (dictx.check ())
-      pydict_to_octmap (oct_value, (boost::python::dict&)py_object);
-    else if (tuplex.check ())
-      pytuple_to_cellarray (oct_value, (boost::python::tuple&)py_object);
     else
-      throw object_convert_exception (
-        PyEval_GetFuncName (py_object.ptr ())
-        + (PyEval_GetFuncDesc (py_object.ptr ())
-        + std::string (": Unsupported Python object type, "
-                       "cannot convert to Octave value")));
+      pyobj_to_oct_pyobject (oct_value, py_object);
   }
 
   void pytuple_to_octlist (octave_value_list& octave_list,
