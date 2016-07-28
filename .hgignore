@@ -25,14 +25,25 @@ syntax: regexp
 (^|/).*\.in$
 (^|/).*\.guess$
 (^|/).*\.sub$
+(^|/)Makefile
 (^|/)depcomp
 (^|/)missing
 (^|/)install-sh
+(^|/)libtool
 (^|/)ltmain.sh
+(^|/)stamp-h1
 
 
+(^|/)config\.h$
+(^|/)config\.log$
+(^|/)config\.status$
 (^|/)configure$
 (^|/)autom4te\.cache($|/)
+
+(^|/)\.deps
+(^|/)\.libs
+
+(^|/)octave-workspace
 
 # e.g. doc/faq/OctaveFAQ.info
 #      doc/interpreter/octave.info-4
