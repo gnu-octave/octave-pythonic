@@ -30,7 +30,7 @@
 ## pyexec ("import os")
 ## os = pyeval ("os");
 ## methods (os)
-##   @print{} Methods for module os:
+##   @print{} Methods for Python module 'os':
 ##   @print{} ...
 ##   @print{} chdir ...
 ##   @print{} ...
@@ -81,13 +81,12 @@ function mtds = methods (x)
 
     if (pycall (is_module, x))
       modulename = pycall ("getattr", x, "__name__");
-      printf ("Methods for module %s:\n", modulename);
+      printf ("Methods for Python module '%s':\n", modulename);
     else
       ## FIXME: should be `class (x)`
       classref = pycall ("getattr", x, "__class__");
       classname = pycall ("getattr", classref, "__name__");
-      ## FIXME: indicate that this is a Python class?
-      printf ("Methods for class %s:\n", classname);
+      printf ("Methods for Python class '%s':\n", classname);
     endif
     disp (list_in_columns (mtds_list));
   else
