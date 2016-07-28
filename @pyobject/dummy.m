@@ -32,12 +32,17 @@
 ##   @result{} ans =
 ##     @{
 ##       [1,1] = bit_length
-##       [1,2] = conjugate
-##       [1,3] = denominator
-##       [1,4] = imag
-##       [1,5] = numerator
-##       [1,6] = real
-##      @}
+##       [2,1] = conjugate
+##     @}
+##
+## sort (fieldnames (g))
+##   @result{} ans =
+##     @{
+##       [1,1] = denominator
+##       [2,1] = imag
+##       [3,1] = numerator
+##       [4,1] = real
+##     @}
 ##
 ## g.numerator
 ##   @result{} ans =  6

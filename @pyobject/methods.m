@@ -38,7 +38,7 @@
 ##   @result{} x =
 ##     @{
 ##       [1,1] = ...
-##       [1,2] = ...
+##       [2,1] = ...
 ##        ...  = chdir
 ##        ...  = getenv
 ##        ...
@@ -91,7 +91,7 @@ function mtds = methods (x)
     endif
     disp (list_in_columns (mtds_list));
   else
-    mtds = mtds_list;
+    mtds = mtds_list(:);
   endif
 
 endfunction
