@@ -52,6 +52,7 @@ namespace pytave
 
     PyObject *ptype, *pvalue, *ptraceback;
     PyErr_Fetch (&ptype, &pvalue, &ptraceback);
+    PyErr_NormalizeException (&ptype, &pvalue, &ptraceback);
     std::string message;
 
     try
