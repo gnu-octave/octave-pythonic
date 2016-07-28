@@ -1,8 +1,8 @@
 ## Copyright (C) 2016 Colin B. Macdonald
 ##
-## This file is part of PyTave.
+## This file is part of Pytave.
 ##
-## OctSymPy is free software; you can redistribute it and/or modify
+## Pytave is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published
 ## by the Free Software Foundation; either version 3 of the License,
 ## or (at your option) any later version.
@@ -41,16 +41,16 @@ function r = subsasgn(x, idx, rhs)
 
       for i = 1:length (idx.subs)
         j = idx.subs{i};
-        if (isindex (j) && isnumeric (j) && rem (j, 1) == 0)
-          idx.subs{i} = int32 (j) - 1;
-        end
-      end
+        if (isindex (j) && isnumeric (j))
+          idx.subs{i} = cast (j, class (sizemax ())) - 1;
+        endif
+      endfor
 
       if (isscalar (idx.subs))
         ind = idx.subs{1};
       else
         error ("not implemented, waiting on #26, #27")
-      end
+      endif
 
       xsi = pycall ("getattr", x, "__setitem__");   # x.__setitem__
       pycall (xsi, ind, rhs);
@@ -60,8 +60,8 @@ function r = subsasgn(x, idx, rhs)
       idx
       rhs
       error ("@pyobject/subsasgn: not implemented")
-  end
-end
+  endswitch
+endfunction
 
 
 %!test
