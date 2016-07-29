@@ -141,6 +141,11 @@ pyeval (\"dict(one=1, two=2)\")\n\
 
 %!assert (isa (pyeval ("object()"), "pyobject"))
 
+%!assert (isnumeric (pyeval ("sys.maxsize")))
+%!assert (isnumeric (pyeval ("-sys.maxsize")))
+%!assert (pyeval ("99999999999999"), 99999999999999)
+%!assert (pyeval ("-99999999999999"), -99999999999999)
+
 ## FIXME: these will change when dict, list, and tuple are not converted
 %!assert (pyeval ("{'x': 1, 'y': 2}"), struct ("x", 1, "y", 2))
 %!assert (pyeval ("[1, 2, 3]"), {1, 2, 3})
