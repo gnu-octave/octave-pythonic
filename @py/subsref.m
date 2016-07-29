@@ -42,7 +42,15 @@ function varargout = subsref (x, idx)
     error ("py: invalid indexing type");
   endif
 
-  y = pycall ("__import__", subs);
+  if (type == "." && ((numel (idx) == 1) || (idx(2).type != ".")))
+    try
+      y = pyeval (subs);
+    catch
+      y = pycall ("__import__", subs);
+    end_try_catch
+  else
+    y = pycall ("__import__", subs);
+  endif
 
   if (numel (idx) > 1)
     y = subsref (y, idx(2:end));
