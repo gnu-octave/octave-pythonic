@@ -141,8 +141,7 @@ pyeval (\"dict(one=1, two=2)\")\n\
 
 %!assert (isa (pyeval ("object()"), "pyobject"))
 
-%!assert (isnumeric (pyeval ("sys.maxsize")))
-%!assert (isnumeric (pyeval ("-sys.maxsize")))
+%!assert (isnumeric (pyeval ("__import__('sys').maxsize")))
 %!assert (pyeval ("99999999999999"), 99999999999999)
 %!assert (pyeval ("-99999999999999"), -99999999999999)
 
