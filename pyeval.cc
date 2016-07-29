@@ -155,6 +155,6 @@ pyeval (\"dict(one=1, two=2)\")\n\
 %! assert (z{4}{2}{2}, 422)
 
 %!error <NameError>
-%! pyexec ("def raiseException ():\n  raise NameError ('oops')")
-%! pyeval ("raiseException ()")
+%! pyexec ("def raiseException(): raise NameError ('oops')")
+%! pyeval ("raiseException()")
 */

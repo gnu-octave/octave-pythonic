@@ -278,11 +278,11 @@ r = pycall (s.add, 4)\n\
 %! endfor
 
 %!error <argument type conversion>
-%! pyexec ("def intwrapper(x):\n    return int(x)\n");
+%! pyexec ("def intwrapper(x): return int(x)");
 %! pycall ("intwrapper", ftp ());
 
 %!test
-%! pyexec ("def pyfunc(x):\n    return 2*x");
+%! pyexec ("def pyfunc(x): return 2*x");
 %! z = pycall ("pyfunc", [20 20]);
 %! assert (z, [40 40])
 
@@ -296,7 +296,7 @@ r = pycall (s.add, 4)\n\
 %! assert (pycall ("pyfunc", 10), 10)
 
 %!error <NameError>
-%! pyexec ("def raiseException ():\n  raise NameError ('oops')")
+%! pyexec ("def raiseException(): raise NameError('oops')")
 %! pycall ("raiseException")
 
 ## None as a return value
