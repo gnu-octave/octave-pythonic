@@ -85,8 +85,14 @@ function varargout = subsref (x, idx)
 
   ## unpack results, ensure "ans" works (see also pycall)
   is_none = pyeval ("lambda x: x is None");
-  if (nargout > 0 || ! pycall (is_none, r))
+  if (nargout == 0 && ! pycall (is_none, r))
     varargout{1} = r;
+  elseif (nargout == 1)
+    varargout{1} = r;
+  elseif (nargout >= 2)
+    assert (length (r) == nargout, ...
+            "pyobject/subsref: number of outputs must match")
+    [varargout{1:nargout}] = r{1:nargout};
   endif
 endfunction
 
@@ -200,3 +206,33 @@ endfunction
 %! s.pop ();
 %! assert (exist ("ans", "var"))
 %! assert (length (s) == 1)
+
+%!test
+%! % multiple return values: can get all of them
+%! f = pyeval ("lambda: (1, 2, 3)");
+%! a = f ();
+%! assert (length (a) == 3)
+
+%!test
+%! % multiple return values: separate them
+%! f = pyeval ("lambda: (1, 2, 3)");
+%! [a, b, c] = f ();
+%! assert (a, 1)
+%! assert (b, 2)
+%! assert (c, 3)
+
+%!test
+%! % multiple return values: set ans
+%! f = pyeval ("lambda: (1, 2, 3)");
+%! f ();
+%! assert (length (ans) == 3)
+
+%!error <outputs must match>
+%! % multiple return values: too many outputs
+%! f = pyeval ("lambda: (1, 2)");
+%! [a, b, c] = f ();
+
+%!error <outputs must match>
+%! % multiple return values: not enough outputs
+%! f = pyeval ("lambda: (1, 2, 3)");
+%! [a, b] = f ();
