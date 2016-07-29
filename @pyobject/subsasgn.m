@@ -30,6 +30,16 @@
 
 function r = subsasgn(x, idx, rhs)
 
+  if (nargin != 3)
+    print_usage ();
+  endif
+
+  ## If rhs is a pyobject but x is not, dispatch to the builtin subsasgn
+  if (! isa (x, "pyobject"))
+    r = builtin ("subsasgn", x, idx, rhs);
+    return;
+  endif
+
   switch idx.type
     case "."
       assert (ischar (idx.subs))
