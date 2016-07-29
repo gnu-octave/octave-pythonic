@@ -72,20 +72,10 @@ pyeval (\"dict(one=1, two=2)\")\n\
 
   object main_module = import ("__main__");
   object main_namespace = main_module.attr ("__dict__");
-#if PY_VERSION_HEX >= 0x03000000
-  object builtins_module = import ("builtins");
-#else
-  object builtins_module = import ("__builtin__");
-#endif
 
   try
     {
       res = eval (code.c_str (), main_namespace, main_namespace);
-      // hex(id(res))
-      object hex_function = builtins_module.attr ("hex");
-      object id_function = builtins_module.attr ("id");
-      object idtmp = hex_function (id_function (res));
-      id = extract<std::string> (idtmp);
 
       if (nargout > 0 || ! res.is_none ())
         {
@@ -96,16 +86,7 @@ pyeval (\"dict(one=1, two=2)\")\n\
     }
   catch (pytave::object_convert_exception const &)
     {
-      // Ensure we have a __InOct__ dict, and then put `res` into it
-      exec ("if not (\"__InOct__\" in vars() or \"__InOct__\" in globals()):\n"
-            "    __InOct__ = dict()\n"
-            "    # FIXME: make it accessible elsewhere?\n"
-            "    import __main__\n"
-            "    __main__.__InOct__ = __InOct__\n",
-            main_namespace, main_namespace);
-      main_namespace["__InOct__"][id] = res;
-      // Create @pyobject
-      retval = feval ("pyobject", ovl (id), 1);
+      error ("pyexec: error in return value type conversion");
     }
   catch (error_already_set const &)
     {
@@ -145,16 +126,28 @@ pyeval (\"dict(one=1, two=2)\")\n\
 %!assert (pyeval ("99999999999999"), 99999999999999)
 %!assert (pyeval ("-99999999999999"), -99999999999999)
 
-## FIXME: these will change when dict, list, and tuple are not converted
-%!assert (pyeval ("{'x': 1, 'y': 2}"), struct ("x", 1, "y", 2))
-%!assert (pyeval ("[1, 2, 3]"), {1, 2, 3})
-%!assert (pyeval ("(4, 5, 6)"), {4, 5, 6})
+%!test
+%! z = pyeval ("{'x': 1, 'y': 2}");
+%! assert (isa (z, "pyobject"))
+%! assert (z{"x"}, 1)
 
 %!test
-%! % FIXME: this will change when we stop converting lists
+%! z = pyeval ("[1, 2, 3]");
+%! assert (isa (z, "pyobject"))
+%! assert ({z{1}, z{2}, z{3}}, {1, 2, 3})
+
+%!test
+%! z = pyeval ("(4, 5, 6)");
+%! assert (isa (z, "pyobject"))
+%! assert ({z{1}, z{2}, z{3}}, {4, 5, 6})
+
+%!test
 %! z = pyeval ("[1, [21, 22], 3, [41, [421, 422], 43]]");
+%! assert (isa (z, "pyobject"))
+%! assert (isa (z{2}, "pyobject"))
 %! assert (z{2}{1}, 21)
 %! assert (z{2}{2}, 22)
+%! assert (isa (z{4}{2}, "pyobject"))
 %! assert (z{4}{2}{1}, 421)
 %! assert (z{4}{2}{2}, 422)
 

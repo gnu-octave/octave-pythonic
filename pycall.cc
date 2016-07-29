@@ -218,16 +218,7 @@ r = pycall (s.add, 4)\n\
     }
   catch (pytave::object_convert_exception const &)
     {
-      // Ensure we have a __InOct__ dict, and then put `res` into it
-      exec ("if not (\"__InOct__\" in vars() or \"__InOct__\" in globals()):\n"
-            "    __InOct__ = dict()\n"
-            "    # FIXME: make it accessible elsewhere?\n"
-            "    import __main__\n"
-            "    __main__.__InOct__ = __InOct__\n",
-            main_namespace, main_namespace);
-      main_namespace["__InOct__"][id] = res;
-      // Create @pyobject
-      retval = feval ("pyobject", ovl (id), 1);
+      error ("pyexec: error in return value type conversion");
     }
   catch (pytave::value_convert_exception const &)
     {
