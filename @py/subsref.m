@@ -56,6 +56,16 @@ function varargout = subsref (x, idx)
     y = subsref (y, idx(2:end));
   endif
 
+  ## If the *last* indexing operation is ".name", and the object returned
+  ## is a Python callable, then call it with no arguments to be compatible
+  ## with how Octave functions are evaluated.
+  if (idx(end).type == ".")
+    is_callable = pyeval ("lambda x: isinstance(x, __import__('collections').Callable)");
+    if (pycall (is_callable, y))
+      y = pycall (y);
+    endif
+  endif
+
   is_none = pyeval ("lambda x: x is None");
   if (nargout > 0 || ! pycall (is_none, y))
     varargout{1} = y;
