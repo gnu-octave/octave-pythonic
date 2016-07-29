@@ -48,7 +48,7 @@ function varargout = subsref (x, idx)
       pyexec ("import collections")
       pyexec ("import numpy")
       x_is_list = pycall (pyeval (
-        "lambda (x): isinstance(x, (collections.Sequence, numpy.ndarray))"),
+        "lambda x: isinstance(x, (collections.Sequence, numpy.ndarray))"),
         x);
       for i = 1:length(t.subs)
         j = t.subs{i};
