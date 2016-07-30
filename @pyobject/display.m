@@ -33,7 +33,7 @@
 ## @end group
 ## @end example
 ##
-## @seealso{@@pyobject/disp}
+## @seealso{@@pyobject/char, @@pyobject/disp}
 ## @end defmethod
 
 
@@ -42,7 +42,7 @@ function display (x)
   loose = ! __compactformat__ ();
 
   printf ("%s = [pyobject %s]\n", inputname (1), getid (x));
-  s = disp (x);
+  s = char (x);
   s = make_indented (s);
   if (loose), printf ("\n"); endif
   disp (s)

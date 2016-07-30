@@ -96,8 +96,12 @@ classdef pyobject < handle
       r = x.id;
     endfunction
 
+    function s = char (x)
+      s = pycall ("str", x);
+    endfunction
+
     function varargout = disp (x)
-      s = pyeval (sprintf ("str(__InOct__['%s'])", x.id));
+      s = char (x);
       if (nargout == 0)
         disp (s)
       else
@@ -144,3 +148,9 @@ endclassdef
 %! pyexec ("import sys");
 %! pyobj = pyeval ("sys");
 %! assert (length (pyobj), 1)
+
+%!assert (char (pyeval ("None")), "None")
+%!assert (char (pyeval ("'this is a string'")), "this is a string")
+%!assert (char (pyeval ("[1, 2, 3, 4, 5]")), "[1, 2, 3, 4, 5]")
+%!assert (char (pyeval ("(1, 2, 3, 4, 5)")), "(1, 2, 3, 4, 5)")
+%!assert (char (pyeval ("__import__('sys')")), "<module 'sys' (built-in)>")
