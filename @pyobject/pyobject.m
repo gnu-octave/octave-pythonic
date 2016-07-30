@@ -170,6 +170,43 @@ classdef pyobject < handle
         len = 1;
       end_try_catch
     endfunction
+
+    function sz = size (x, d)
+      assert (nargin <= 2)
+      try
+        idx = struct ("type", ".", "subs", "shape");
+        sz = subsref (x, idx);
+        sz = cell2mat (cell (sz));
+      catch
+        ## if it had no shape, make it a row vector
+        n = length (x);
+        sz = [1 n];
+      end_try_catch
+      if (nargin > 1)
+        if (d > length (sz))
+          ## standard Octave behaviour: do we really want this?
+          sz = 1;
+        else
+          sz = sz(d);
+        endif
+      endif
+    endfunction
+
+    function n = numel (x)
+      assert (nargin == 1)
+      sz = size (x);
+      n = prod (sz);
+    endfunction
+
+    function r = end (x, index_pos, num_indices)
+      assert (nargin == 3)
+      assert (isscalar (index_pos))
+      if (num_indices == 1)
+        r = numel (x);
+      else
+        r = size (x, index_pos);
+      endif
+    endfunction
   endmethods
 endclassdef
 
@@ -188,6 +225,32 @@ endclassdef
 %! pyexec ("import sys");
 %! pyobj = pyeval ("sys");
 %! assert (length (pyobj), 1)
+
+%!assert (size (pyeval ("[10, 20, 30]")), [1 3])
+%!assert (size (pyeval ("[10, 20, 30]"), 1), 1)
+%!assert (size (pyeval ("[10, 20, 30]"), 2), 3)
+%!assert (size (pyeval ("[10, 20, 30]"), 3), 1)
+
+%!assert (numel (pyeval ("[10, 20, 30]")), 3)
+
+%!test
+%! L = pyeval ("[10, 20, 30]");
+%! assert (L{end}, 30)
+%! assert (L{end-1}, 20)
+
+%!test
+%! myrange = pyeval ( ...
+%!   "range if __import__('sys').hexversion >= 0x03000000 else xrange");
+%! R = pycall (myrange, int32 (5), int32 (10), int32 (2));
+%! assert (R{end}, 9)
+
+%!shared a
+%! pyexec ("class _myclass(): shape = (3, 4, 5)")
+%! a = pyeval ("_myclass()");
+%!assert (size (a), [3 4 5])
+%!assert (size (a, 3), 5)
+%!assert (numel (a), 60)
+%!shared
 
 %!assert (char (pyeval ("None")), "None")
 %!assert (char (pyeval ("'this is a string'")), "this is a string")
