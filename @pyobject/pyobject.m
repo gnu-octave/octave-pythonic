@@ -198,6 +198,11 @@ classdef pyobject < handle
       n = prod (sz);
     endfunction
 
+    function n = ndims (x)
+      assert (nargin == 1)
+      n = length (size (x));
+    endfunction
+
     function r = end (x, index_pos, num_indices)
       assert (nargin == 3)
       assert (isscalar (index_pos))
@@ -250,6 +255,7 @@ endclassdef
 %!assert (size (a), [3 4 5])
 %!assert (size (a, 3), 5)
 %!assert (numel (a), 60)
+%!assert (ndims (a), 3)
 %!shared
 
 %!assert (char (pyeval ("None")), "None")
