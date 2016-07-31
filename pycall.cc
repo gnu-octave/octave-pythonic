@@ -203,11 +203,6 @@ r = pycall (s.add, 4)\n\
           break;
         }
 
-      object hex_function = builtins_module.attr ("hex");
-      object id_function = builtins_module.attr ("id");
-      object idtmp = hex_function (id_function (res));
-      id = extract<std::string> (idtmp);
-
       // Ensure reasonable "ans" behaviour, consistent with Python's "_".
       if (nargout > 0 || ! res.is_none ())
         {
@@ -242,6 +237,9 @@ r = pycall (s.add, 4)\n\
 %!assert (pycall ("cmath.sqrt", 2j), sqrt (2j))
 %!assert (pycall ("int", 10.2), 10)
 %!assert (isa (pycall ("object"), "pyobject"))
+%!assert (isa (pycall ("dict"), "pyobject"))
+%!assert (isa (pycall ("list"), "pyobject"))
+%!assert (isa (pycall ("tuple"), "pyobject"))
 
 ## Test argument type conversion of values into Python
 %!test
