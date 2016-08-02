@@ -69,7 +69,7 @@ function mtds = methods (x)
 
   # filter the output of `dir(x)` to get callable methods only
   cmd = pyeval (["lambda x: [a for a in dir(x)" ...
-                 " if callable(getattr(x, a)) and not a.startswith('__')]"]);
+                 " if callable(getattr(x, a)) and not a.startswith('_')]"]);
 
   # FIXME: may need to convert from Python list to Octave cell array
   mtds_list = pycall (cmd, x)
