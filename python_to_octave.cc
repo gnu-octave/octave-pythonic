@@ -500,7 +500,7 @@ namespace pytave
           main_namespace, main_namespace);
     main_namespace["__InOct__"][id] = py_object;
     // Create @pyobject
-    oct_value = feval ("pyobject", ovl (id), 1);
+    oct_value = feval ("pyobject", ovl (0, id), 2);
   }
 
   void pyobj_to_octvalue (octave_value& oct_value,
