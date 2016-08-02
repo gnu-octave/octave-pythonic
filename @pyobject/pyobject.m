@@ -110,7 +110,8 @@ classdef pyobject < handle
     endfunction
 
     function s = whatclass (x)
-      s = pyeval (sprintf ("str(__InOct__['%s'].__class__)", x.id));
+      idx = struct ("type", ".", "subs", "__class__");
+      s = subsref (x, idx);
     endfunction
 
     function vargout = help (x)

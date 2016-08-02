@@ -68,13 +68,11 @@
 function mtds = methods (x)
 
   # filter the output of `dir(x)` to get callable methods only
-  cmd = sprintf (["[a for x in (__InOct__['%s'],) for a in dir(x) " ...
-                  " if callable(getattr(x, a))" ...
-                  " and not a.startswith('__')]"],
-                 getid (x));
+  cmd = pyeval (["lambda x: [a for a in dir(x)" ...
+                 " if callable(getattr(x, a)) and not a.startswith('__')]"]);
 
   # FIXME: may need to convert from Python list to Octave cell array
-  mtds_list = pyeval (cmd);
+  mtds_list = pycall (cmd, x)
 
   if (nargout == 0)
     ## FIXME: should this be available as @pyobject/ismodule.m ?

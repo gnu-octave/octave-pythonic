@@ -47,14 +47,13 @@
 
 function names = fieldnames (x)
 
-  cmd = sprintf (["[a for x in (__InOct__['%s'],) for a in dir(x) " ...
-                  " if not callable(getattr(x, a))" ...
-                  " and not isinstance(getattr(x, a), __import__('types').ModuleType)" ...
-                  " and not a.startswith('_')]"],
-                 getid (x));
+  cmd = pyeval (["lambda x: [a for a in dir(x)" ...
+                 " if not callable(getattr(x, a))" ...
+                 " and not isinstance(getattr(x, a), __import__('types').ModuleType)" ...
+                 " and not a.startswith('_')]"]);
 
   # FIXME: may need to convert from Python list to Octave cell array
-  names = pyeval (cmd);
+  names = pycall (cmd, x);
   names = names(:);
 
 endfunction
