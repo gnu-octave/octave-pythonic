@@ -181,8 +181,6 @@ namespace pytave
       return create_array<bool, boolNDArray> (matrix.bool_array_value (), NPY_BOOL);
     if (matrix.is_string ())
       return create_array<char, charNDArray> (matrix.char_array_value (), NPY_CHAR);
-    if (matrix.is_cell ())
-      return create_array<PyObject *, Cell> (matrix.cell_value (), NPY_OBJECT);
 
     throw value_convert_exception ("Octave matrix type not known, conversion not implemented");
   }
@@ -193,6 +191,26 @@ namespace pytave
   {
     PyArrayObject *pyarr = octvalue_to_pyarrobj (octvalue);
     py_object = object (handle<PyObject> ((PyObject *)pyarr));
+  }
+
+  static void
+  octcell_to_pyobject (boost::python::object& py_object,
+                       const Cell& cell)
+  {
+    if (! (cell.is_empty () || cell.is_vector ()))
+      throw value_convert_exception (
+        "unable to convert multidimensional cell array into Python sequence");
+
+    boost::python::list sequence;
+
+    for (octave_idx_type i = 0; i < cell.numel (); i++)
+      {
+        boost::python::object py_val;
+        octvalue_to_pyobj (py_val, cell(i));
+        sequence.append (py_val);
+      }
+
+    py_object = sequence;
   }
 
   static void
@@ -273,8 +291,10 @@ namespace pytave
       octstring_to_pyobject (py_object, octvalue.string_value ());
     else if (octvalue.is_scalar_type ())
       octscalar_to_pyobject (py_object, octvalue);
+    else if (octvalue.is_cell ())
+      octcell_to_pyobject (py_object, octvalue.cell_value ());
     else if (octvalue.is_numeric_type () || octvalue.is_string ()
-             || octvalue.is_cell () || octvalue.is_bool_type ())
+             || octvalue.is_bool_type ())
       octvalue_to_pyarr (py_object, octvalue);
     else if (octvalue.is_map ())
       octmap_to_pyobject (py_object, octvalue.map_value ());

@@ -257,6 +257,18 @@ r = pycall (s.add, 4)\n\
 %!assert (pycall ("typename", "Hello world"), "str")
 %!assert (pycall ("typename", char ([1, 2, 3])), "str")
 
+## Test construction of sequence types from cell arrays
+%!assert (char (pycall ("list")), "[]")
+%!assert (char (pycall ("list", {})), "[]")
+%!assert (char (pycall ("list", {1, 2, 3})), "[1.0, 2.0, 3.0]")
+%!assert (char (pycall ("list", {int8(1), int8(2), int8(3)})), "[1, 2, 3]")
+%!assert (char (pycall ("tuple")), "()")
+%!assert (char (pycall ("tuple", {})), "()")
+%!assert (char (pycall ("tuple", {1, 2, 3})), "(1.0, 2.0, 3.0)")
+%!assert (char (pycall ("tuple", {int8(1), int8(2), int8(3)})), "(1, 2, 3)")
+%!error (pycall ("list", {1, 2, 3; 4, 5, 6}))
+%!error (pycall ("dict", {1, 2, 3}))
+
 ## Test round trip type preservation / conversion
 %!test
 %! pyexec ("def roundtrip(x): return x");
