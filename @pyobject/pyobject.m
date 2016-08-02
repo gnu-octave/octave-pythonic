@@ -145,9 +145,12 @@ classdef pyobject < handle
       endif
     endfunction
 
-    function s = whatclass (x)
+    function s = class (x)
       idx = struct ("type", ".", "subs", "__class__");
-      s = subsref (x, idx);
+      class_ref = subsref (x, idx);
+      idx = struct ("type", ".", "subs", "__name__");
+      s = subsref (class_ref, idx);
+      s = sprintf ("py.%s", char (s));
     endfunction
 
     function vargout = help (x)
@@ -197,3 +200,10 @@ endclassdef
 %!assert (isa (pyobject (42.2), "pyobject"))
 %!assert (isa (pyobject (int32 (42)), "pyobject"))
 %!assert (isa (pyobject (pyobject ()), "pyobject"))
+
+%!assert (class (pyeval ("{}")), "py.dict")
+%!assert (class (pyeval ("[]")), "py.list")
+%!assert (class (pyeval ("()")), "py.tuple")
+%!assert (class (pyeval ("set()")), "py.set")
+%!assert (class (pyeval ("None")), "py.NoneType")
+%!assert (class (pyeval ("2.5")), "double")
