@@ -53,10 +53,14 @@ function names = fieldnames (x)
                  " and not a.startswith('_')]"]);
 
   names_obj = pycall (cmd, x);
+  ## FIXME: names = cellfun (@char, cell (names_obj), "uniformoutput", false);
   len = length (names_obj);
-  idx = struct ("type", "{}", "subs", {{1:len}});
-  [names{1:len}] = subsref (names_obj, idx);
-  names = names(:);
+  names = cell (len, 1);
+  if (len > 0)
+    idx = struct ("type", "{}", "subs", {{1:len}});
+    [names{1:len}] = subsref (names_obj, idx);
+    names = cellfun (@char, names, "uniformoutput", false);
+  endif
 
 endfunction
 
@@ -78,3 +82,7 @@ endfunction
 %! assert (any (strcmp (lst, "False")))
 %! assert (any (strcmp (lst, "None")))
 %! assert (any (strcmp (lst, "True")))
+
+%!assert (fieldnames (pyeval ("object()")), cell (0, 1))
+%!assert (fieldnames (pyeval ("{}")), cell (0, 1))
+%!assert (ismember ("denominator", fieldnames (pycall ("fractions.Fraction"))))

@@ -72,9 +72,15 @@ function mtds = methods (x)
                  " if callable(getattr(x, a)) and not a.startswith('_')]"]);
 
   mtds_list_obj = pycall (cmd, x);
+
+  ## FIXME: mtds_list = cellfun (@char, cell (mtds_list_obj), "uniformoutput", false);
   len = length (mtds_list_obj);
-  idx = struct ("type", "{}", "subs", {{1:len}});
-  [mtds_list{1:len}] = subsref (mtds_list_obj, idx);
+  mtds_list = cell (len, 1);
+  if (len > 0)
+    idx = struct ("type", "{}", "subs", {{1:len}});
+    [mtds_list{1:len}] = subsref (mtds_list_obj, idx);
+    mtds_list = cellfun (@char, mtds_list, "uniformoutput", false);
+  endif
 
   if (nargout == 0)
     ## FIXME: should this be available as @pyobject/ismodule.m ?
@@ -111,3 +117,7 @@ endfunction
 %! assert (any (strcmp (m, "getcwd")))
 %! assert (any (strcmp (m, "getenv")))
 %! assert (any (strcmp (m, "getpid")))
+
+%!assert (methods (pyeval ("object()")), cell (0, 1))
+%!assert (ismember ("append", methods (pyeval ("[]"))))
+%!assert (ismember ("keys", methods (pyeval ("{}"))))
