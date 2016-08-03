@@ -52,8 +52,10 @@ function names = fieldnames (x)
                  " and not isinstance(getattr(x, a), __import__('types').ModuleType)" ...
                  " and not a.startswith('_')]"]);
 
-  # FIXME: may need to convert from Python list to Octave cell array
-  names = pycall (cmd, x);
+  names_obj = pycall (cmd, x);
+  len = length (names_obj);
+  idx = struct ("type", "{}", "subs", {{1:len}});
+  [names{1:len}] = subsref (names_obj, idx);
   names = names(:);
 
 endfunction

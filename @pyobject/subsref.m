@@ -57,7 +57,14 @@ function varargout = subsref (x, idx)
         endif
       endfor
 
-      if (isscalar (t.subs))
+      if (ischar (t.subs{1}) && strcmp (t.subs{1}, ":"))
+        is_map = pyeval ("lambda x: isinstance(x, collections.Mapping)");
+        if (pycall (is_map, x))
+          ind = ":";
+        else
+          ind = int32 ([1:length(x)] - 1);
+        endif
+      elseif (isscalar (t.subs))
         ind = t.subs{1};
       else
         ## XXX: after #26, #27, I think its just:
@@ -70,8 +77,16 @@ function varargout = subsref (x, idx)
         pyexec ("_temp = tuple(_temp[0])");
         ind = pyobject.fromPythonVarName ("_temp");
       endif
+
       gi = pycall ("getattr", x, "__getitem__");   # x.__getitem__
-      r = pycall (gi, ind);
+      if (isnumeric (ind) && length (ind) > 1)
+        r = {};
+        for k = 1:length (ind)
+          r(end+1) = pycall (gi, ind(k));
+        endfor
+      else
+        r = pycall (gi, ind);
+      endif
 
     otherwise
       t
@@ -92,7 +107,7 @@ function varargout = subsref (x, idx)
   elseif (nargout >= 2)
     assert (length (r) == nargout, ...
             "pyobject/subsref: number of outputs must match")
-    [varargout{1:nargout}] = r{1:nargout};
+    [varargout{1:nargout}] = subsref (r, struct ("type", "{}", "subs", {{1:nargout}}));
   endif
 endfunction
 
@@ -104,11 +119,11 @@ endfunction
 %! assert (L{1}, 10)
 %! assert (L{2}, 20)
 
-%!xtest
+%!test
 %! % list indexing, slice
 %! pyexec ("L = [10, 20, [30, 40]]")
 %! L = pyobject.fromPythonVarName ("L");
-%! L2 = L{:};
+%! [L2{1:length(L)}] = L{:};
 %! assert (L2{1}, 10)
 %! assert (L2{2}, 20)
 %! assert (L2{3}{1}, 30)
@@ -226,6 +241,12 @@ endfunction
 %! f = pyeval ("lambda: (1, 2, 3)");
 %! f ();
 %! assert (length (ans) == 3)
+
+%!test
+%! % ensure None is returned if nargout > 0
+%! L = pyeval ("[1, None, 3]");
+%! a = L{2};
+%! assert (char (a), "None")
 
 %!error <outputs must match>
 %! % multiple return values: too many outputs
