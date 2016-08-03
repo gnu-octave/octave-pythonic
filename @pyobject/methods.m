@@ -71,8 +71,10 @@ function mtds = methods (x)
   cmd = pyeval (["lambda x: [a for a in dir(x)" ...
                  " if callable(getattr(x, a)) and not a.startswith('_')]"]);
 
-  # FIXME: may need to convert from Python list to Octave cell array
-  mtds_list = pycall (cmd, x)
+  mtds_list_obj = pycall (cmd, x);
+  len = length (mtds_list_obj);
+  idx = struct ("type", "{}", "subs", {{1:len}});
+  [mtds_list{1:len}] = subsref (mtds_list_obj, idx);
 
   if (nargout == 0)
     ## FIXME: should this be available as @pyobject/ismodule.m ?
