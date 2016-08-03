@@ -119,11 +119,11 @@ endfunction
 %! assert (L{1}, 10)
 %! assert (L{2}, 20)
 
-%!xtest
+%!test
 %! % list indexing, slice
 %! pyexec ("L = [10, 20, [30, 40]]")
 %! L = pyobject.fromPythonVarName ("L");
-%! L2 = L{:};
+%! [L2{1:length(L)}] = L{:};
 %! assert (L2{1}, 10)
 %! assert (L2{2}, 20)
 %! assert (L2{3}{1}, 30)
@@ -241,6 +241,12 @@ endfunction
 %! f = pyeval ("lambda: (1, 2, 3)");
 %! f ();
 %! assert (length (ans) == 3)
+
+%!test
+%! % ensure None is returned if nargout > 0
+%! L = pyeval ("[1, None, 3]");
+%! a = L{2};
+%! assert (char (a), "None")
 
 %!error <outputs must match>
 %! % multiple return values: too many outputs
