@@ -123,7 +123,7 @@ endfunction
 %! % list indexing, slice
 %! pyexec ("L = [10, 20, [30, 40]]")
 %! L = pyobject.fromPythonVarName ("L");
-%! [L2{1:length(L)}] = L{:};
+%! L2 = L{:};
 %! assert (L2{1}, 10)
 %! assert (L2{2}, 20)
 %! assert (L2{3}{1}, 30)
