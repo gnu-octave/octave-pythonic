@@ -55,8 +55,7 @@
 ## @group
 ## methods pyobject
 ##   @print{} Methods for class pyobject:
-##   @print{} display  ...  subsref
-##   @print{} ...
+##   @print{} ...   display   ...
 ## @comment this doctest may need updating as we add methods
 ## @end group
 ## @end example
