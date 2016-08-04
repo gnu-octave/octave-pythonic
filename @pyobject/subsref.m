@@ -138,6 +138,14 @@ endfunction
 %! assert (L{3}{3}, 12)
 
 %!test
+%! % list indexing, assign to vars
+%! L = pyeval ("[1, 2, 'Octave']");
+%! [a, b, c] = L{:};
+%! assert (a, 1)
+%! assert (b, 2)
+%! assert (c, "Octave")
+
+%!test
 %! % 2D array indexing
 %! pyexec ("import numpy")
 %! pyexec ("A = numpy.array([[1, 2], [3, 4]])")
