@@ -54,6 +54,7 @@ function names = fieldnames (x)
 
   names_obj = pycall (cmd, x);
   names = cellfun (@char, cell (names_obj), "uniformoutput", false);
+  names = names(:);
 
 endfunction
 
