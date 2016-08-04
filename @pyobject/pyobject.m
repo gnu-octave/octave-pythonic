@@ -272,6 +272,7 @@ endclassdef
 %! assert (L{end-1}, 20)
 
 %!test
+%! % ensure "end" works for iterables that are not lists
 %! myrange = pyeval ( ...
 %!   "range if __import__('sys').hexversion >= 0x03000000 else xrange");
 %! R = pycall (myrange, int32 (5), int32 (10), int32 (2));
