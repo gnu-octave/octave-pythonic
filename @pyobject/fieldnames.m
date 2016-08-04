@@ -53,14 +53,7 @@ function names = fieldnames (x)
                  " and not a.startswith('_')]"]);
 
   names_obj = pycall (cmd, x);
-  ## FIXME: names = cellfun (@char, cell (names_obj), "uniformoutput", false);
-  len = length (names_obj);
-  names = cell (len, 1);
-  if (len > 0)
-    idx = struct ("type", "{}", "subs", {{1:len}});
-    [names{1:len}] = subsref (names_obj, idx);
-    names = cellfun (@char, names, "uniformoutput", false);
-  endif
+  names = cellfun (@char, cell (names_obj), "uniformoutput", false);
 
 endfunction
 

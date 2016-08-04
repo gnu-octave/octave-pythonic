@@ -67,15 +67,13 @@
 ## @end defmethod
 
 
-function c = cell (L)
-  ## XXX: better implementation available possible in C++?
-
-  c = {};
-  #c = cell (size (L));  # scary, b/c "size" calls "cell"
-
-  for i = 1:length (L)  # not numel
-    c{i} = subsref (L, struct ("type", "{}", "subs", {{i}}));
-  endfor
+function c = cell (x)
+  ## FIXME: subsref should take care of this case
+  if (length (x) == 0)
+    c = cell (0, 1);
+    return
+  endif
+  c = subsref (x, struct ("type", "{}", "subs", {{":"}}));
 endfunction
 
 

@@ -73,14 +73,7 @@ function mtds = methods (x)
 
   mtds_list_obj = pycall (cmd, x);
 
-  ## FIXME: mtds_list = cellfun (@char, cell (mtds_list_obj), "uniformoutput", false);
-  len = length (mtds_list_obj);
-  mtds_list = cell (len, 1);
-  if (len > 0)
-    idx = struct ("type", "{}", "subs", {{1:len}});
-    [mtds_list{1:len}] = subsref (mtds_list_obj, idx);
-    mtds_list = cellfun (@char, mtds_list, "uniformoutput", false);
-  endif
+  mtds_list = cellfun (@char, cell (mtds_list_obj), "uniformoutput", false);
 
   if (nargout == 0)
     ## FIXME: should this be available as @pyobject/ismodule.m ?
