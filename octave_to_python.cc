@@ -229,6 +229,42 @@ namespace pytave
       }
   }
 
+  inline PyObject *
+  python_integer_value (int32_t value)
+  {
+#if PY_VERSION_HEX >= 0x03000000
+    return PyLong_FromLong (value);
+#else
+    return PyInt_FromLong (value);
+#endif
+  }
+
+  inline PyObject *
+  python_integer_value (uint32_t value)
+  {
+    return PyLong_FromUnsignedLong (value);
+  }
+
+  inline PyObject *
+  python_integer_value (int64_t value)
+  {
+#if (defined (HAVE_LONG_LONG) && (SIZEOF_LONG_LONG > SIZEOF_LONG))
+    return PyLong_FromLongLong (value);
+#else
+    return PyLong_FromLong (value);
+#endif
+  }
+
+  inline PyObject *
+  python_integer_value (uint64_t value)
+  {
+#if (defined (HAVE_LONG_LONG) && (SIZEOF_LONG_LONG > SIZEOF_LONG))
+    return PyLong_FromUnsignedLongLong (value);
+#else
+    return PyLong_FromUnsignedLong (value);
+#endif
+  }
+
   static void
   octscalar_to_pyobject (boost::python::object& py_object,
                          const octave_value& arg)
@@ -242,22 +278,22 @@ namespace pytave
       obj = PyFloat_FromDouble (arg.double_value ());
 
     else if (arg.is_int8_type ())
-      obj = PyLong_FromLong (arg.int8_scalar_value ().value ());
+      obj = python_integer_value (arg.int8_scalar_value ().value ());
     else if (arg.is_int16_type ())
-      obj = PyLong_FromLong (arg.int16_scalar_value ().value ());
+      obj = python_integer_value (arg.int16_scalar_value ().value ());
     else if (arg.is_int32_type ())
-      obj = PyLong_FromLong (arg.int32_scalar_value ().value ());
+      obj = python_integer_value (arg.int32_scalar_value ().value ());
     else if (arg.is_int64_type ())
-      obj = PyLong_FromLong (arg.int64_scalar_value ().value ());
+      obj = python_integer_value (arg.int64_scalar_value ().value ());
 
     else if (arg.is_uint8_type ())
-      obj = PyLong_FromUnsignedLong (arg.uint8_scalar_value ().value ());
+      obj = python_integer_value (arg.uint8_scalar_value ().value ());
     else if (arg.is_uint16_type ())
-      obj = PyLong_FromUnsignedLong (arg.uint16_scalar_value ().value ());
+      obj = python_integer_value (arg.uint16_scalar_value ().value ());
     else if (arg.is_uint32_type ())
-      obj = PyLong_FromUnsignedLong (arg.uint32_scalar_value ().value ());
+      obj = python_integer_value (arg.uint32_scalar_value ().value ());
     else if (arg.is_uint64_type ())
-      obj = PyLong_FromUnsignedLong (arg.uint64_scalar_value ().value ());
+      obj = python_integer_value (arg.uint64_scalar_value ().value ());
 
     else if (arg.is_bool_type ())
       obj = PyBool_FromLong (arg.bool_value ());

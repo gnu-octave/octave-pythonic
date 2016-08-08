@@ -278,6 +278,28 @@ r = pycall (s.add, 4)\n\
 %!   assert (pycall ("roundtrip", values{i}), values{i});
 %! endfor
 
+## Test conversion of integer types into Python
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x ==        0"), int8 (0)))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x == -2**7   "), intmin ("int8")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x ==  2**7 -1"), intmax ("int8")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x ==        0"), intmin ("uint8")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x ==  2**8 -1"), intmax ("uint8")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x ==        0"), int16 (0)))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x == -2**15  "), intmin ("int16")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x ==  2**15-1"), intmax ("int16")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x ==        0"), intmin ("uint16")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x ==  2**16-1"), intmax ("uint16")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x ==        0"), int32 (0)))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x == -2**31  "), intmin ("int32")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(0) and x ==  2**31-1"), intmax ("int32")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(2**64) and x ==        0"), intmin ("uint32")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(2**64) and x ==  2**32-1"), intmax ("uint32")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(2**64) and x ==        0"), int64 (0)))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(2**64) and x == -2**63  "), intmin ("int64")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(2**64) and x ==  2**63-1"), intmax ("int64")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(2**64) and x ==        0"), intmin ("uint64")))
+%!assert (pycall (pyeval ("lambda x: type(x) == type(2**64) and x ==  2**64-1"), intmax ("uint64")))
+
 %!error <argument type conversion>
 %! pyexec ("def intwrapper(x): return int(x)");
 %! pycall ("intwrapper", ftp ());
