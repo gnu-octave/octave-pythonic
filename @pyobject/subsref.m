@@ -67,15 +67,9 @@ function varargout = subsref (x, idx)
       elseif (isscalar (t.subs))
         ind = t.subs{1};
       else
-        ## XXX: after #26, #27, I think its just:
-        #ind = pycall ("tuple", t.subs);
-        pyexec (["global _temp\n" ...
-                 "def pystoretemp(x):\n" ...
-                 "    global _temp\n" ...
-                 "    _temp = x"]);
-        pycall ("pystoretemp", t.subs);
-        pyexec ("_temp = tuple(_temp[0])");
-        ind = pyobject.fromPythonVarName ("_temp");
+        ## workaround bug: we get list of list instead of list
+        # ind = pycall ("tuple", t.subs);
+        ind = pycall (pyeval ("lambda x: tuple(x[0])"), t.subs);
       endif
 
       gi = pycall ("getattr", x, "__getitem__");   # x.__getitem__
