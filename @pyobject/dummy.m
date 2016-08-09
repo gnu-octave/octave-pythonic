@@ -34,7 +34,7 @@
 ##   @result{} ans =
 ##     @{
 ##       [1,1] = bit_length
-##       [2,1] = conjugate
+##       ...
 ##     @}
 ##
 ## sort (fieldnames (g))
@@ -75,12 +75,11 @@
 ## We can accesss ``callables'' (methods) of objects:
 ## @example
 ## @group
-## x.keys ()
-##   @result{} ans =
-##       @{
-##         [1,1] = two
-##         [1,2] = one
-##       @}
+## keyslist = py.list (x.keys ());
+## keyslist.sort ();
+## keyslist
+##   @result{} keyslist = [pyobject ...]
+##       ['one', 'two']
 ## @end group
 ## @end example
 ##
