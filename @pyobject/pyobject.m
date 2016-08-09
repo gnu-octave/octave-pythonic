@@ -32,30 +32,6 @@ classdef pyobject < handle
     id
   endproperties
 
-  methods (Static)
-    function x = fromPythonVarName (pyvarname)
-      # Warning: just for testing, may be removed without notice!
-      # If @var{pyvarname} is a string, its assumed to be a variable
-      # name, e.g., previously created with pyexec.  This must exist
-      # at the time of construction but it can disappear later (we
-      # will keep track of the reference).
-      if (! ischar (pyvarname))
-        error ("pyobject: currently we only take variable names as input")
-      endif
-      cmd = sprintf ([ ...
-        'if not ("__InOct__" in vars() or "__InOct__" in globals()):\n' ...
-        '    __InOct__ = dict()\n' ...
-        '    # FIXME: make it accessible elsewhere?\n' ...
-        '    import __main__\n' ...
-        '    __main__.__InOct__ = __InOct__\n' ...
-        '__InOct__[hex(id(%s))] = %s' ], ...
-        pyvarname, pyvarname);
-      pyexec (cmd);
-      id = pyeval (["hex(id(" pyvarname "))"]);
-      x = pyobject (0, id);
-    endfunction
-  endmethods
-
 
   methods
     function obj = pyobject (x, id)
