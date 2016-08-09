@@ -35,6 +35,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include "exceptions.h"
 #include "octave_to_python.h"
 #include "python_to_octave.h"
+#include "pytave_utils.h"
 
 using namespace boost::python;
 
@@ -88,64 +89,18 @@ r = pycall (s.add, 4)\n\
       return retval;
     }
 
-  bool func_by_name = false;
-
-  if (args(0).is_string ())
-    func_by_name = true;
-  else if (args(0).is_object () && args(0).class_name () == "pyobject")
-    func_by_name = false;
-  else
-    error ("pycall: FUNC must be a string or a Python reference");
-
   Py_Initialize ();
 
   pytave::init_exceptions ();
   numeric::array::set_module_and_type ("numpy", "ndarray");
   _import_array ();
 
-  object main_module = import ("__main__");
-  object main_namespace = main_module.attr ("__dict__");
-#if PY_VERSION_HEX >= 0x03000000
-  object builtins_module = import ("builtins");
-#else
-  object builtins_module = import ("__builtin__");
-#endif
-
   try
     {
       object callable;
-
-      if (func_by_name)
-        {
-          std::string module;
-          std::string func = args(0).string_value ();
-
-          size_t idx = func.rfind (".");
-          if (idx != std::string::npos)
-            {
-              module = func.substr (0, idx);
-              func = func.substr (idx + 1);
-            }
-
-          object mod;
-          if (module.empty ())
-            {
-              if (PyObject_HasAttrString (main_module.ptr (), func.c_str ()))
-                mod = main_module;
-              else
-                mod = builtins_module;
-            }
-          else
-            mod = import (module.c_str ());
-
-          callable = mod.attr (func.c_str ());
-        }
-      else
-        {
-          octave_value_list tmp = feval ("getid", ovl (args(0)), 1);
-          std::string hexid = tmp(0).string_value ();
-          callable = main_module.attr ("__InOct__")[hexid];
-        }
+      pytave::get_object_from_python (args(0), callable);
+      if (callable.is_none ())
+        error("pycall: FUNC must be a string or a Python reference");
 
       std::vector<object> pyargs;
       for (int i = 1; i < nargin; i++)
