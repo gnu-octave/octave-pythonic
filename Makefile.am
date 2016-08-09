@@ -27,7 +27,8 @@ AM_CPPFLAGS = $(OCTAVE_CPPFLAGS) $(PYTHON_CPPFLAGS) -I$(NUMPY_INCLUDEDIR)
 COMMON_SOURCE_FILES = \
   exceptions.cc \
   octave_to_python.cc \
-  python_to_octave.cc
+  python_to_octave.cc \
+  pytave_utils.cc
 
 DOC_FILES = \
   INSTALL.md \
@@ -45,7 +46,8 @@ PYTAVE_HEADER_FILES = \
   config.h \
   exceptions.h \
   octave_to_python.h \
-  python_to_octave.h
+  python_to_octave.h \
+  pytave_utils.h
 
 PY_FILES = \
   package/__init__.py \

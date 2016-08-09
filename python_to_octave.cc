@@ -41,6 +41,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "python_to_octave.h"
+#include "pytave_utils.h"
 
 using namespace boost::python;
 
@@ -481,11 +482,8 @@ namespace pytave
   {
     object main_module = import ("__main__");
     object main_namespace = main_module.attr ("__dict__");
-#if PY_VERSION_HEX >= 0x03000000
-    object builtins_module = import ("builtins");
-#else
-    object builtins_module = import ("__builtin__");
-#endif
+    object builtins_module;
+    pytave::get_builtins_module (builtins_module);
     object hex_function = builtins_module.attr ("hex");
     object id_function = builtins_module.attr ("id");
     object idtmp = hex_function (id_function (py_object));
