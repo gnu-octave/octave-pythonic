@@ -77,7 +77,6 @@ r = pycall (s.add, 4)\n\
 @end deftypefn")
 {
   octave_value_list retval;
-  object res;
   std::string id;
 
   int nargin = args.length ();
@@ -147,61 +146,18 @@ r = pycall (s.add, 4)\n\
           callable = main_module.attr ("__InOct__")[hexid];
         }
 
-      std::vector<object> pyargs;
+      PyObject *pyargs = PyTuple_New (nargin - 1);
       for (int i = 1; i < nargin; i++)
         {
           object arg;
           pytave::octvalue_to_pyobj (arg, args(i));
-          pyargs.push_back (arg);
+          PyObject *obj = arg.ptr ();
+          Py_INCREF (obj);
+          PyTuple_SET_ITEM (pyargs, i - 1, obj);
         }
 
-      switch (nargin - 1)
-        {
-        case 0:
-          res = callable ();
-          break;
-        case 1:
-          res = callable (pyargs[0]);
-          break;
-        case 2:
-          res = callable (pyargs[0], pyargs[1]);
-          break;
-        case 3:
-          res = callable (pyargs[0], pyargs[1], pyargs[2]);
-          break;
-        case 4:
-          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3]);
-          break;
-        case 5:
-          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
-                          pyargs[4]);
-          break;
-        case 6:
-          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
-                          pyargs[4], pyargs[5]);
-          break;
-        case 7:
-          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
-                          pyargs[4], pyargs[5], pyargs[6]);
-          break;
-        case 8:
-          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
-                          pyargs[4], pyargs[5], pyargs[6], pyargs[7]);
-          break;
-        case 9:
-          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
-                          pyargs[4], pyargs[5], pyargs[6], pyargs[7],
-                          pyargs[8]);
-          break;
-        case 10:
-          res = callable (pyargs[0], pyargs[1], pyargs[2], pyargs[3],
-                          pyargs[4], pyargs[5], pyargs[6], pyargs[7],
-                          pyargs[8], pyargs[9]);
-          break;
-        default:
-          error ("pycall: more than 10 arguments are not yet supported");
-          break;
-        }
+      PyObject *result = PyEval_CallObjectWithKeywords (callable.ptr (), pyargs, 0);
+      object res = object (handle<PyObject> (result));
 
       // Ensure reasonable "ans" behaviour, consistent with Python's "_".
       if (nargout > 0 || ! res.is_none ())
