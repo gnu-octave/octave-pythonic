@@ -34,13 +34,16 @@ along with Pytave; see the file COPYING.  If not, see
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "python_to_octave.h"
+#include "pytave_utils.h"
 
 using namespace boost::python;
 
 DEFUN_DLD (pyexec, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn {} {} pyexec (@var{expr})\n\
+@deftypefn {} {} pyexec (@var{expr}, @var{localNS})\n\
 Execute a Python expression or block of code.\n\
+You can supply a 'localNS' to enforce all changes in that namespace.\n\
 \n\
 Examples:\n\
 @example\n\
@@ -56,7 +59,7 @@ pyexec (\"print(42)\")\n\
 
   int nargin = args.length ();
 
-  if (nargin != 1)
+  if (nargin < 1 || nargin > 2)
     {
       print_usage ();
       return retval;
@@ -68,12 +71,21 @@ pyexec (\"print(42)\")\n\
 
   object main_module = import ("__main__");
   object main_namespace = main_module.attr ("__dict__");
+  object local_namespace;
+  if (nargin > 1)
+  {
+    pytave::get_object_from_python (args(1), local_namespace);
+    if (local_namespace.is_none ())
+      error ("pyexec: NAMESPACE must be a string or a Python reference");
+  }
+  else
+    local_namespace = main_namespace;
 
   try
     {
       // FIXME: figure out exec return code:
       // http://www.boost.org/doc/libs/1_38_0/libs/python/doc/v2/exec.html
-      exec (code.c_str (), main_namespace, main_namespace);
+      exec (code.c_str (), main_namespace, local_namespace);
     }
   catch (pytave::object_convert_exception const &)
     {

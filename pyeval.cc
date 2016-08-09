@@ -35,6 +35,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "python_to_octave.h"
+#include "pytave_utils.h"
 
 using namespace boost::python;
 
@@ -42,7 +43,10 @@ DEFUN_DLD (pyeval, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} pyeval (@var{expr})\n\
 @deftypefnx {} {@var{x} =} pyeval (@var{expr})\n\
+@deftypefn  {} {} pyeval (@var{expr}, @var{localNS})\n\
+@deftypefnx {} {@var{x} =} pyeval (@var{expr}, @var{localNS})\n\
 Evaluate a Python expression and return the result.\n\
+You can supply a 'localNS' to enforce all changes in that namespace.\n\
 \n\
 Examples:\n\
 @example\n\
@@ -63,6 +67,12 @@ pyeval (\"dict(one=1, two=2)\")\n\
 
   int nargin = args.length ();
 
+  if (nargin < 1 || nargin > 2)
+    {
+      print_usage ();
+      return retval;
+    }
+
   std::string code = args(0).string_value ();
 
   std::string id;
@@ -72,10 +82,19 @@ pyeval (\"dict(one=1, two=2)\")\n\
 
   object main_module = import ("__main__");
   object main_namespace = main_module.attr ("__dict__");
+  object local_namespace;
+  if (nargin > 1)
+  {
+    pytave::get_object_from_python (args(1), local_namespace);
+    if (local_namespace.is_none ())
+      error ("pyeval: NAMESPACE must be a string or a Python reference");
+  }
+  else
+    local_namespace = main_namespace;
 
   try
     {
-      res = eval (code.c_str (), main_namespace, main_namespace);
+      res = eval (code.c_str (), main_namespace, local_namespace);
 
       if (nargout > 0 || ! res.is_none ())
         {
@@ -154,4 +173,50 @@ pyeval (\"dict(one=1, two=2)\")\n\
 %!error <NameError>
 %! pyexec ("def raiseException(): raise NameError ('oops')")
 %! pyeval ("raiseException()")
+
+%!test
+%! % Variable defined in global namespace is available locally
+%! myNS = pyeval ("{}");
+%! pyexec ("myvar = 1")
+%! assert (pyeval ("myvar", myNS), 1);
+
+%!test
+%! % Variables with same name can have different values in different namespaces
+%! myNS1 = pyeval ("{}");
+%! myNS2 = pyeval ("{}");
+%! pyexec ("myvar = 1")
+%! pyexec ("myvar = 2", myNS1)
+%! pyexec ("myvar = 3", myNS2)
+%! assert (pyeval ("myvar"), 1)
+%! assert (pyeval ("myvar", myNS1), 2)
+%! assert (pyeval ("myvar", myNS2), 3)
+
+%!test
+%! pyexec ("if 'myvar' in globals(): del myvar")
+%! % Namespaces can also be passed as strings
+%! pyexec ("myNS = {}");
+%! pyexec ("myvar = 1", "myNS");
+%! assert (pyeval ("myvar", "myNS"), 1);
+
+%!error <NameError>
+%! pyexec ("if 'myvar' in globals(): del myvar")
+%! % Variable defined in local namespace MUST not be available globally
+%! myNS = pyeval ("{}");
+%! pyexec ("myvar = 1", myNS)
+%! pyeval ("myvar");
+
+%!error <NameError>
+%! pyexec ("if 'myvar' in globals(): del myvar")
+%! % Variable defined in one local namespace MUST not be available in another
+%! myNS1 = pyeval ("{}");
+%! myNS2 = pyeval ("{}");
+%! pyexec ("myvar = 1", myNS1)
+%! pyeval ("myvar", myNS2);
+
+%!error <NameError>
+%! pyexec ("if 'sys' in globals(): del sys")
+%! % Modules imported in local namespace MUST not be accessible globally
+%! myNS = pyeval ("{}");
+%! pyexec ("import sys", myNS);
+%! pyeval ("sys");
 */
