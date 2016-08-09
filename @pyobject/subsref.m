@@ -114,15 +114,13 @@ endfunction
 
 %!test
 %! % list indexing
-%! pyexec ("L = [10, 20]")
-%! L = pyobject.fromPythonVarName ("L");
+%! L = pyeval ("[10, 20]");
 %! assert (L{1}, 10)
 %! assert (L{2}, 20)
 
 %!test
 %! % list indexing, slice
-%! pyexec ("L = [10, 20, [30, 40]]")
-%! L = pyobject.fromPythonVarName ("L");
+%! L = pyeval ("[10, 20, [30, 40]]");
 %! L2 = L{:};
 %! assert (L2{1}, 10)
 %! assert (L2{2}, 20)
@@ -131,8 +129,7 @@ endfunction
 
 %!test
 %! % list indexing, nested list
-%! pyexec ("L = [1, 2, [10, 11, 12]]")
-%! L = pyobject.fromPythonVarName ("L");
+%! L = pyeval ("[1, 2, [10, 11, 12]]");
 %! assert (L{2}, 2)
 %! assert (L{3}{1}, 10)
 %! assert (L{3}{3}, 12)
@@ -148,40 +145,34 @@ endfunction
 %!test
 %! % 2D array indexing
 %! pyexec ("import numpy")
-%! pyexec ("A = numpy.array([[1, 2], [3, 4]])")
-%! A = pyobject.fromPythonVarName ("A");
+%! A = pyobject (pyeval ("numpy.array([[1, 2], [3, 4]])"));
 %! assert (A{1, 1}, 1)
 %! assert (A{2, 1}, 3)
 %! assert (A{1, 2}, 2)
 
 %!test
 %! % dict: str key access
-%! pyexec ("d = {'one':1, 5:5, 6:6}")
-%! d = pyobject.fromPythonVarName ("d");
+%! d = pyeval ("{'one':1, 5:5, 6:6}");
 %! assert (d{"one"}, 1)
 
 %!test
 %! % dict: integer key access
-%! pyexec ("d = {5:42, 6:42}")
-%! d = pyobject.fromPythonVarName ("d");
+%! d = pyeval ("{5:42, 6:42}");
 %! assert (d{6}, 42)
 
 %!test
 %! % dict: integer key should not subtract one
-%! pyexec ("d = {5:40, 6:42}")
-%! d = pyobject.fromPythonVarName ("d");
+%! d = pyeval ("{5:40, 6:42}");
 %! assert (d{6}, 42)
 
 %!test
 %! % dict: floating point keys should work
-%! pyexec ("d = {5.5:'ok'}")
-%! d = pyobject.fromPythonVarName ("d");
+%! d = pyeval ("{5.5:'ok'}");
 %! assert (d{5.5}, "ok")
 
 %!test
 %! % dict: make sure key ":" doesn't break anything
-%! pyexec ("d = {'a':1, ':':2}")
-%! d = pyobject.fromPythonVarName ("d");
+%! d = pyeval ("{'a':1, ':':2}");
 %! assert (d{'a'}, 1)
 %! assert (d{':'}, 2)
 

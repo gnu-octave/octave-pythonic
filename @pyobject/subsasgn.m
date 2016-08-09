@@ -88,8 +88,7 @@ endfunction
 
 %!test
 %! % list indexing
-%! pyexec ("L = [10, 20]")
-%! L = pyobject.fromPythonVarName ("L");
+%! L = pyeval ("[10, 20]");
 %! L{2} = "Octave";
 %! assert (length (L) == 2)
 %! assert (L{1}, 10)
@@ -97,8 +96,7 @@ endfunction
 
 %!test
 %! % dict assignment, adding new keys
-%! pyexec ("d = dict()")
-%! d = pyobject.fromPythonVarName ("d");
+%! d = pyeval ("dict()");
 %! d{"a"} = 3;
 %! d{"b"} = 4;
 %! assert (d{"a"}, 3)
@@ -106,15 +104,13 @@ endfunction
 
 %!test
 %! % dict assignment, update existing key
-%! pyexec ("d = {'a':1}")
-%! d = pyobject.fromPythonVarName ("d");
+%! d = pyeval ("{'a':1}");
 %! d{"a"} = 3;
 %! assert (d{"a"}, 3)
 
 %!test
 %! % dict assignment, other keys (e.g., Issue #10).
-%! pyexec ("d = dict()")
-%! d = pyobject.fromPythonVarName ("d");
+%! d = pyeval ("dict()");
 %! d{"5"} = 10;
 %! d{5.5} = 11;
 %! d{5} = 12;
