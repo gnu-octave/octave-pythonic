@@ -315,7 +315,6 @@ namespace pytave
                          const boost::python::object& py_object)
   {
     object main_module = import ("__main__");
-    object main_namespace = main_module.attr ("__dict__");
     object builtins_module;
     pytave::get_builtins_module (builtins_module);
     object hex_function = builtins_module.attr ("hex");
@@ -324,12 +323,10 @@ namespace pytave
     std::string id = extract<std::string> (idtmp);
 
     // Ensure _InOctave dict exists
-    // TODO: don't need exec, just do here in C
-    exec ("if not getattr(__import__('__main__'), '_InOctave', None):\n"
-          "    __import__('__main__')._InOctave = dict()",
-          main_namespace, main_namespace);
+    if (! PyObject_HasAttrString (main_module.ptr (), "_InOctave"))
+      main_module.attr ("_InOctave") = boost::python::dict ();
 
-    main_namespace["_InOctave"][id] = py_object;
+    main_module.attr ("_InOctave")[id] = py_object;
     // Create @pyobject
     oct_value = feval ("pyobject", ovl (0, id), 2);
   }
