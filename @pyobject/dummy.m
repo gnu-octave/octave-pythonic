@@ -19,10 +19,18 @@
 ## -*- texinfo -*-
 ## @documentencoding UTF-8
 ## @defmethod @@pyobject dummy (@var{x})
-## Does nothing, stores doctests for now.
+## Does nothing, stores doctests and other misc docs for now.
 ##
 ##
-## Simple example:
+## Some simple Python objects are converted to equivalent Octave values:
+## @example
+## @group
+## pyeval ("6")
+##   @result{} ans = 6
+## @end group
+## @end example
+##
+## To ensure the return value is a @@pyobject, it can be cast:
 ## @example
 ## @group
 ## g = pyobject (int32 (6))
@@ -57,10 +65,10 @@
 ## You can delete an object in Python and it will persist:
 ## @example
 ## @group
-## pyexec ("d = dict(one=1, two=2)")
-## x = pyobject.fromPythonVarName ("d")
+## pyexec ("d = dict(two=2)")
+## x = pyeval ("d")
 ##   @result{} x = [pyobject ...]
-##       @{'two': 2, 'one': 1@}
+##       @{'two': 2@}
 ##
 ## # oops, overwrote d in Python:
 ## pyexec ("d = 42")
@@ -68,20 +76,26 @@
 ## # but have no fear, we still have a reference to it:
 ## x
 ##   @result{} x = [pyobject ...]
-##       @{'two': 2, 'one': 1@}
+##       @{'two': 2@}
 ## @end group
 ## @end example
 ##
 ## We can accesss ``callables'' (methods) of objects:
 ## @example
 ## @group
-## keyslist = py.list (x.keys ());
-## keyslist.sort ();
-## keyslist
-##   @result{} keyslist = [pyobject ...]
-##       ['one', 'two']
+## x.pop ("two")
+##   @result{} ans =  2
 ## @end group
 ## @end example
+## And note this has changed the Python dict @code{x}:
+## @example
+## @group
+## x
+##   @result{} x = [pyobject ...]
+##       @{@}
+## @end group
+## @end example
+##
 ##
 ## @code{pyeval} returns a @@pyobject for things it cannot convert to
 ## Octave-native objects:
@@ -103,18 +117,32 @@
 ## @end example
 ##
 ##
-## TODO: this should return a cell array with a double, a string,
-## and an @@pyobject in it:
+## A Python list is returned as a @@pyobject:
 ## @example
 ## @group
-## pyeval ("[42, 'hello', sys]")         # doctest: +XFAIL
+## L = pyeval ("[42, 'hello', sys]")
+##   @result{} L = [pyobject ...]
+##       [42, 'hello', <module 'sys' (built-in)>]
+## @end group
+## @end example
+##
+## Elements of the list can be accessed directly
+## @example
+## @group
+## L@{1@}
+##   @result{} ans =  42
+## @end group
+## @end example
+## or if needed, the list can be converted to a cell array:
+## @example
+## @group
+## cell (L)
 ##   @result{} ans =
 ##       @{
 ##         [1,1] =  42
 ##         [1,2] = hello
-##         [1,3] =
-##           [PyObject id ...]
-##           <module 'sys' (built-in)>
+##               = [pyobject ...]
+##                 <module 'sys' (built-in)>
 ##       @}
 ## @end group
 ## @end example
@@ -124,11 +152,10 @@
 ## For example:
 ## @example
 ## @group
-## pycall ("__builtin__.print", sysmodule)   # doctest: +XFAIL
-##   @print{} <module 'sys' (built-in)>
+## pycall ("repr", sysmodule)
+##   @result{} <module 'sys' (built-in)>
 ## @end group
 ## @end example
-## (FIXME: I think this failure may correspond to an existing doctest issue).
 ##
 ## @seealso{pyobject}
 ## @end defmethod
