@@ -40,10 +40,13 @@ using namespace boost::python;
 
 DEFUN_DLD (pyexec, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn {} {} pyexec (@var{expr})\n\
-@deftypefn {} {} pyexec (@var{expr}, @var{localNS})\n\
+@deftypefn  {} {} pyexec (@var{expr})\n\
+@deftypefnx {} {} pyexec (@var{expr}, @var{localns})\n\
 Execute a Python expression or block of code.\n\
-You can supply a 'localNS' to enforce all changes in that namespace.\n\
+\n\
+When called with an optional second argument, @var{localns} is a\n\
+@code{py.dict} that acts as the namespace for any assignments or other\n\
+side effects of the expression.\n\
 \n\
 Examples:\n\
 @example\n\

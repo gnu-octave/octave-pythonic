@@ -42,11 +42,13 @@ using namespace boost::python;
 DEFUN_DLD (pyeval, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} pyeval (@var{expr})\n\
-@deftypefnx {} {@var{x} =} pyeval (@var{expr})\n\
-@deftypefn  {} {} pyeval (@var{expr}, @var{localNS})\n\
-@deftypefnx {} {@var{x} =} pyeval (@var{expr}, @var{localNS})\n\
+@deftypefnx {} {} pyeval (@var{expr}, @var{localns})\n\
+@deftypefnx {} {@var{x} =} pyeval (@dots{})\n\
 Evaluate a Python expression and return the result.\n\
-You can supply a 'localNS' to enforce all changes in that namespace.\n\
+\n\
+When called with an optional second argument, @var{localns} is a\n\
+@code{py.dict} that acts as the namespace for any assignments or other\n\
+side effects of the expression.\n\
 \n\
 Examples:\n\
 @example\n\
@@ -54,10 +56,9 @@ Examples:\n\
 pyexec (\"import sys\")\n\
 pyeval (\"sys.version\")\n\
   @result{} ...\n\
-pyeval (\"dict(one=1, two=2)\")\n\
-  @result{} scalar structure containing the fields:\n\
-      two =  2\n\
-      one =  1\n\
+pyeval (\"dict(two=2)\")\n\
+  @result{} [pyobject ...]\n\
+      @{'two': 2@}\n\
 @end group\n\
 @end example\n\
 @seealso{pycall, pyexec}\n\
