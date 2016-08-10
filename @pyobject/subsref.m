@@ -136,8 +136,7 @@ endfunction
 
 %!test
 %! % 2D array indexing
-%! pyexec ("import numpy")
-%! A = pyobject (pyeval ("numpy.array([[1, 2], [3, 4]])"));
+%! A = pyobject ([1 2; 3 4]);
 %! assert (A{1, 1}, 1)
 %! assert (A{2, 1}, 3)
 %! assert (A{1, 2}, 2)
