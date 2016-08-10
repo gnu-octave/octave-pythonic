@@ -67,9 +67,7 @@ function varargout = subsref (x, idx)
       elseif (isscalar (t.subs))
         ind = t.subs{1};
       else
-        ## workaround bug: we get list of list instead of list
-        # ind = pycall ("tuple", t.subs);
-        ind = pycall (pyeval ("lambda x: tuple(x[0])"), t.subs);
+        ind = pycall ("tuple", t.subs);
       endif
 
       gi = pycall ("getattr", x, "__getitem__");   # x.__getitem__
