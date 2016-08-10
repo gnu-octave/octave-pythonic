@@ -65,7 +65,7 @@ function r = subsasgn(x, idx, rhs)
       if (isscalar (idx.subs))
         ind = idx.subs{1};
       else
-        error ("not implemented, waiting on #26, #27")
+        ind = pycall ("tuple", idx.subs);
       endif
 
       xsi = pycall ("getattr", x, "__setitem__");   # x.__setitem__
@@ -117,3 +117,14 @@ endfunction
 %! assert (d{"5"}, 10)
 %! assert (d{5.5}, 11)
 %! assert (d{5}, 12)
+
+%!test
+%! % 2D array indexing
+%! A = pyobject ([1.1 2 3; 4 5 6]);
+%! A{1, 1} = 10;
+%! A{1, 3} = 30;
+%! A{2, 1} = 40;
+%! assert (A{1, 1}, 10)
+%! assert (A{1, 3}, 30)
+%! assert (A{2, 1}, 40)
+%! assert (A{2, 2}, 5)
