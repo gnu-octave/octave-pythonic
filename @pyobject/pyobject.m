@@ -45,19 +45,18 @@ classdef pyobject < handle
         if (isa (x, "pyobject"))
           obj = x;
         else
+          ## Ensure _InOctave dict exists
+          cmd = [ "if not getattr(__import__('__main__'), '_InOctave', None):\n" ...
+                  "    __import__('__main__')._InOctave = dict()" ];
+          pyexec (cmd);
+
           ## XXX: perhaps not the ideal implementation!
           vars = pyeval ("__import__('__main__').__dict__");
           ## this is vars{"_temp"} = x
           idx = struct ("type", "{}", "subs", {{"_temp"}});
           vars = subsasgn (vars, idx, x);
-          cmd = [ ...
-            "if not ('__InOct__' in vars() or '__InOct__' in globals()):\n" ...
-            "    __InOct__ = dict()\n" ...
-            "    # FIXME: make it accessible elsewhere?\n" ...
-            "    import __main__\n" ...
-            "    __main__.__InOct__ = __InOct__\n" ...
-            "__InOct__[hex(id(_temp))] = _temp" ];
-          pyexec (cmd);
+
+          pyexec ("__import__('__main__')._InOctave[hex(id(_temp))] = _temp")
           id = pyeval (["hex(id(_temp))"]);
           obj = pyobject (0, id);
         endif
@@ -68,7 +67,7 @@ classdef pyobject < handle
         ## The actual constructor.  Nicer to split this off to static method
         ## like `pyobject.new` but I don't know how to call from pycall.cc.
         ## Warning: not intended for casual use: you must also insert the
-        ## object into the Python `__InOct__` dict with key `id`.
+        ## object into the Python `_InOctave` dict with key `id`.
         obj.id = id;
         return
       endif
@@ -95,7 +94,7 @@ classdef pyobject < handle
       #disp ("delete")
 
       # throws KeyError if it wasn't in there for some reason
-      cmd = sprintf ("__InOct__.pop('%s')", x.id);
+      cmd = sprintf ("__import__('__main__')._InOctave.pop('%s')", x.id);
       pyexec (cmd)
     endfunction
 

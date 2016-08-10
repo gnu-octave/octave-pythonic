@@ -323,14 +323,13 @@ namespace pytave
     object idtmp = hex_function (id_function (py_object));
     std::string id = extract<std::string> (idtmp);
 
-    // Ensure we have a __InOct__ dict, and then put `res` into it
-    exec ("if not (\"__InOct__\" in vars() or \"__InOct__\" in globals()):\n"
-          "    __InOct__ = dict()\n"
-          "    # FIXME: make it accessible elsewhere?\n"
-          "    import __main__\n"
-          "    __main__.__InOct__ = __InOct__\n",
+    // Ensure _InOctave dict exists
+    // TODO: don't need exec, just do here in C
+    exec ("if not getattr(__import__('__main__'), '_InOctave', None):\n"
+          "    __import__('__main__')._InOctave = dict()",
           main_namespace, main_namespace);
-    main_namespace["__InOct__"][id] = py_object;
+
+    main_namespace["_InOctave"][id] = py_object;
     // Create @pyobject
     oct_value = feval ("pyobject", ovl (0, id), 2);
   }
