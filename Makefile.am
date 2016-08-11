@@ -30,6 +30,7 @@ export INCFLAGS
 COMMON_SOURCE_FILES = \
   exceptions.cc \
   octave_to_python.cc \
+  oct-py-types.cc \
   python_to_octave.cc \
   pytave_utils.cc
 
@@ -48,6 +49,7 @@ PYTAVE_HEADER_FILES = \
   arrayobjectdefs.h \
   config.h \
   exceptions.h \
+  oct-py-types.h \
   octave_to_python.h \
   python_to_octave.h \
   pytave_utils.h

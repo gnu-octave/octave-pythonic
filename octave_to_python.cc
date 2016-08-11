@@ -37,6 +37,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "octave_to_python.h"
+#include "oct-py-types.h"
 
 using namespace boost::python;
 
@@ -332,8 +333,11 @@ namespace pytave
     else if (octvalue.is_numeric_type () || octvalue.is_string ()
              || octvalue.is_bool_type ())
       octvalue_to_pyarr (py_object, octvalue);
-    else if (octvalue.is_map ())
-      octmap_to_pyobject (py_object, octvalue.map_value ());
+    else if (octvalue.is_map () && octvalue.numel () == 1)
+      {
+        PyObject *obj = make_py_dict (octvalue.scalar_map_value ());
+        py_object = object (handle<PyObject> (obj));
+      }
     else if (octvalue.is_object () && octvalue.class_name () == "pyobject")
       {
         octave_value_list tmp = feval ("getid", ovl (octvalue), 1);

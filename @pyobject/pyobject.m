@@ -275,6 +275,21 @@ endclassdef
 %!assert (ndims (a), 3)
 %!shared
 
+## Test conversion of scalar struct into a Python dict
+%!shared s1
+%! s1.name = "Octave";
+%! s1.value = 42;
+%! s1.counts = {1, 2, 3};
+%! s1.ok = true;
+%!assert (isa (pyobject (s1), "pyobject"))
+%!assert (class (pyobject (s1)), "py.dict")
+%!assert (char (pyobject (s1){"name"}), "Octave")
+%!assert (pyobject (s1){"value"}, 42)
+%!assert (pyobject (s1){"ok"}, true)
+
+%!error pyobject (struct ("a", {}))
+%!error pyobject (struct ("a", {1, 2}))
+
 %!assert (char (pyeval ("None")), "None")
 %!assert (char (pyeval ("'this is a string'")), "this is a string")
 %!assert (char (pyeval ("[1, 2, 3, 4, 5]")), "[1, 2, 3, 4, 5]")
