@@ -322,11 +322,11 @@ namespace pytave
     object idtmp = hex_function (id_function (py_object));
     std::string id = extract<std::string> (idtmp);
 
-    // Ensure _InOctave dict exists
-    if (! PyObject_HasAttrString (main_module.ptr (), "_InOctave"))
-      main_module.attr ("_InOctave") = boost::python::dict ();
+    // Ensure dict for Octave communication exists
+    if (! PyObject_HasAttrString (main_module.ptr (), "_in_octave"))
+      main_module.attr ("_in_octave") = boost::python::dict ();
 
-    main_module.attr ("_InOctave")[id] = py_object;
+    main_module.attr ("_in_octave")[id] = py_object;
     // Create @pyobject
     oct_value = feval ("pyobject", ovl (0, id), 2);
   }

@@ -190,7 +190,7 @@ namespace pytave
       {
         octave_value_list tmp = feval ("getid", ovl (octvalue), 1);
         std::string hexid = tmp(0).string_value ();
-        py_object = boost::python::import ("__main__").attr ("_InOctave")[hexid];
+        py_object = boost::python::import ("__main__").attr ("_in_octave")[hexid];
       }
     else
       throw value_convert_exception (

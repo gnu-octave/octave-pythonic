@@ -45,15 +45,15 @@ classdef pyobject < handle
         if (isa (x, "pyobject"))
           obj = x;
         else
-          ## Ensure _InOctave dict exists
-          cmd = [ "if not getattr(__import__('__main__'), '_InOctave', None):\n" ...
-                  "    __import__('__main__')._InOctave = dict()" ];
+          ## Ensure dict for Octave communication exists
+          cmd = [ "if not getattr(__import__('__main__'), '_in_octave', None):\n" ...
+                  "    __import__('__main__')._in_octave = dict()" ];
           pyexec (cmd);
 
           ## Function to insert and return the hex id
           cmd = [ "def _in_octave_insert(x):\n" ...
                   "    h = hex(id(x))\n" ...
-                  "    __import__('__main__')._InOctave[h] = x\n" ...
+                  "    __import__('__main__')._in_octave[h] = x\n" ...
                   "    return h" ];
           pyexec (cmd);
 
@@ -67,7 +67,7 @@ classdef pyobject < handle
         ## The actual constructor.  Nicer to split this off to static method
         ## like `pyobject.new` but I don't know how to call from pycall.cc.
         ## Warning: not intended for casual use: you must also insert the
-        ## object into the Python `_InOctave` dict with key `id`.
+        ## object into the Python `_in_octave` dict with key `id`.
         obj.id = id;
         return
       endif
@@ -93,8 +93,8 @@ classdef pyobject < handle
 
       #disp ("delete")
 
-      # throws KeyError if it wasn't in there for some reason
-      cmd = sprintf ("__import__('__main__')._InOctave.pop('%s')", x.id);
+      ## throws KeyError if it wasn't in there for some reason
+      cmd = sprintf ("__import__('__main__')._in_octave.pop('%s')", x.id);
       pyexec (cmd)
     endfunction
 

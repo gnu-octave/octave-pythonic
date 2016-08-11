@@ -92,7 +92,7 @@ get_object_from_python (const octave_value& oct_value,
     {
       octave_value_list tmp = feval ("getid", ovl (oct_value), 1);
       std::string hexid = tmp(0).string_value ();
-      py_object = main_module.attr ("_InOctave")[hexid];
+      py_object = main_module.attr ("_in_octave")[hexid];
     }
 }
 
