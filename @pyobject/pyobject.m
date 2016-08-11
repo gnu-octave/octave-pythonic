@@ -50,14 +50,14 @@ classdef pyobject < handle
                   "    __import__('__main__')._InOctave = dict()" ];
           pyexec (cmd);
 
-          ## XXX: perhaps not the ideal implementation!
-          vars = pyeval ("__import__('__main__').__dict__");
-          ## this is vars{"_temp"} = x
-          idx = struct ("type", "{}", "subs", {{"_temp"}});
-          vars = subsasgn (vars, idx, x);
+          ## Function to insert and return the hex id
+          cmd = [ "def _in_octave_insert(x):\n" ...
+                  "    h = hex(id(x))\n" ...
+                  "    __import__('__main__')._InOctave[h] = x\n" ...
+                  "    return h" ];
+          pyexec (cmd);
 
-          pyexec ("__import__('__main__')._InOctave[hex(id(_temp))] = _temp")
-          id = pyeval (["hex(id(_temp))"]);
+          id = pycall ("_in_octave_insert", x);
           obj = pyobject (0, id);
         endif
         return
