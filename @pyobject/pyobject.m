@@ -129,6 +129,16 @@ classdef pyobject < handle
       s = sprintf ("py.%s", char (s));
     endfunction
 
+    function y = double (x)
+      fn = pyeval ("lambda x: isinstance(x, __import__('array').array)");
+      if (pycall (fn, x))
+        c = cell (x);
+        y = cellfun (@(t) eval ("double (t)"), c);
+      else
+        y = pycall ("float", x);
+      endif
+    endfunction
+
     function vargout = help (x)
       idx = struct ("type", ".", "subs", "__doc__");
       s = subsref (x, idx);
@@ -308,3 +318,14 @@ endclassdef
 %!assert (class (pyeval ("set()")), "py.set")
 %!assert (class (pyeval ("None")), "py.NoneType")
 %!assert (class (pyeval ("2.5")), "double")
+
+## Test conversion method pyobject.double
+%!assert (double (pyobject (2.5)), 2.5)
+%!assert (double (pyobject (42)), 42)
+%!assert (double (pyobject ("42")), 42)
+%!assert (double (pyobject (false)), 0)
+%!assert (double (pycall ("array.array", "d", {31, 32, 33, 34})), [31, 32, 33, 34])
+
+%!error double (pyobject ("this is not a number"))
+%!error double (pyobject ())
+%!error double (pyeval ("[1, 2, 3]"))
