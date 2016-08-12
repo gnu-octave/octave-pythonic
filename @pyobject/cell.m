@@ -1,4 +1,5 @@
 ## Copyright (C) 2016 Colin B. Macdonald
+## Copyright (C) 2016 Mike Miller
 ##
 ## This file is part of Pytave
 ##
@@ -19,7 +20,8 @@
 ## -*- texinfo -*-
 ## @documentencoding UTF-8
 ## @defmethod @@pyobject cell (@var{x})
-## Convert an iterable Python object to a cell array.
+## Convert a Python list or other object implementing the Sequence protocol
+## to a cell array.
 ##
 ## For example, by default Python lists are not automatically
 ## converted into native Octave objects:
@@ -68,17 +70,23 @@
 
 
 function c = cell (x)
-  ## FIXME: subsref should take care of this case
-  if (length (x) == 0)
-    c = cell (0, 1);
-    return
+  ## FIXME: when subsref returns the right number of output args, this can
+  ##        simply be "c = {x{:}}"
+  n = length (x);
+  c = cell (1, n);
+  if (n > 0)
+    [c{:}] = subsref (x, struct ("type", "{}", "subs", {{":"}}));
   endif
-  c = subsref (x, struct ("type", "{}", "subs", {{":"}}));
 endfunction
 
 
-%!test
-%! L = pyeval ("(1, 2, 3)");
-%! C = cell (L);
-%! assert (iscell (C))
-%! assert (C, {1, 2, 3})
+%!assert (cell (pyeval ("[]")), cell (1, 0))
+%!assert (cell (pyeval ("[1]")), {1})
+%!assert (cell (pyeval ("[1, 2, 3]")), {1, 2, 3})
+%!assert (cell (pyeval ("(1, 2, 3)")), {1, 2, 3})
+%!assert (cell (pyobject ("asdf")), {"a", "s", "d", "f"})
+%!assert (cell (pyeval ("range(10)")), num2cell (0:9))
+
+%!error cell (pyobject ())
+%!error cell (pyeval ("None"))
+%!error cell (pyobject (1))
