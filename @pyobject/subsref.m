@@ -44,22 +44,28 @@ function varargout = subsref (x, idx)
       r = pycall ("getattr", x, t.subs);
 
     case "{}"
-      ## Subtract one from index: do this for lists, numpy arrays, etc
-      pyexec ("import collections")
-      pyexec ("import numpy")
-      x_is_list = pycall (pyeval (
-        "lambda x: isinstance(x, (collections.Sequence, numpy.ndarray))"),
-        x);
+      ## Determine the types and protocols that we are able to index into
+      x_is_mapping = pycall (pyeval (
+        "lambda x: isinstance(x, __import__('collections').Mapping)"), x);
+      x_is_sequence = pycall (pyeval (
+        ["lambda x: isinstance(x, (__import__('collections').Sequence, " ...
+                                  "__import__('array').array, " ...
+                                  "__import__('numpy').ndarray))"]), x);
+
+      if (! (x_is_mapping || x_is_sequence))
+        error ("subsref: cannot index Python object, not sequence or mapping");
+      endif
+
+      ## Subtract one from index: do this for lists, arrays, numpy arrays, etc
       for i = 1:length(t.subs)
         j = t.subs{i};
-        if (isindex (j) && isnumeric (j) && x_is_list)
+        if (isindex (j) && isnumeric (j) && x_is_sequence)
           t.subs{i} = cast (j, class (sizemax ())) - 1;
         endif
       endfor
 
       if (ischar (t.subs{1}) && strcmp (t.subs{1}, ":"))
-        is_map = pyeval ("lambda x: isinstance(x, collections.Mapping)");
-        if (pycall (is_map, x))
+        if (x_is_mapping)
           ind = ":";
         else
           ind = int32 ([1:length(x)] - 1);
@@ -140,6 +146,13 @@ endfunction
 %! assert (A{1, 1}, 1)
 %! assert (A{2, 1}, 3)
 %! assert (A{1, 2}, 2)
+
+## Test element indexing on array.array types
+%!test
+%! a = pycall ("array.array", "d", {11, 12, 13, 14});
+%! assert (a{1}, 11)
+%! assert (a{2}, 12)
+%! assert (a{end}, 14)
 
 %!test
 %! % dict: str key access
@@ -237,6 +250,10 @@ endfunction
 %! L = pyeval ("[1, None, 3]");
 %! a = L{2};
 %! assert (char (a), "None")
+
+%!error <cannot index Python object>
+%! f = pyeval ("abs");
+%! f{1}
 
 %!error <outputs must match>
 %! % multiple return values: too many outputs
