@@ -77,7 +77,9 @@ function varargout = subsref (x, idx)
       endif
 
       gi = pycall ("getattr", x, "__getitem__");   # x.__getitem__
-      if (isnumeric (ind) && length (ind) > 1)
+      if (isempty (ind) && x_is_sequence)
+        r = pyeval ("None");
+      elseif (isnumeric (ind) && length (ind) > 1)
         r = {};
         for k = 1:length (ind)
           r(end+1) = pycall (gi, ind(k));
