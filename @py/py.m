@@ -28,3 +28,27 @@ endfunction
 
 %!assert (py.math.sqrt (2), sqrt (2))
 %!assert (ischar (py.sys.version))
+
+%!test
+%! if (double (py.sys.hexversion) >= 0x03000000)
+%!   assert (isobject (py.int (0)))
+%! else
+%!   assert (py.int (0), int64 (0))
+%! endif
+
+%!test
+%! if (double (py.sys.hexversion) < 0x03000000)
+%!   assert (py.int (2147483647), int64 (2147483647))
+%! endif
+
+%!test
+%! if (double (py.sys.hexversion) < 0x03000000)
+%!   assert (isobject (py.long (0)))
+%! endif
+
+%!test
+%! if (double (py.sys.hexversion) >= 0x03000000)
+%!   assert (isobject (py.int (2^100)))
+%! else
+%!   assert (isobject (py.long (2^100)))
+%! endif

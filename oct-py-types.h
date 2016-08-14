@@ -34,6 +34,9 @@ namespace pytave
 PyObject *
 make_py_dict (const octave_scalar_map& map);
 
+int64_t
+extract_py_int64 (PyObject *obj);
+
 std::string
 extract_py_str (PyObject *obj);
 

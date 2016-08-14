@@ -68,6 +68,24 @@ make_py_dict (const octave_scalar_map& map)
   return dict;
 }
 
+int64_t
+extract_py_int64 (PyObject *obj)
+{
+  if (! obj)
+    throw object_convert_exception ("failed to extract integer: null object");
+
+  if (PyLong_Check (obj))
+    return PyLong_AsLong (obj);
+#if PY_VERSION_HEX < 0x03000000
+  else if (PyInt_Check (obj))
+    return PyInt_AsLong (obj);
+#endif
+  else
+    throw object_convert_exception ("failed to extract integer: wrong type");
+
+  return 0;
+}
+
 std::string
 extract_py_str (PyObject *obj)
 {

@@ -215,6 +215,28 @@ r = pycall (s.add, 4)\n\
 %! pyexec ("def intwrapper(x): return int(x)");
 %! pycall ("intwrapper", ftp ());
 
+## Test conversion of integer types from Python
+%!test
+%! if (pyeval ("__import__('sys').hexversion >= 0x03000000"))
+%!   assert (isa (pycall ("int",  0), "pyobject"))
+%!   assert (isa (pycall ("int",  2^31-1), "pyobject"))
+%!   assert (isa (pycall ("int", -2^31), "pyobject"))
+%!   assert (double (pycall ("int",  0)), 0)
+%!   assert (double (pycall ("int",  2^31-1)), 2^31-1)
+%!   assert (double (pycall ("int", -2^31)), -2^31)
+%! else
+%!   assert (pycall ("int",  0), int64 (0))
+%!   assert (pycall ("int",  2^31-1), int64 (2^31-1))
+%!   assert (pycall ("int", -2^31), int64 (-2^31))
+%!   assert (isa (pycall ("long",  0), "pyobject"))
+%!   assert (isa (pycall ("long",  2^31-1), "pyobject"))
+%!   assert (isa (pycall ("long", -2^31), "pyobject"))
+%!   assert (double (pycall ("long",  0)), 0)
+%!   assert (double (pycall ("long",  2^31-1)), 2^31-1)
+%!   assert (double (pycall ("long", -2^31)), -2^31)
+%! endif
+%!assert (isa (pycall ("int", 2^100), "pyobject"))
+
 %!test
 %! pyexec ("def pyfunc(x): return 2*x");
 %! z = pycall ("pyfunc", [20 20]);

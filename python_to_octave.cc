@@ -345,6 +345,10 @@ namespace pytave
 
     if (PyBool_Check (py_object.ptr ()))
       oct_value = boolx ();
+#if PY_VERSION_HEX < 0x03000000
+    else if (PyInt_Check (py_object.ptr ()))
+      oct_value = octave_int64 (extract_py_int64 (py_object.ptr ()));
+#endif
     else if (PyFloat_Check (py_object.ptr ()))
       oct_value = doublex ();
     else if (PyComplex_Check (py_object.ptr ()))
