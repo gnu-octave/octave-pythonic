@@ -217,6 +217,17 @@ classdef pyobject < handle
         r = size (x, index_pos);
       endif
     endfunction
+
+    function res = isequal (varargin)
+      assert (nargin >= 2)
+      res = all (strcmp ("pyobject", cellfun ("class", varargin, "uniformoutput", false)));
+      for i = 2:nargin
+        if (! res)
+          return;
+        endif
+        res = res && pycall("bool", pycall ("operator.eq", varargin{1}, varargin{i}));
+      endfor
+    endfunction
   endmethods
 endclassdef
 
@@ -329,3 +340,15 @@ endclassdef
 %!error double (pyobject ("this is not a number"))
 %!error double (pyobject ())
 %!error double (pyeval ("[1, 2, 3]"))
+
+%!error (isequal (pyobject ()))
+%!assert (! isequal (pyobject (1.2), 1.2))
+%!assert (isequal (pyobject ("a string"), pyobject ("a string")))
+%!assert (isequal (pyeval ("None"), pyeval ("None")))
+%!assert (! isequal (pyeval ("None"), pyeval ("None"), pyobject (10)))
+%!assert (isequal (pyobject (10), pyobject (10.0), pyobject (int8 (10))))
+
+%!test
+%! A = pyeval ("[1, 2, 3]");
+%! B = pycall ("list", {1, 2, 3});
+%! assert (isequal (A, B))
