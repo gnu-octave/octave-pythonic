@@ -49,7 +49,7 @@ Call a Python function or callable, passing Octave values as arguments.\n\
 Examples:\n\
 @example\n\
 @group\n\
-pycall (\"int\", 6)\n\
+pycall (\"float\", 6)\n\
   @result{} 6\n\
 pycall (\"os.getuid\")\n\
   @result{} ...\n\
@@ -142,11 +142,11 @@ r = pycall (s.add, 4)\n\
 /*
 %!assert (ischar (pycall ("os.getcwd")))
 %!assert (isreal (pycall ("random.random")))
-%!assert (pycall ("math.exp", 3), exp (3))
-%!assert (pycall ("math.trunc", pi), fix (pi))
-%!assert (pycall ("math.sqrt", 2), sqrt (2))
-%!assert (pycall ("cmath.sqrt", 2j), sqrt (2j))
-%!assert (pycall ("int", 10.2), 10)
+%!assert (double (pycall ("math.exp", 3)), exp (3))
+%!assert (double (pycall ("math.trunc", pi)), fix (pi))
+%!assert (double (pycall ("math.sqrt", 2)), sqrt (2))
+%!assert (double (pycall ("cmath.sqrt", 2j)), sqrt (2j))
+%!assert (double (pycall ("int", 10.2)), 10)
 %!assert (isa (pycall ("object"), "pyobject"))
 %!assert (isa (pycall ("dict"), "pyobject"))
 %!assert (isa (pycall ("list"), "pyobject"))
@@ -225,9 +225,9 @@ r = pycall (s.add, 4)\n\
 %!         "    if x is True:\n        return 30\n" ...
 %!         "    elif x is False:\n        return 20\n" ...
 %!         "    else:\n        return 10"]);
-%! assert (pycall ("pyfunc", true), 30)
-%! assert (pycall ("pyfunc", false), 20)
-%! assert (pycall ("pyfunc", 10), 10)
+%! assert (double (pycall ("pyfunc", true)), 30)
+%! assert (double (pycall ("pyfunc", false)), 20)
+%! assert (double (pycall ("pyfunc", 10)), 10)
 
 %!error <NameError>
 %! pyexec ("def raiseException(): raise NameError('oops')")

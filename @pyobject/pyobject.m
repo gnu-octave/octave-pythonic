@@ -151,7 +151,7 @@ classdef pyobject < handle
 
     function len = length (x)
       try
-        len = pycall ("len", x);
+        len = double (pycall ("len", x));
       catch
         len = 1;
       end_try_catch
@@ -163,7 +163,7 @@ classdef pyobject < handle
       try
         idx = struct ("type", ".", "subs", "shape");
         sz = subsref (x, idx);
-        sz = cell2mat (cell (sz));
+        sz = cellfun (@(x) eval ("double (x)"), cell (sz));
       catch
         ## if it had no shape, make it a row vector
         sz = [1 length(x)];
@@ -254,15 +254,15 @@ endclassdef
 
 %!test
 %! L = pyeval ("[10, 20, 30]");
-%! assert (L{end}, 30)
-%! assert (L{end-1}, 20)
+%! assert (double (L{end}), 30)
+%! assert (double (L{end-1}), 20)
 
 %!test
 %! % ensure "end" works for iterables that are not lists
 %! myrange = pyeval ( ...
 %!   "range if __import__('sys').hexversion >= 0x03000000 else xrange");
 %! R = pycall (myrange, int32 (5), int32 (10), int32 (2));
-%! assert (R{end}, 9)
+%! assert (double (R{end}), 9)
 
 %!shared a
 %! pyexec ("class _myclass(): shape = (3, 4, 5)")

@@ -27,10 +27,10 @@
 ## converted into native Octave objects:
 ## @example
 ## @group
-## L = pyeval ("[10, 20, 'hello']")
+## L = pyeval ("[10.0, 20.0, 'hello']")
 ##   @result{} L = [pyobject ...]
 ##
-##       [10, 20, 'hello']
+##       [10.0, 20.0, 'hello']
 ## @end group
 ## @end example
 ##
@@ -50,7 +50,7 @@
 ## The conversion is not recursive, in the following sense:
 ## @example
 ## @group
-## L = pyeval ("[10, 20, [33, 44], 50]");
+## L = pyeval ("[10.0, 20.0, [33.0, 44.0], 50.0]");
 ## C = cell (L)
 ##   @result{} C =
 ##     @{
@@ -58,7 +58,7 @@
 ##       [1,2] =  20
 ##             = [pyobject ...]
 ##
-##                 [33, 44]
+##                 [33.0, 44.0]
 ##
 ##       [1,4] =  50
 ##     @}
@@ -81,11 +81,15 @@ endfunction
 
 
 %!assert (cell (pyeval ("[]")), cell (1, 0))
-%!assert (cell (pyeval ("[1]")), {1})
-%!assert (cell (pyeval ("[1, 2, 3]")), {1, 2, 3})
-%!assert (cell (pyeval ("(1, 2, 3)")), {1, 2, 3})
+%!assert (cell (pyeval ("[1.]")), {1})
+%!assert (cell (pyeval ("[1., 2., 3.]")), {1, 2, 3})
+%!assert (cell (pyeval ("(1., 2., 3.)")), {1, 2, 3})
 %!assert (cell (pyobject ("asdf")), {"a", "s", "d", "f"})
-%!assert (cell (pyeval ("range(10)")), num2cell (0:9))
+
+%!test
+%! c = cell (pyeval ("range(10)"));
+%! c = cellfun (@(x) eval ("double (x)"), c, "uniformoutput", false);
+%! assert (c, num2cell (0:9))
 
 %!error cell (pyobject ())
 %!error cell (pyeval ("None"))

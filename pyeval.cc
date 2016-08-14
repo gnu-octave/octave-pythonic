@@ -118,9 +118,9 @@ pyeval (\"dict(two=2)\")\n\
 }
 
 /*
-%!assert (isnumeric (pyeval ("0")))
-%!assert (isreal (pyeval ("0")))
-%!assert (pyeval ("0"), 0)
+%!assert (isnumeric (double (pyeval ("0"))))
+%!assert (isreal (double (pyeval ("0"))))
+%!assert (double (pyeval ("0")), 0)
 
 %!assert (isnumeric (pyeval ("10.1")))
 %!assert (isreal (pyeval ("10.1")))
@@ -142,27 +142,27 @@ pyeval (\"dict(two=2)\")\n\
 
 %!assert (isa (pyeval ("object()"), "pyobject"))
 
-%!assert (isnumeric (pyeval ("__import__('sys').maxsize")))
-%!assert (pyeval ("99999999999999"), 99999999999999)
-%!assert (pyeval ("-99999999999999"), -99999999999999)
+%!assert (isnumeric (double (pyeval ("__import__('sys').maxsize"))))
+%!assert (double (pyeval ("99999999999999")), 99999999999999)
+%!assert (double (pyeval ("-99999999999999")), -99999999999999)
 
 %!test
-%! z = pyeval ("{'x': 1, 'y': 2}");
+%! z = pyeval ("{'x': 1., 'y': 2.}");
 %! assert (isa (z, "pyobject"))
 %! assert (z{"x"}, 1)
 
 %!test
-%! z = pyeval ("[1, 2, 3]");
+%! z = pyeval ("[1., 2., 3.]");
 %! assert (isa (z, "pyobject"))
 %! assert ({z{1}, z{2}, z{3}}, {1, 2, 3})
 
 %!test
-%! z = pyeval ("(4, 5, 6)");
+%! z = pyeval ("(4., 5., 6.)");
 %! assert (isa (z, "pyobject"))
 %! assert ({z{1}, z{2}, z{3}}, {4, 5, 6})
 
 %!test
-%! z = pyeval ("[1, [21, 22], 3, [41, [421, 422], 43]]");
+%! z = pyeval ("[1., [21., 22.], 3., [41., [421., 422.], 43.]]");
 %! assert (isa (z, "pyobject"))
 %! assert (isa (z{2}, "pyobject"))
 %! assert (z{2}{1}, 21)
@@ -178,16 +178,16 @@ pyeval (\"dict(two=2)\")\n\
 %!test
 %! % Variable defined in global namespace is available locally
 %! myNS = pyeval ("{}");
-%! pyexec ("myvar = 1")
+%! pyexec ("myvar = 1.")
 %! assert (pyeval ("myvar", myNS), 1);
 
 %!test
 %! % Variables with same name can have different values in different namespaces
 %! myNS1 = pyeval ("{}");
 %! myNS2 = pyeval ("{}");
-%! pyexec ("myvar = 1")
-%! pyexec ("myvar = 2", myNS1)
-%! pyexec ("myvar = 3", myNS2)
+%! pyexec ("myvar = 1.")
+%! pyexec ("myvar = 2.", myNS1)
+%! pyexec ("myvar = 3.", myNS2)
 %! assert (pyeval ("myvar"), 1)
 %! assert (pyeval ("myvar", myNS1), 2)
 %! assert (pyeval ("myvar", myNS2), 3)
@@ -196,14 +196,14 @@ pyeval (\"dict(two=2)\")\n\
 %! pyexec ("if 'myvar' in globals(): del myvar")
 %! % Namespaces can also be passed as strings
 %! pyexec ("myNS = {}");
-%! pyexec ("myvar = 1", "myNS");
+%! pyexec ("myvar = 1.", "myNS");
 %! assert (pyeval ("myvar", "myNS"), 1);
 
 %!error <NameError>
 %! pyexec ("if 'myvar' in globals(): del myvar")
 %! % Variable defined in local namespace MUST not be available globally
 %! myNS = pyeval ("{}");
-%! pyexec ("myvar = 1", myNS)
+%! pyexec ("myvar = 1.", myNS)
 %! pyeval ("myvar");
 
 %!error <NameError>
@@ -211,7 +211,7 @@ pyeval (\"dict(two=2)\")\n\
 %! % Variable defined in one local namespace MUST not be available in another
 %! myNS1 = pyeval ("{}");
 %! myNS2 = pyeval ("{}");
-%! pyexec ("myvar = 1", myNS1)
+%! pyexec ("myvar = 1.", myNS1)
 %! pyeval ("myvar", myNS2);
 
 %!error <NameError>

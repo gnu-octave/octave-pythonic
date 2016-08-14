@@ -88,7 +88,7 @@ endfunction
 
 %!test
 %! % list indexing
-%! L = pyeval ("[10, 20]");
+%! L = pyeval ("[10., 20.]");
 %! L{2} = "Octave";
 %! assert (length (L) == 2)
 %! assert (L{1}, 10)

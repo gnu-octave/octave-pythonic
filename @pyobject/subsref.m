@@ -114,13 +114,13 @@ endfunction
 
 %!test
 %! % list indexing
-%! L = pyeval ("[10, 20]");
+%! L = pyeval ("[10., 20.]");
 %! assert (L{1}, 10)
 %! assert (L{2}, 20)
 
 %!test
 %! % list indexing, slice
-%! L = pyeval ("[10, 20, [30, 40]]");
+%! L = pyeval ("[10., 20., [30., 40.]]");
 %! L2 = L{:};
 %! assert (L2{1}, 10)
 %! assert (L2{2}, 20)
@@ -129,14 +129,14 @@ endfunction
 
 %!test
 %! % list indexing, nested list
-%! L = pyeval ("[1, 2, [10, 11, 12]]");
+%! L = pyeval ("[1., 2., [10., 11., 12.]]");
 %! assert (L{2}, 2)
 %! assert (L{3}{1}, 10)
 %! assert (L{3}{3}, 12)
 
 %!test
 %! % list indexing, assign to vars
-%! L = pyeval ("[1, 2, 'Octave']");
+%! L = pyeval ("[1., 2., 'Octave']");
 %! [a, b, c] = L{:};
 %! assert (a, 1)
 %! assert (b, 2)
@@ -144,7 +144,7 @@ endfunction
 
 %!test
 %! % 2D array indexing
-%! A = pyobject ([1 2; 3 4]);
+%! A = pyobject ([1. 2.; 3. 4.]);
 %! assert (A{1, 1}, 1)
 %! assert (A{2, 1}, 3)
 %! assert (A{1, 2}, 2)
@@ -158,17 +158,17 @@ endfunction
 
 %!test
 %! % dict: str key access
-%! d = pyeval ("{'one':1, 5:5, 6:6}");
+%! d = pyeval ("{'one':1., 5:5, 6:6}");
 %! assert (d{"one"}, 1)
 
 %!test
 %! % dict: integer key access
-%! d = pyeval ("{5:42, 6:42}");
+%! d = pyeval ("{5:42., 6:42.}");
 %! assert (d{6}, 42)
 
 %!test
 %! % dict: integer key should not subtract one
-%! d = pyeval ("{5:40, 6:42}");
+%! d = pyeval ("{5:40., 6:42.}");
 %! assert (d{6}, 42)
 
 %!test
@@ -178,7 +178,7 @@ endfunction
 
 %!test
 %! % dict: make sure key ":" doesn't break anything
-%! d = pyeval ("{'a':1, ':':2}");
+%! d = pyeval ("{'a':1., ':':2.}");
 %! assert (d{'a'}, 1)
 %! assert (d{':'}, 2)
 
@@ -199,7 +199,7 @@ endfunction
 
 %!test
 %! % callable can return something
-%! s = pyeval ("set({1, 2})");
+%! s = pyeval ("set({1., 2.})");
 %! v = s.pop ();
 %! assert (length (s) == 1)
 %! assert (v == 1 || v == 2)
@@ -235,7 +235,7 @@ endfunction
 
 %!test
 %! % multiple return values: separate them
-%! f = pyeval ("lambda: (1, 2, 3)");
+%! f = pyeval ("lambda: (1., 2., 3.)");
 %! [a, b, c] = f ();
 %! assert (a, 1)
 %! assert (b, 2)

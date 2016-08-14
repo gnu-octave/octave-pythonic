@@ -25,7 +25,7 @@
 ## Some simple Python objects are converted to equivalent Octave values:
 ## @example
 ## @group
-## pyeval ("6")
+## pyeval ("6.0")
 ##   @result{} ans = 6
 ## @end group
 ## @end example
@@ -54,9 +54,9 @@
 ##       [4,1] = real
 ##     @}
 ##
-## g.numerator
+## double (g.numerator)
 ##   @result{} ans =  6
-## g.denominator
+## double (g.denominator)
 ##   @result{} ans =  1
 ## @end group
 ## @end example
@@ -83,7 +83,7 @@
 ## We can accesss ``callables'' (methods) of objects:
 ## @example
 ## @group
-## x.pop ("two")
+## double (x.pop ("two"))
 ##   @result{} ans =  2
 ## @end group
 ## @end example
@@ -120,9 +120,9 @@
 ## A Python list is returned as a @@pyobject:
 ## @example
 ## @group
-## L = pyeval ("[42, 'hello', sys]")
+## L = pyeval ("[42.0, 'hello', sys]")
 ##   @result{} L = [pyobject ...]
-##       [42, 'hello', <module 'sys' (built-in)>]
+##       [42.0, 'hello', <module 'sys' (built-in)>]
 ## @end group
 ## @end example
 ##
