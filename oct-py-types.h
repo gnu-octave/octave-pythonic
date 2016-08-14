@@ -24,6 +24,7 @@ along with Pytave; see the file COPYING.  If not, see
 #define pytave_oct_py_types_h 1
 
 #include <Python.h>
+#include <string>
 
 class octave_scalar_map;
 
@@ -32,6 +33,12 @@ namespace pytave
 
 PyObject *
 make_py_dict (const octave_scalar_map& map);
+
+std::string
+extract_py_str (PyObject *obj);
+
+PyObject *
+make_py_str (const std::string& str);
 
 }
 

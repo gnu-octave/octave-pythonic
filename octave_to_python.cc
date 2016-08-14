@@ -305,19 +305,6 @@ namespace pytave
       throw value_convert_exception ("unhandled scalar type");
   }
 
-  static void
-  octstring_to_pyobject (boost::python::object& py_object,
-                         const std::string& str)
-  {
-    py_object = object (handle<PyObject> (
-#if PY_VERSION_HEX >= 0x03000000
-      PyUnicode_FromStringAndSize (str.data (), str.size ())
-#else
-      PyString_FromStringAndSize (str.data (), str.size ())
-#endif
-    ));
-  }
-
   void octvalue_to_pyobj (boost::python::object& py_object,
                           const octave_value& octvalue)
   {
@@ -325,7 +312,10 @@ namespace pytave
       throw value_convert_exception (
         "Octave value `undefined'. Can not convert to a Python object");
     else if (octvalue.is_string ())
-      octstring_to_pyobject (py_object, octvalue.string_value ());
+      {
+        PyObject *obj = make_py_str (octvalue.string_value ());
+        py_object = object (handle<PyObject> (obj));
+      }
     else if (octvalue.is_scalar_type ())
       octscalar_to_pyobject (py_object, octvalue);
     else if (octvalue.is_cell ())

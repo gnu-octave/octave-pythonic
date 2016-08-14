@@ -40,6 +40,7 @@ along with Pytave; see the file COPYING.  If not, see
 
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
+#include "oct-py-types.h"
 #include "python_to_octave.h"
 #include "pytave_utils.h"
 
@@ -466,16 +467,6 @@ namespace pytave
     oct_value = map;
   }
 
-  static std::string
-  pyunicode_to_utf8 (PyObject *unicode)
-  {
-    std::string str;
-    PyObject *utf8 = PyUnicode_AsUTF8String (unicode);
-    str.assign (PyBytes_AsString (utf8), PyBytes_Size (utf8));
-    Py_DECREF (utf8);
-    return str;
-  }
-
   static void
   pyobj_to_oct_pyobject (octave_value& oct_value,
                          const boost::python::object& py_object)
@@ -508,8 +499,6 @@ namespace pytave
     extract<bool> boolx (py_object);
     extract<double> doublex (py_object);
     extract<Complex> complexx (py_object);
-    extract<std::string> stringx (py_object);
-    extract<std::wstring> wstringx (py_object);
     extract<numeric::array> arrayx (py_object);
     extract<boost::python::list> listx (py_object);
     extract<boost::python::dict> dictx (py_object);
@@ -525,10 +514,8 @@ namespace pytave
       oct_value = complexx ();
     else if (arrayx.check ())
       pyarr_to_octvalue (oct_value, (PyArrayObject*)py_object.ptr ());
-    else if (stringx.check ())
-      oct_value = stringx ();
-    else if (wstringx.check ())
-      oct_value = pyunicode_to_utf8 (py_object.ptr ());
+    else if (PyBytes_Check (py_object.ptr ()) || PyUnicode_Check (py_object.ptr ()))
+      oct_value = extract_py_str (py_object.ptr ());
     else
       pyobj_to_oct_pyobject (oct_value, py_object);
   }

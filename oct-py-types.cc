@@ -27,6 +27,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/oct-map.h>
 #include <octave/quit.h>
 
+#include "exceptions.h"
 #include "oct-py-types.h"
 
 // FIXME: only here to bootstrap nested conversions needed in this file
@@ -54,7 +55,10 @@ make_py_dict (const octave_scalar_map& map)
 
   for (auto p = map.begin (); p != map.end (); ++p)
     {
-      PyObject *key = wrap_octvalue_to_pyobj (map.key (p));
+      PyObject *key = make_py_str (map.key (p));
+      if (! key)
+        octave_throw_bad_alloc ();
+
       PyObject *item = wrap_octvalue_to_pyobj (map.contents (p));
 
       if (PyDict_SetItem (dict, key, item) < 0)
@@ -62,6 +66,49 @@ make_py_dict (const octave_scalar_map& map)
     }
 
   return dict;
+}
+
+std::string
+extract_py_str (PyObject *obj)
+{
+  std::string retval;
+
+  if (! obj)
+    throw object_convert_exception ("failed to extract string: null object");
+  if (PyBytes_Check (obj))
+    {
+      retval.assign (PyBytes_AsString (obj), PyBytes_Size (obj));
+    }
+  else if (PyUnicode_Check (obj))
+    {
+      bool ok = false;
+      PyObject *enc = PyUnicode_AsUTF8String (obj);
+      if (enc)
+        {
+          if (PyBytes_Check (enc))
+            {
+              ok = true;
+              retval.assign (PyBytes_AsString (enc), PyBytes_Size (enc));
+            }
+          Py_DECREF (enc);
+        }
+      if (! ok)
+        throw object_convert_exception ("failed to extract string: UTF-8 error");
+    }
+  else
+    throw object_convert_exception ("failed to extract string: wrong type");
+
+  return retval;
+}
+
+PyObject *
+make_py_str (const std::string& str)
+{
+#if PY_VERSION_HEX >= 0x03000000
+  return PyUnicode_FromStringAndSize (str.data (), str.size ());
+#else
+  return PyString_FromStringAndSize (str.data (), str.size ());
+#endif
 }
 
 }
