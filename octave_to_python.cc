@@ -76,43 +76,6 @@ namespace pytave
       }
   }
 
-  template <>
-  void
-  copy_octarray_to_pyarrobj<PyObject *, Cell> (PyArrayObject *pyarr,
-                                               const Cell& matrix,
-                                               const unsigned int matindex,
-                                               const unsigned int matstride,
-                                               const int dimension,
-                                               const unsigned int offset)
-  {
-    unsigned char *ptr = (unsigned char*) PyArray_DATA (pyarr);
-    if (dimension == PyArray_NDIM (pyarr) - 1)
-      {
-        // Last dimension, base case
-        for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++)
-          {
-            object pyobj;
-            octvalue_to_pyobj (pyobj, matrix.elem (matindex + i*matstride));
-            Py_INCREF (pyobj.ptr ());
-            *(PyObject **)&ptr[offset + i*PyArray_STRIDE (pyarr, dimension)]
-                = pyobj.ptr ();
-          }
-      }
-    else
-      {
-        for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++)
-          {
-            copy_octarray_to_pyarrobj<PyObject *, Cell> (
-              pyarr,
-              matrix,
-              matindex + i*matstride,
-              matstride * PyArray_DIM (pyarr, dimension),
-              dimension + 1,
-              offset + i*PyArray_STRIDE (pyarr, dimension));
-          }
-      }
-  }
-
   static PyArrayObject *
   createPyArr (const dim_vector& dims, int pyarrtype)
   {
@@ -212,22 +175,6 @@ namespace pytave
       }
 
     py_object = sequence;
-  }
-
-  static void
-  octmap_to_pyobject (boost::python::object& py_object,
-                      const octave_map& map)
-  {
-    py_object = boost::python::dict ();
-    string_vector keys = map.keys ();
-
-    for (octave_idx_type i = 0 ; i < keys.numel (); i++)
-      {
-        boost::python::object py_val;
-        const Cell c = map.contents (keys[i]);
-        octvalue_to_pyarr (py_val, c);
-        py_object[keys[i]] = py_val;
-      }
   }
 
   inline PyObject *

@@ -85,48 +85,6 @@ namespace pytave
       }
   }
 
-  template <>
-  void
-  copy_pyarrobj_to_octarray<PyObject *, Cell> (Cell& matrix,
-                                               PyArrayObject *pyarr,
-                                               const int unsigned matindex,
-                                               const unsigned int matstride,
-                                               const int dimension,
-                                               const unsigned int offset)
-  {
-    unsigned char *ptr = (unsigned char*) PyArray_DATA (pyarr);
-    if (dimension == PyArray_NDIM (pyarr) - 1)
-      {
-        // Last dimension, base case
-        for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++)
-          {
-            PyObject *pobj = *(PyObject **)
-               &ptr[offset + i*PyArray_STRIDE (pyarr, dimension)];
-            pyobj_to_octvalue (matrix.elem (matindex + i*matstride),
-                               object (handle<PyObject> (borrowed (pobj))));
-          }
-      }
-    else if (PyArray_NDIM (pyarr) == 0)
-      {
-        PyObject *pobj = *(PyObject **) ptr;
-        pyobj_to_octvalue (matrix.elem (0),
-                           object (handle<PyObject> (borrowed (pobj))));
-      }
-    else
-      {
-        for (int i = 0; i < PyArray_DIM (pyarr, dimension); i++)
-          {
-            copy_pyarrobj_to_octarray<PyObject *, Cell> (
-              matrix,
-              pyarr,
-              matindex + i*matstride,
-              matstride * PyArray_DIM (pyarr, dimension),
-              dimension + 1,
-              offset + i*PyArray_STRIDE (pyarr, dimension));
-          }
-      }
-  }
-
   template <class PythonPrimitive, class OctaveBase>
   static void
   copy_pyarrobj_to_octarray_dispatch (OctaveBase& matrix,
@@ -218,7 +176,6 @@ namespace pytave
       ARRAYCASE (NPY_BOOL,    bool)
       ARRAYCASE (NPY_CHAR,    char)
       ARRAYCASE (NPY_STRING,  char)
-      ARRAYCASE (NPY_OBJECT,  PyObject *)
 
       default:
         throw object_convert_exception (
@@ -344,9 +301,6 @@ namespace pytave
             }
         }
         break;
-      case NPY_OBJECT:
-        pyarrobj_to_octvalueNd<Cell> (octvalue, pyarr, dims);
-        break;
       default:
         throw object_convert_exception (
           PyEval_GetFuncDesc ((PyObject*)(pyarr)) + std::string (" ")
@@ -354,117 +308,6 @@ namespace pytave
           + ": Encountered unsupported Python array");
         break;
       }
-  }
-
-  static void
-  pylist_to_cellarray (octave_value& oct_value, const boost::python::list& list)
-  {
-    octave_idx_type length = boost::python::extract<octave_idx_type> (list.attr ("__len__") ());
-    octave_value_list values;
-
-    for (octave_idx_type i = 0; i < length; i++)
-      {
-         octave_value val;
-
-         pyobj_to_octvalue (val, list[i]);
-         values.append (val);
-
-      }
-
-    oct_value = Cell (values);
-  }
-
-  static void
-  pytuple_to_cellarray (octave_value& oct_value, const boost::python::tuple& tuple)
-  {
-    octave_idx_type length = boost::python::extract<octave_idx_type> (tuple.attr ("__len__") ());
-    octave_value_list values;
-
-    for (octave_idx_type i = 0; i < length; i++)
-      {
-         octave_value val;
-
-         pyobj_to_octvalue (val, tuple[i]);
-         values.append (val);
-
-      }
-
-    oct_value = Cell (values);
-  }
-
-  static void
-  pydict_to_octmap (octave_value& oct_value, const boost::python::dict& dict)
-  {
-    boost::python::list list = dict.items ();
-    octave_idx_type length = boost::python::extract<octave_idx_type> (list.attr ("__len__") ());
-
-    dim_vector dims = dim_vector (1, 1);
-
-    octave_value_list vals (length);
-    string_vector keys (length);
-
-    // Extract all keys and convert values. Remember whether dimensions
-    // match.
-
-    for (octave_idx_type i = 0; i < length; i++)
-      {
-        std::string& key = keys[i];
-
-        boost::python::tuple tuple =
-            boost::python::extract<boost::python::tuple> (list[i]) ();
-
-        boost::python::extract<std::string> str (tuple[0]);
-        if (! str.check ())
-          throw object_convert_exception (
-            std::string ("Can not convert key of type ")
-            + PyEval_GetFuncName (boost::python::object (tuple[0]).ptr ())
-            + PyEval_GetFuncDesc (boost::python::object (tuple[0]).ptr ())
-            + " to a structure field name. Field names must be strings.");
-
-        key = str ();
-
-        if (! valid_identifier (key))
-          throw object_convert_exception (
-            std::string ("Can not convert key `") + key + "' to a structure "
-            "field name. Field names must be valid Octave identifiers.");
-
-        octave_value& val = vals(i);
-
-        pyobj_to_octvalue (val, tuple[1]);
-
-        if (val.is_cell ())
-          {
-            if (i == 0)
-               dims = val.dims ();
-            else if (val.numel () != 1 && val.dims () != dims)
-               throw object_convert_exception (
-                 "Dimensions of the struct fields do not match");
-          }
-      }
-
-    octave_map map = octave_map (dims);
-
-    for (octave_idx_type i = 0; i < length; i++)
-      {
-        std::string& key = keys[i];
-        octave_value val = vals(i);
-
-        if (val.is_cell ())
-         {
-            const Cell c = val.cell_value ();
-            if (c.numel () == 1)
-            {
-               map.assign (key, Cell (dims, c(0)));
-            }
-            else
-            {
-               map.assign (key, c);
-            }
-         }
-        else
-          map.assign (key, Cell (dims, val));
-      }
-    oct_value = map;
   }
 
   static void
@@ -500,9 +343,6 @@ namespace pytave
     extract<double> doublex (py_object);
     extract<Complex> complexx (py_object);
     extract<numeric::array> arrayx (py_object);
-    extract<boost::python::list> listx (py_object);
-    extract<boost::python::dict> dictx (py_object);
-    extract<boost::python::tuple> tuplex (py_object);
 
     if (boolx.check () && PyBool_Check ((PyArrayObject*)py_object.ptr ()))
       oct_value = boolx ();
