@@ -34,6 +34,7 @@ along with Pytave; see the file COPYING.  If not, see
 #define PYTAVE_DO_DECLARE_SYMBOL
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
+#include "oct-py-eval.h"
 #include "oct-py-util.h"
 #include "python_to_octave.h"
 
@@ -77,7 +78,6 @@ pyeval (\"dict(two=2)\")\n\
   std::string code = args(0).string_value ();
 
   std::string id;
-  object res;
 
   Py_Initialize ();
 
@@ -95,7 +95,9 @@ pyeval (\"dict(two=2)\")\n\
 
   try
     {
-      res = eval (code.c_str (), main_namespace, local_namespace);
+      PyObject *obj = pytave::py_eval_string (code, main_namespace.ptr (),
+                                              local_namespace.ptr ());
+      boost::python::object res { boost::python::handle<> (obj) };
 
       if (nargout > 0 || ! res.is_none ())
         {

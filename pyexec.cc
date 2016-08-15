@@ -33,6 +33,7 @@ along with Pytave; see the file COPYING.  If not, see
 #define PYTAVE_DO_DECLARE_SYMBOL
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
+#include "oct-py-eval.h"
 #include "oct-py-util.h"
 #include "python_to_octave.h"
 
@@ -88,7 +89,8 @@ pyexec (\"print(42)\")\n\
     {
       // FIXME: figure out exec return code:
       // http://www.boost.org/doc/libs/1_38_0/libs/python/doc/v2/exec.html
-      exec (code.c_str (), main_namespace, local_namespace);
+      pytave::py_exec_string (code, main_namespace.ptr (),
+                              local_namespace.ptr ());
     }
   catch (pytave::object_convert_exception const &)
     {
