@@ -193,6 +193,24 @@ r = pycall (s.add, 4)\n\
 %!error (pycall ("list", {1, 2, 3; 4, 5, 6}))
 %!error (pycall ("dict", {1, 2, 3}))
 
+## Test construction of dict from pyargs
+%!test
+%! a = pycall ("dict", pyargs ("a", 1, "b", 2, "c", 3));
+%! assert (sort (cell (pycall ("list", a.keys ()))), {"a", "b", "c"})
+%! assert (sort (double (pycall ("array.array", "d", a.values ()))), [1, 2, 3])
+
+## Test copy construction of dict from dict
+%!test
+%! a = pycall ("dict", pyargs ("a", 1, "b", 2, "c", 3));
+%! b = pycall ("dict", a);
+%! assert (isequal (a, b))
+
+## Test construction of dict from sequence of key value pairs
+%!test
+%! a = pycall ("dict", pyargs ("a", 1, "b", 2, "c", 3));
+%! b = pycall ("dict", pycall ("zip", {"a", "b", "c"}, {1, 2, 3}));
+%! assert (isequal (a, b))
+
 ## Test round trip type preservation / conversion
 %!test
 %! pyexec ("def roundtrip(x): return x");
