@@ -24,6 +24,7 @@ along with Pytave; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
+#include <octave/Cell.h>
 #include <octave/oct-map.h>
 #include <octave/quit.h>
 
@@ -84,6 +85,28 @@ extract_py_int64 (PyObject *obj)
     throw object_convert_exception ("failed to extract integer: wrong type");
 
   return 0;
+}
+
+PyObject *
+make_py_list (const Cell& cell)
+{
+  if (! (cell.is_empty () || cell.is_vector ()))
+    throw value_convert_exception (
+      "unable to convert multidimensional cell array into Python sequence");
+
+  PyObject *list = PyList_New (0);
+  if (! list)
+    octave_throw_bad_alloc ();
+
+  for (octave_idx_type i = 0; i < cell.numel (); i++)
+    {
+      PyObject *item = wrap_octvalue_to_pyobj (cell.xelem (i));
+
+      if (PyList_Append (list, item) < 0)
+        throw boost::python::error_already_set ();
+    }
+
+  return list;
 }
 
 std::string

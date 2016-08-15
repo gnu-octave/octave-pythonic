@@ -157,26 +157,6 @@ namespace pytave
     py_object = object (handle<PyObject> ((PyObject *)pyarr));
   }
 
-  static void
-  octcell_to_pyobject (boost::python::object& py_object,
-                       const Cell& cell)
-  {
-    if (! (cell.is_empty () || cell.is_vector ()))
-      throw value_convert_exception (
-        "unable to convert multidimensional cell array into Python sequence");
-
-    boost::python::list sequence;
-
-    for (octave_idx_type i = 0; i < cell.numel (); i++)
-      {
-        boost::python::object py_val;
-        octvalue_to_pyobj (py_val, cell(i));
-        sequence.append (py_val);
-      }
-
-    py_object = sequence;
-  }
-
   inline PyObject *
   python_integer_value (int32_t value)
   {
@@ -266,7 +246,10 @@ namespace pytave
     else if (octvalue.is_scalar_type ())
       octscalar_to_pyobject (py_object, octvalue);
     else if (octvalue.is_cell ())
-      octcell_to_pyobject (py_object, octvalue.cell_value ());
+      {
+        PyObject *obj = make_py_list (octvalue.cell_value ());
+        py_object = object (handle<PyObject> (obj));
+      }
     else if (octvalue.is_numeric_type () || octvalue.is_string ()
              || octvalue.is_bool_type ())
       octvalue_to_pyarr (py_object, octvalue);

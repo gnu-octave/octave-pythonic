@@ -26,6 +26,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <Python.h>
 #include <string>
 
+class Cell;
 class octave_scalar_map;
 
 namespace pytave
@@ -36,6 +37,9 @@ make_py_dict (const octave_scalar_map& map);
 
 int64_t
 extract_py_int64 (PyObject *obj);
+
+PyObject *
+make_py_list (const Cell& cell);
 
 std::string
 extract_py_str (PyObject *obj);
