@@ -31,8 +31,8 @@ COMMON_SOURCE_FILES = \
   exceptions.cc \
   octave_to_python.cc \
   oct-py-types.cc \
-  python_to_octave.cc \
-  pytave_utils.cc
+  oct-py-util.cc \
+  python_to_octave.cc
 
 DOC_FILES = \
   INSTALL.md \
@@ -50,9 +50,9 @@ PYTAVE_HEADER_FILES = \
   config.h \
   exceptions.h \
   oct-py-types.h \
+  oct-py-util.h \
   octave_to_python.h \
-  python_to_octave.h \
-  pytave_utils.h
+  python_to_octave.h
 
 PY_FILES = \
   package/__init__.py \

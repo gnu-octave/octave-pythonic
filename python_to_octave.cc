@@ -41,8 +41,8 @@ along with Pytave; see the file COPYING.  If not, see
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "oct-py-types.h"
+#include "oct-py-util.h"
 #include "python_to_octave.h"
-#include "pytave_utils.h"
 
 using namespace boost::python;
 

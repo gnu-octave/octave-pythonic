@@ -20,16 +20,23 @@ along with Pytave; see the file COPYING.  If not, see
 
 */
 
-#if ! defined (pytave_utils_h)
-#define pytave_utils_h
+#if ! defined (pytave_oct_py_util_h)
+#define pytave_oct_py_util_h
 
 #include <boost/python.hpp>
 
+class octave_value;
+
 namespace pytave
 {
-  void get_builtins_module (boost::python::object& builtins_module);
-  void get_object_from_python (const octave_value& oct_value,
-                               boost::python::object& py_object);
+
+void
+get_builtins_module (boost::python::object& builtins_module);
+
+void
+get_object_from_python (const octave_value& oct_value,
+                        boost::python::object& py_object);
+
 }
 
 #endif
