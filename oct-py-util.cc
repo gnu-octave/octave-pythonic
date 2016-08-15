@@ -27,6 +27,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <oct.h>
 #include <octave/parse.h>
 
+#include "oct-py-types.h"
 #include "oct-py-util.h"
 
 using namespace boost::python;
@@ -93,6 +94,35 @@ get_object_from_python (const octave_value& oct_value,
       std::string hexid = tmp(0).string_value ();
       py_object = main_module.attr ("__InOct__")[hexid];
     }
+}
+
+std::string
+py_object_class_name (PyObject *obj)
+{
+  PyObject *class_ = obj ? PyObject_GetAttrString (obj, "__class__") : 0;
+  PyObject *name_ = class_ ? PyObject_GetAttrString (class_, "__name__") : 0;
+  return name_ ? extract_py_str (name_): "";
+}
+
+bool
+is_py_kwargs_argument (PyObject *obj)
+{
+  if (obj && py_object_class_name (obj) == "_OctaveKwargs"
+      && PyObject_HasAttrString (obj, "is_kwargs_argument"))
+    {
+      PyObject *flag = PyObject_GetAttrString (obj, "is_kwargs_argument");
+      if (flag && PyBool_Check (flag) && PyObject_IsTrue (flag))
+        return true;
+    }
+  return false;
+}
+
+PyObject *
+update_py_dict (PyObject *dict_orig, PyObject *dict_new)
+{
+  PyObject *dict = dict_orig ? dict_orig : PyDict_New ();
+  PyDict_Update (dict, dict_new);
+  return dict;
 }
 
 }

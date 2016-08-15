@@ -101,18 +101,31 @@ r = pycall (s.add, 4)\n\
       if (callable.is_none ())
         error("pycall: FUNC must be a string or a Python reference");
 
-      PyObject *pyargs = PyTuple_New (nargin - 1);
+      PyObject *args_list = PyList_New (0);
+      PyObject *kwargs = 0;
       for (int i = 1; i < nargin; i++)
         {
           object arg;
           pytave::octvalue_to_pyobj (arg, args(i));
           PyObject *obj = arg.ptr ();
-          Py_INCREF (obj);
-          PyTuple_SET_ITEM (pyargs, i - 1, obj);
+
+          if (pytave::is_py_kwargs_argument (obj))
+            kwargs = pytave::update_py_dict (kwargs, obj);
+          else
+            {
+              Py_INCREF (obj);
+              PyList_Append (args_list, obj);
+            }
         }
 
-      PyObject *result = PyEval_CallObjectWithKeywords (callable.ptr (), pyargs, 0);
+      PyObject *pyargs = PyList_AsTuple (args_list);
+      PyObject *result = PyEval_CallObjectWithKeywords (callable.ptr (), pyargs, kwargs);
       object res = object (handle<PyObject> (result));
+
+      Py_DECREF (args_list);
+      Py_DECREF (pyargs);
+      if (kwargs)
+        Py_DECREF (kwargs);
 
       // Ensure reasonable "ans" behaviour, consistent with Python's "_".
       if (nargout > 0 || ! res.is_none ())

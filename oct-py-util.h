@@ -23,6 +23,7 @@ along with Pytave; see the file COPYING.  If not, see
 #if ! defined (pytave_oct_py_util_h)
 #define pytave_oct_py_util_h
 
+#include <string>
 #include <boost/python.hpp>
 
 class octave_value;
@@ -36,6 +37,15 @@ get_builtins_module (boost::python::object& builtins_module);
 void
 get_object_from_python (const octave_value& oct_value,
                         boost::python::object& py_object);
+
+std::string
+py_object_class_name (PyObject *obj);
+
+bool
+is_py_kwargs_argument (PyObject *obj);
+
+PyObject *
+update_py_dict (PyObject *dict_orig, PyObject *dict_new);
 
 }
 
