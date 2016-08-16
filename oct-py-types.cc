@@ -219,25 +219,24 @@ extract_py_int64 (PyObject *obj)
 }
 
 PyObject *
-make_py_list (const Cell& cell)
+make_py_tuple (const Cell& cell)
 {
   if (! (cell.is_empty () || cell.is_vector ()))
     throw value_convert_exception (
-      "unable to convert multidimensional cell array into Python sequence");
+      "unable to convert multidimensional cell array into Python tuple");
 
-  PyObject *list = PyList_New (0);
-  if (! list)
+  octave_idx_type size = cell.numel ();
+  PyObject *tuple = PyTuple_New (size);
+  if (! tuple)
     octave_throw_bad_alloc ();
 
-  for (octave_idx_type i = 0; i < cell.numel (); i++)
+  for (octave_idx_type i = 0; i < size; ++i)
     {
       PyObject *item = wrap_octvalue_to_pyobj (cell.xelem (i));
-
-      if (PyList_Append (list, item) < 0)
-        throw boost::python::error_already_set ();
+      PyTuple_SET_ITEM (tuple, i, item);
     }
 
-  return list;
+  return tuple;
 }
 
 std::string

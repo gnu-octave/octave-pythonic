@@ -175,7 +175,7 @@ namespace pytave
       }
     else if (octvalue.is_cell ())
       {
-        PyObject *obj = make_py_list (octvalue.cell_value ());
+        PyObject *obj = make_py_tuple (octvalue.cell_value ());
         py_object = object (handle<PyObject> (obj));
       }
     else if (octvalue.is_numeric_type () || octvalue.is_string ()

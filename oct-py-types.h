@@ -121,15 +121,15 @@ make_py_int (int64_t value);
 PyObject *
 make_py_int (uint64_t value);
 
-//! Create a Python list object from the given Octave cell array value.
+//! Create a Python tuple object from the given Octave cell array value.
 //!
 //! The values contained in the cell array are recursively converted to
 //! appropriate Python values.
 //!
 //! @param cell Octave cell array
-//! @return Python list object
+//! @return Python tuple object
 PyObject *
-make_py_list (const Cell& cell);
+make_py_tuple (const Cell& cell);
 
 //! Create a Python numeric object from the given Octave numeric or boolean
 //! scalar value.
