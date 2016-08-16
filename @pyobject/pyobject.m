@@ -139,6 +139,10 @@ classdef pyobject < handle
       endif
     endfunction
 
+    function y = struct (x)
+      y = __py_struct_from_dict__ (x);
+    endfunction
+
     function vargout = help (x)
       idx = struct ("type", ".", "subs", "__doc__");
       s = subsref (x, idx);
@@ -340,6 +344,20 @@ endclassdef
 %!error double (pyobject ("this is not a number"))
 %!error double (pyobject ())
 %!error double (pyeval ("[1, 2, 3]"))
+
+## Test conversion method pyobject.struct
+%!assert (struct (pycall ("dict")), struct ())
+%!assert (struct (pyobject (struct ())), struct ())
+%!test
+%! a = struct ("a", 1, "b", 2, "three", 3);
+%! b = pyobject (a);
+%! c = struct (b);
+%! assert (c, a)
+%!test
+%! a = struct ("a", 1, "b", 2, "three", 3);
+%! b = pycall ("dict", pyargs ("a", 1, "b", 2, "three", 3));
+%! c = struct (b);
+%! assert (c, a)
 
 ## Octave fails to resolve function overloads via function handles
 %!xtest
