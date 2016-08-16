@@ -76,6 +76,13 @@ extract_py_float (PyObject *obj);
 PyObject *
 make_py_float (double value);
 
+//! Extract an Octave scalar map from the given Python dict object.
+//!
+//! @param obj Python dict object
+//! @return Octave scalar map containing the items of @a obj
+octave_scalar_map
+extract_py_scalar_map (PyObject *obj);
+
 //! Create a Python dict object from the given Octave scalar map value.
 //!
 //! The values contained in the map are recursively converted to appropriate

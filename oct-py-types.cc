@@ -33,6 +33,7 @@ along with Pytave; see the file COPYING.  If not, see
 
 // FIXME: only here to bootstrap nested conversions needed in this file
 #include "octave_to_python.h"
+#include "python_to_octave.h"
 
 namespace pytave
 {
@@ -176,6 +177,43 @@ wrap_octvalue_to_pyobj (const octave_value& value)
   PyObject *ptr = obj.ptr ();
   Py_INCREF (ptr);
   return ptr;
+}
+
+inline octave_value
+wrap_pyobj_to_octvalue (PyObject *obj)
+{
+  boost::python::object objref { boost::python::handle<> (boost::python::borrowed (obj)) };
+  octave_value value;
+  pyobj_to_octvalue (value, objref);
+  return value;
+}
+
+octave_scalar_map
+extract_py_scalar_map (PyObject *obj)
+{
+  if (! obj)
+    throw object_convert_exception ("failed to extract map: null object");
+
+  if (! PyDict_Check (obj))
+    throw object_convert_exception ("failed to extract map: wrong type");
+
+  octave_scalar_map map;
+
+  Py_ssize_t pos = 0;
+  PyObject *py_key = 0;
+  PyObject *py_value = 0;
+
+  while (PyDict_Next (obj, &pos, &py_key, &py_value))
+    {
+      if (! PyBytes_Check (py_key) && ! PyUnicode_Check (py_key))
+        throw object_convert_exception ("failed to extract map: bad key type");
+
+      std::string key = extract_py_str (py_key);
+      octave_value value = wrap_pyobj_to_octvalue (py_value);
+      map.setfield (key, value);
+    }
+
+  return map;
 }
 
 PyObject *
