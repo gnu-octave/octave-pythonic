@@ -338,21 +338,18 @@ namespace pytave
   void pyobj_to_octvalue (octave_value& oct_value,
                           const boost::python::object& py_object)
   {
-    extract<bool> boolx (py_object);
-    extract<double> doublex (py_object);
-    extract<Complex> complexx (py_object);
     extract<numeric::array> arrayx (py_object);
 
     if (PyBool_Check (py_object.ptr ()))
-      oct_value = boolx ();
+      oct_value = extract_py_bool (py_object.ptr ());
 #if PY_VERSION_HEX < 0x03000000
     else if (PyInt_Check (py_object.ptr ()))
       oct_value = octave_int64 (extract_py_int64 (py_object.ptr ()));
 #endif
     else if (PyFloat_Check (py_object.ptr ()))
-      oct_value = doublex ();
+      oct_value = extract_py_float (py_object.ptr ());
     else if (PyComplex_Check (py_object.ptr ()))
-      oct_value = complexx ();
+      oct_value = extract_py_complex (py_object.ptr ());
     else if (arrayx.check ())
       pyarr_to_octvalue (oct_value, (PyArrayObject*)py_object.ptr ());
     else if (PyBytes_Check (py_object.ptr ()) || PyUnicode_Check (py_object.ptr ()))

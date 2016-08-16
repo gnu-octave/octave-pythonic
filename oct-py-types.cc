@@ -59,6 +59,43 @@ make_py_float (double value)
   return PyFloat_FromDouble (value);
 }
 
+bool
+extract_py_bool (PyObject *obj)
+{
+  if (! obj)
+    throw object_convert_exception ("failed to extract boolean: null object");
+
+  if (! PyBool_Check (obj))
+    throw object_convert_exception ("failed to extract boolean: wrong type");
+
+  return (obj == Py_True);
+}
+
+std::complex<double>
+extract_py_complex (PyObject *obj)
+{
+  if (! obj)
+    throw object_convert_exception ("failed to extract complex: null object");
+
+  if (! PyComplex_Check (obj))
+    throw object_convert_exception ("failed to extract complex: wrong type");
+
+  Py_complex value = PyComplex_AsCComplex (obj);
+  return reinterpret_cast<std::complex<double>&> (value);
+}
+
+double
+extract_py_float (PyObject *obj)
+{
+  if (! obj)
+    throw object_convert_exception ("failed to extract float: null object");
+
+  if (! PyFloat_Check (obj))
+    throw object_convert_exception ("failed to extract float: wrong type");
+
+  return PyFloat_AsDouble (obj);
+}
+
 inline PyObject *
 make_py_int (int32_t value)
 {

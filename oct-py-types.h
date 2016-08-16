@@ -34,6 +34,13 @@ class octave_value;
 namespace pytave
 {
 
+//! Extract the integer value of the given Python bool object.
+//!
+//! @param obj Python bool object
+//! @return @c true or @c false value of @a obj
+bool
+extract_py_bool (PyObject *obj);
+
 //! Create a Python bool object with the value of the given @c bool value.
 //!
 //! @param value @c true or @c false value
@@ -41,12 +48,26 @@ namespace pytave
 PyObject *
 make_py_bool (bool value);
 
+//! Extract the complex value of the given Python complex object.
+//!
+//! @param obj Python complex object
+//! @return complex value of @a obj
+std::complex<double>
+extract_py_complex (PyObject *obj);
+
 //! Create a Python complex object with the value of the given @c complex value.
 //!
 //! @param value complex value
 //! @return Python complex object
 PyObject *
 make_py_complex (std::complex<double> value);
+
+//! Extract the floating point value of the given Python float object.
+//!
+//! @param obj Python float object
+//! @return floating point value of @a obj
+double
+extract_py_float (PyObject *obj);
 
 //! Create a Python float object with the value of the given @c double value.
 //!
