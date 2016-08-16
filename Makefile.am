@@ -40,6 +40,7 @@ DOC_FILES = \
   README.md
 
 OCT_FILES = \
+  __py_struct_from_dict__.oct \
   pycall.oct \
   pyeval.oct \
   pyexec.oct
