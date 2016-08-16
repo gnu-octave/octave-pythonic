@@ -52,3 +52,8 @@ endfunction
 %! else
 %!   assert (isobject (py.long (2^100)))
 %! endif
+
+## Cannot use '@' to make a handle to a Python function
+%!xtest
+%! fn = @py.math.abs;
+%! assert (fn (-3), 3)

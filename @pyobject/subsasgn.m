@@ -128,3 +128,8 @@ endfunction
 %! assert (A{1, 3}, 30)
 %! assert (A{2, 1}, 40)
 %! assert (A{2, 2}, 5)
+
+## Test of string key assignment, fails in the general case
+%!xtest
+%! d = pyobject (struct ());
+%! d{"value"} = 1;

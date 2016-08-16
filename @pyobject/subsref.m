@@ -253,6 +253,19 @@ endfunction
 %! a = L{2};
 %! assert (char (a), "None")
 
+## Test of multi-element indexing, fails to return correct number of output args
+%!xtest
+%! a = {1, 2, 3, 4, 5, 6};
+%! b = pyobject (a);
+%! b{:};
+%! assert (ans, a{end})
+
+%!xtest
+%! a = {1, 2, 3, 4, 5, 6};
+%! b = pyobject (a);
+%! c = {b{:}};
+%! assert (c, a)
+
 %!error <cannot index Python object>
 %! f = pyeval ("abs");
 %! f{1}

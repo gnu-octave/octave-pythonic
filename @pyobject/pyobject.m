@@ -341,6 +341,12 @@ endclassdef
 %!error double (pyobject ())
 %!error double (pyeval ("[1, 2, 3]"))
 
+## Octave fails to resolve function overloads via function handles
+%!xtest
+%! fn = @double;
+%! x = pyobject (int64 (42));
+%! assert (fn (x), double (x))
+
 %!error (isequal (pyobject ()))
 %!assert (! isequal (pyobject (1.2), 1.2))
 %!assert (isequal (pyobject ("a string"), pyobject ("a string")))
