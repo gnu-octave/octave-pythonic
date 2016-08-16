@@ -24,13 +24,24 @@ along with Pytave; see the file COPYING.  If not, see
 #define pytave_oct_py_types_h 1
 
 #include <Python.h>
+#include <complex>
 #include <string>
 
 class Cell;
 class octave_scalar_map;
+class octave_value;
 
 namespace pytave
 {
+
+PyObject *
+make_py_bool (bool value);
+
+PyObject *
+make_py_complex (std::complex<double> value);
+
+PyObject *
+make_py_float (double value);
 
 PyObject *
 make_py_dict (const octave_scalar_map& map);
@@ -39,7 +50,22 @@ int64_t
 extract_py_int64 (PyObject *obj);
 
 PyObject *
+make_py_int (int32_t value);
+
+PyObject *
+make_py_int (uint32_t value);
+
+PyObject *
+make_py_int (int64_t value);
+
+PyObject *
+make_py_int (uint64_t value);
+
+PyObject *
 make_py_list (const Cell& cell);
+
+PyObject *
+make_py_numeric_value (const octave_value& value);
 
 std::string
 extract_py_str (PyObject *obj);

@@ -157,81 +157,6 @@ namespace pytave
     py_object = object (handle<PyObject> ((PyObject *)pyarr));
   }
 
-  inline PyObject *
-  python_integer_value (int32_t value)
-  {
-#if PY_VERSION_HEX >= 0x03000000
-    return PyLong_FromLong (value);
-#else
-    return PyInt_FromLong (value);
-#endif
-  }
-
-  inline PyObject *
-  python_integer_value (uint32_t value)
-  {
-    return PyLong_FromUnsignedLong (value);
-  }
-
-  inline PyObject *
-  python_integer_value (int64_t value)
-  {
-#if (defined (HAVE_LONG_LONG) && (SIZEOF_LONG_LONG > SIZEOF_LONG))
-    return PyLong_FromLongLong (value);
-#else
-    return PyLong_FromLong (value);
-#endif
-  }
-
-  inline PyObject *
-  python_integer_value (uint64_t value)
-  {
-#if (defined (HAVE_LONG_LONG) && (SIZEOF_LONG_LONG > SIZEOF_LONG))
-    return PyLong_FromUnsignedLongLong (value);
-#else
-    return PyLong_FromUnsignedLong (value);
-#endif
-  }
-
-  static void
-  octscalar_to_pyobject (boost::python::object& py_object,
-                         const octave_value& arg)
-  {
-    PyObject *obj = 0;
-
-    if (arg.is_complex_type ())
-      obj = PyComplex_FromDoubles (arg.real ().double_value (),
-                                   arg.imag ().double_value ());
-    else if (arg.is_float_type ())
-      obj = PyFloat_FromDouble (arg.double_value ());
-
-    else if (arg.is_int8_type ())
-      obj = python_integer_value (arg.int8_scalar_value ().value ());
-    else if (arg.is_int16_type ())
-      obj = python_integer_value (arg.int16_scalar_value ().value ());
-    else if (arg.is_int32_type ())
-      obj = python_integer_value (arg.int32_scalar_value ().value ());
-    else if (arg.is_int64_type ())
-      obj = python_integer_value (arg.int64_scalar_value ().value ());
-
-    else if (arg.is_uint8_type ())
-      obj = python_integer_value (arg.uint8_scalar_value ().value ());
-    else if (arg.is_uint16_type ())
-      obj = python_integer_value (arg.uint16_scalar_value ().value ());
-    else if (arg.is_uint32_type ())
-      obj = python_integer_value (arg.uint32_scalar_value ().value ());
-    else if (arg.is_uint64_type ())
-      obj = python_integer_value (arg.uint64_scalar_value ().value ());
-
-    else if (arg.is_bool_type ())
-      obj = PyBool_FromLong (arg.bool_value ());
-
-    if (obj)
-      py_object = object (handle<PyObject> (obj));
-    else
-      throw value_convert_exception ("unhandled scalar type");
-  }
-
   void octvalue_to_pyobj (boost::python::object& py_object,
                           const octave_value& octvalue)
   {
@@ -244,7 +169,10 @@ namespace pytave
         py_object = object (handle<PyObject> (obj));
       }
     else if (octvalue.is_scalar_type ())
-      octscalar_to_pyobject (py_object, octvalue);
+      {
+        PyObject *obj = make_py_numeric_value (octvalue);
+        py_object = object (handle<PyObject> (obj));
+      }
     else if (octvalue.is_cell ())
       {
         PyObject *obj = make_py_list (octvalue.cell_value ());

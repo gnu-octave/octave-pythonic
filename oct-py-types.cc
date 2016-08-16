@@ -37,6 +37,100 @@ along with Pytave; see the file COPYING.  If not, see
 namespace pytave
 {
 
+PyObject *
+make_py_bool (bool value)
+{
+  if (value)
+    Py_RETURN_TRUE;
+  else
+    Py_RETURN_FALSE;
+}
+
+PyObject *
+make_py_complex (std::complex<double> value)
+{
+  Py_complex& py_complex_value = reinterpret_cast<Py_complex&> (value);
+  return PyComplex_FromCComplex (py_complex_value);
+}
+
+PyObject *
+make_py_float (double value)
+{
+  return PyFloat_FromDouble (value);
+}
+
+inline PyObject *
+make_py_int (int32_t value)
+{
+#if PY_VERSION_HEX >= 0x03000000
+  return PyLong_FromLong (value);
+#else
+  return PyInt_FromLong (value);
+#endif
+}
+
+inline PyObject *
+make_py_int (uint32_t value)
+{
+  return PyLong_FromUnsignedLong (value);
+}
+
+inline PyObject *
+make_py_int (int64_t value)
+{
+#if (defined (HAVE_LONG_LONG) && (SIZEOF_LONG_LONG > SIZEOF_LONG))
+  return PyLong_FromLongLong (value);
+#else
+  return PyLong_FromLong (value);
+#endif
+}
+
+inline PyObject *
+make_py_int (uint64_t value)
+{
+#if (defined (HAVE_LONG_LONG) && (SIZEOF_LONG_LONG > SIZEOF_LONG))
+  return PyLong_FromUnsignedLongLong (value);
+#else
+  return PyLong_FromUnsignedLong (value);
+#endif
+}
+
+PyObject *
+make_py_numeric_value (const octave_value& value)
+{
+  if (value.is_scalar_type ())
+    {
+      if (value.is_bool_type ())
+        return make_py_bool (value.bool_value ());
+
+      else if (value.is_int8_type ())
+        return make_py_int (value.int8_scalar_value ().value ());
+      else if (value.is_int16_type ())
+        return make_py_int (value.int16_scalar_value ().value ());
+      else if (value.is_int32_type ())
+        return make_py_int (value.int32_scalar_value ().value ());
+      else if (value.is_int64_type ())
+        return make_py_int (value.int64_scalar_value ().value ());
+
+      else if (value.is_uint8_type ())
+        return make_py_int (value.uint8_scalar_value ().value ());
+      else if (value.is_uint16_type ())
+        return make_py_int (value.uint16_scalar_value ().value ());
+      else if (value.is_uint32_type ())
+        return make_py_int (value.uint32_scalar_value ().value ());
+      else if (value.is_uint64_type ())
+        return make_py_int (value.uint64_scalar_value ().value ());
+
+      else if (value.is_complex_type ())
+        return make_py_complex (value.complex_value ());
+      else if (value.is_float_type ())
+        return make_py_float (value.double_value ());
+    }
+
+  throw value_convert_exception ("unhandled scalar type");
+  return 0;
+}
+
 inline PyObject *
 wrap_octvalue_to_pyobj (const octave_value& value)
 {
