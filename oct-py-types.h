@@ -34,42 +34,111 @@ class octave_value;
 namespace pytave
 {
 
+//! Create a Python bool object with the value of the given @c bool value.
+//!
+//! @param value @c true or @c false value
+//! @return Python bool object
 PyObject *
 make_py_bool (bool value);
 
+//! Create a Python complex object with the value of the given @c complex value.
+//!
+//! @param value complex value
+//! @return Python complex object
 PyObject *
 make_py_complex (std::complex<double> value);
 
+//! Create a Python float object with the value of the given @c double value.
+//!
+//! @param value floating point value
+//! @return Python float object
 PyObject *
 make_py_float (double value);
 
+//! Create a Python dict object from the given Octave scalar map value.
+//!
+//! The values contained in the map are recursively converted to appropriate
+//! Python values.
+//!
+//! @param map Octave scalar map
+//! @return Python dict object
 PyObject *
 make_py_dict (const octave_scalar_map& map);
 
+//! Extract the integer value of the given Python int or long object.
+//!
+//! @param obj Python int or long object
+//! @return integer value of @a obj
 int64_t
 extract_py_int64 (PyObject *obj);
 
+//! Create a Python int object with the value of the given @c int32_t value.
+//!
+//! @param value integer value
+//! @return Python int or long object
 PyObject *
 make_py_int (int32_t value);
 
+//! Create a Python int object with the value of the given @c uint32_t value.
+//!
+//! @param value integer value
+//! @return Python int or long object
 PyObject *
 make_py_int (uint32_t value);
 
+//! Create a Python int object with the value of the given @c int64_t value.
+//!
+//! @param value integer value
+//! @return Python int or long object
 PyObject *
 make_py_int (int64_t value);
 
+//! Create a Python int object with the value of the given @c uint64_t value.
+//!
+//! @param value integer value
+//! @return Python int or long object
 PyObject *
 make_py_int (uint64_t value);
 
+//! Create a Python list object from the given Octave cell array value.
+//!
+//! The values contained in the cell array are recursively converted to
+//! appropriate Python values.
+//!
+//! @param cell Octave cell array
+//! @return Python list object
 PyObject *
 make_py_list (const Cell& cell);
 
+//! Create a Python numeric object from the given Octave numeric or boolean
+//! scalar value.
+//!
+//! The following implicit type conversions are implemented by this function:
+//!
+//! @arg @c bool from Octave logical scalar,
+//! @arg @c complex from Octave double or single precision complex scalar,
+//! @arg @c float from Octave double or single precision scalar,
+//! @arg @c int from any Octave integer-valued scalar,
+//! @arg @c long from any Octave @c uint32, @c int64, or @c uint64, and only
+//!         if running against Python 2.
+//!
+//! @param value Octave numeric or boolean scalar value
+//! @return Python numeric object (@c bool, @c int, @c long, @c float, or
+//!         @c complex)
 PyObject *
 make_py_numeric_value (const octave_value& value);
 
+//! Extract the string value of the given Python str, bytes, or unicode object.
+//!
+//! @param obj Python str, bytes, or unicode object
+//! @return string value of @a obj
 std::string
 extract_py_str (PyObject *obj);
 
+//! Create a Python str object from the given @c string value.
+//!
+//! @param str string value
+//! @return Python str object
 PyObject *
 make_py_str (const std::string& str);
 
