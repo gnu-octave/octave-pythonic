@@ -26,11 +26,76 @@ along with Pytave; see the file COPYING.  If not, see
 
 #include <string>
 #include <boost/python.hpp>
+#include <octave/ov.h>
+#include <octave/ovl.h>
 
 #include "oct-py-eval.h"
+#include "oct-py-util.h"
+#include "octave_to_python.h"
 
 namespace pytave
 {
+
+PyObject *
+py_call_function (const std::string& func, const octave_value_list& args)
+{
+  // FIXME: factor out parsing of string into a function reference
+  boost::python::object obj;
+  get_object_from_python (func, obj);
+  return py_call_function (obj.ptr (), args);
+}
+
+PyObject *
+py_call_function (const std::string& func, PyObject *args, PyObject *kwargs)
+{
+  // FIXME: factor out parsing of string into a function reference
+  boost::python::object obj;
+  get_object_from_python (func, obj);
+  return py_call_function (obj.ptr (), args, kwargs);
+}
+
+PyObject *
+py_call_function (PyObject *callable, const octave_value_list& args)
+{
+  PyObject *kwargs = 0;
+  PyObject *args_list = PyList_New (0);
+  if (! args_list)
+    octave_throw_bad_alloc ();
+
+  for (int i = 0; i < args.length (); ++i)
+    {
+      boost::python::object arg;
+      pytave::octvalue_to_pyobj (arg, args(i));
+      PyObject *obj = arg.ptr ();
+
+      if (pytave::is_py_kwargs_argument (obj))
+        kwargs = pytave::update_py_dict (kwargs, obj);
+      else
+        {
+          Py_INCREF (obj);
+          PyList_Append (args_list, obj);
+        }
+    }
+
+  PyObject *args_tuple = PyList_AsTuple (args_list);
+  Py_DECREF (args_list);
+
+  PyObject *retval =  py_call_function (callable, args_tuple, kwargs);
+  Py_DECREF (args_tuple);
+  Py_XDECREF (kwargs);
+
+  return retval;
+}
+
+PyObject *
+py_call_function (PyObject *callable, PyObject *args, PyObject *kwargs)
+{
+  PyObject *retval = PyEval_CallObjectWithKeywords (callable, args, kwargs);
+  if (! retval)
+    throw boost::python::error_already_set ();
+
+  return retval;
+}
 
 PyObject *
 py_run_string_safe (const std::string& expr, int start, PyObject *globals,

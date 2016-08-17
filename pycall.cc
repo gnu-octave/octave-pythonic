@@ -33,6 +33,7 @@ along with Pytave; see the file COPYING.  If not, see
 #define PYTAVE_DO_DECLARE_SYMBOL
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
+#include "oct-py-eval.h"
 #include "oct-py-util.h"
 #include "octave_to_python.h"
 #include "python_to_octave.h"
@@ -101,31 +102,9 @@ r = pycall (s.add, 4)\n\
       if (callable.is_none ())
         error("pycall: FUNC must be a string or a Python reference");
 
-      PyObject *args_list = PyList_New (0);
-      PyObject *kwargs = 0;
-      for (int i = 1; i < nargin; i++)
-        {
-          object arg;
-          pytave::octvalue_to_pyobj (arg, args(i));
-          PyObject *obj = arg.ptr ();
-
-          if (pytave::is_py_kwargs_argument (obj))
-            kwargs = pytave::update_py_dict (kwargs, obj);
-          else
-            {
-              Py_INCREF (obj);
-              PyList_Append (args_list, obj);
-            }
-        }
-
-      PyObject *pyargs = PyList_AsTuple (args_list);
-      PyObject *result = PyEval_CallObjectWithKeywords (callable.ptr (), pyargs, kwargs);
+      octave_value_list arglist = args.slice (1, nargin - 1);
+      PyObject *result = pytave::py_call_function (callable.ptr (), arglist);
       object res = object (handle<PyObject> (result));
-
-      Py_DECREF (args_list);
-      Py_DECREF (pyargs);
-      if (kwargs)
-        Py_DECREF (kwargs);
 
       // Ensure reasonable "ans" behaviour, consistent with Python's "_".
       if (nargout > 0 || ! res.is_none ())
