@@ -29,6 +29,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/quit.h>
 
 #include "exceptions.h"
+#include "oct-py-eval.h"
 #include "oct-py-types.h"
 
 // FIXME: only here to bootstrap nested conversions needed in this file
@@ -134,6 +135,112 @@ make_py_int (uint64_t value)
 }
 
 PyObject *
+make_py_array (const void *data, size_t len, char typecode)
+{
+  if (! typecode)
+    throw object_convert_exception ("unable to create array from Octave data");
+
+  std::string arg { typecode };
+  PyObject *array = py_call_function ("array.array", ovl (arg));
+
+  if (len > 0)
+    {
+      // create a byte buffer containing a copy of the array binary data
+      const char *cdata = reinterpret_cast<const char *> (data);
+      PyObject *buf = PyBytes_FromStringAndSize (cdata, len);
+      if (! buf)
+        octave_throw_bad_alloc ();
+
+      PyObject *frombytes = (PyObject_HasAttrString (array, "frombytes") ?
+                             PyObject_GetAttrString (array, "frombytes") :
+                             PyObject_GetAttrString (array, "fromstring"));
+      PyObject *args = PyTuple_Pack (1, buf);
+      py_call_function (frombytes, args);
+      Py_DECREF (args);
+      Py_DECREF (buf);
+    }
+
+  return array;
+}
+
+// Prefer the 'q' and 'Q' typecodes if they are available (if Python 3 and
+// built with support for long long integers)
+
+#if (PY_VERSION_HEX >= 0x03000000) && defined (HAVE_LONG_LONG)
+#  define ARRAY_INT64_TYPECODE 'q'
+#  define ARRAY_UINT64_TYPECODE 'Q'
+#elif (SIZEOF_LONG == 8)
+#  define ARRAY_INT64_TYPECODE 'l'
+#  define ARRAY_UINT64_TYPECODE 'L'
+#else
+#  define ARRAY_INT64_TYPECODE 0
+#  define ARRAY_UINT64_TYPECODE 0
+#endif
+
+template <typename T>
+struct py_array_info { };
+
+template <>
+struct py_array_info<octave_int8> { static const char typecode = 'b'; };
+
+template <>
+struct py_array_info<octave_int16> { static const char typecode = 'h'; };
+
+template <>
+struct py_array_info<octave_int32> { static const char typecode = 'i'; };
+
+template <>
+struct py_array_info<octave_int64>
+{
+  static const char typecode = ARRAY_INT64_TYPECODE;
+};
+
+template <>
+struct py_array_info<octave_uint8> { static const char typecode = 'B'; };
+
+template <>
+struct py_array_info<octave_uint16> { static const char typecode = 'H'; };
+
+template <>
+struct py_array_info<octave_uint32> { static const char typecode = 'I'; };
+
+template <>
+struct py_array_info<octave_uint64> {
+  static const char typecode = ARRAY_UINT64_TYPECODE;
+};
+
+PyObject *
+make_py_array (const NDArray& nda)
+{
+  return make_py_array (nda.data (), nda.numel () * sizeof (double), 'd');
+}
+
+PyObject *
+make_py_array (const FloatNDArray& nda)
+{
+  return make_py_array (nda.data (), nda.numel () * sizeof (float), 'f');
+}
+
+template <typename T>
+PyObject *
+make_py_array (const intNDArray<T>& nda)
+{
+  return make_py_array (nda.data (), nda.numel () * sizeof (T),
+                        py_array_info<T>::typecode);
+}
+
+// Instantiate all possible integer array template functions needed
+
+template PyObject * make_py_array<octave_int8> (const int8NDArray&);
+template PyObject * make_py_array<octave_int16> (const int16NDArray&);
+template PyObject * make_py_array<octave_int32> (const int32NDArray&);
+template PyObject * make_py_array<octave_int64> (const int64NDArray&);
+template PyObject * make_py_array<octave_uint8> (const uint8NDArray&);
+template PyObject * make_py_array<octave_uint16> (const uint16NDArray&);
+template PyObject * make_py_array<octave_uint32> (const uint32NDArray&);
+template PyObject * make_py_array<octave_uint64> (const uint64NDArray&);
+
+PyObject *
 make_py_numeric_value (const octave_value& value)
 {
   if (value.is_scalar_type ())
@@ -166,6 +273,40 @@ make_py_numeric_value (const octave_value& value)
     }
 
   throw value_convert_exception ("unhandled scalar type");
+  return 0;
+}
+
+PyObject *
+make_py_array (const octave_value& value)
+{
+  if (value.is_numeric_type () && ! value.is_complex_type ()
+      && value.ndims () == 2 && (value.columns () == 1 || value.rows () == 1))
+    {
+      if (value.is_double_type ())
+        return make_py_array (value.array_value ());
+      else if (value.is_single_type ())
+        return make_py_array (value.float_array_value ());
+
+      else if (value.is_int8_type ())
+        return make_py_array (value.int8_array_value ());
+      else if (value.is_int16_type ())
+        return make_py_array (value.int16_array_value ());
+      else if (value.is_int32_type ())
+        return make_py_array (value.int32_array_value ());
+      else if (value.is_int64_type ())
+        return make_py_array (value.int64_array_value ());
+
+      else if (value.is_uint8_type ())
+        return make_py_array (value.uint8_array_value ());
+      else if (value.is_uint16_type ())
+        return make_py_array (value.uint16_array_value ());
+      else if (value.is_uint32_type ())
+        return make_py_array (value.uint32_array_value ());
+      else if (value.is_uint64_type ())
+        return make_py_array (value.uint64_array_value ());
+    }
+
+  throw value_convert_exception ("unhandled Octave numeric vector type");
   return 0;
 }
 

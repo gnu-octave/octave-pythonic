@@ -28,6 +28,9 @@ along with Pytave; see the file COPYING.  If not, see
 #include <string>
 
 class Cell;
+class FloatNDArray;
+class NDArray;
+template <typename T> class intNDArray;
 class octave_scalar_map;
 class octave_value;
 
@@ -127,6 +130,41 @@ make_py_int (int64_t value);
 //! @return Python int or long object
 PyObject *
 make_py_int (uint64_t value);
+
+//! Create a Python array object with the value of the given Octave array.
+//!
+//! @param nda array value
+//! @return Python array object
+PyObject *
+make_py_array (const NDArray& nda);
+
+//! Create a Python array object with the value of the given Octave array.
+//!
+//! @param nda array value
+//! @return Python array object
+PyObject *
+make_py_array (const FloatNDArray& nda);
+
+//! Create a Python array object with the value of the given Octave array.
+//!
+//! @param nda array value
+//! @return Python array object
+template <typename T>
+PyObject *
+make_py_array (const intNDArray<T>& nda);
+
+//! Create a Python array object from the given Octave numeric vector.
+//!
+//! All Octave real floating point and integer values are converted to
+//! corresponding Python array types by this function.
+//!
+//! @warning Depending on the version of Python and how it is configured,
+//!          @c int64 and @c uint64 vectors may not be supported.
+//!
+//! @param value Octave numeric or boolean scalar value
+//! @return Python array object
+PyObject *
+make_py_array (const octave_value& value);
 
 //! Create a Python tuple object from the given Octave cell array value.
 //!

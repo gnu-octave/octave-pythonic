@@ -178,6 +178,12 @@ namespace pytave
         PyObject *obj = make_py_tuple (octvalue.cell_value ());
         py_object = object (handle<PyObject> (obj));
       }
+    else if (octvalue.is_numeric_type () && octvalue.ndims () == 2
+             && (octvalue.columns () == 1 || octvalue.rows () == 1))
+      {
+        PyObject *obj = make_py_array (octvalue);
+        py_object = object (handle<PyObject> (obj));
+      }
     else if (octvalue.is_numeric_type () || octvalue.is_string ()
              || octvalue.is_bool_type ())
       octvalue_to_pyarr (py_object, octvalue);

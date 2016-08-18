@@ -193,8 +193,7 @@ r = pycall (s.add, 4)\n\
 ## Test round trip type preservation / conversion
 %!test
 %! pyexec ("def roundtrip(x): return x");
-%! values = { 0, pi, 2j, eps, false, true, version, "Hello world", ...
-%!            [1, 2, 3], eye (4) };
+%! values = { 0, pi, 2j, eps, false, true, version, "Hello world" };
 %! for i = 1:numel (values)
 %!   assert (pycall ("roundtrip", values{i}), values{i});
 %! endfor
@@ -246,11 +245,6 @@ r = pycall (s.add, 4)\n\
 %!   assert (double (pycall ("long", -2^31)), -2^31)
 %! endif
 %!assert (isa (pycall ("int", 2^100), "pyobject"))
-
-%!test
-%! pyexec ("def pyfunc(x): return 2*x");
-%! z = pycall ("pyfunc", [20 20]);
-%! assert (z, [40 40])
 
 %!test
 %! pyexec (["def pyfunc(x):\n" ...
