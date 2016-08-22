@@ -328,7 +328,7 @@ namespace pytave
 
     main_module.attr ("_in_octave")[id] = py_object;
     // Create @pyobject
-    oct_value = feval ("pyobject", ovl (0, id), 2);
+    oct_value = feval ("pyobject", ovl (0, id), 1)(0);
   }
 
   void pyobj_to_octvalue (octave_value& oct_value,
