@@ -24,6 +24,7 @@ along with Pytave; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
+#include <limits>
 #include <octave/Cell.h>
 #include <octave/oct-map.h>
 #include <octave/quit.h>
@@ -386,7 +387,20 @@ extract_py_int64 (PyObject *obj)
     throw object_convert_exception ("failed to extract integer: null object");
 
   if (PyLong_Check (obj))
-    return PyLong_AsLong (obj);
+    {
+      int overflow = 0;
+#if (defined (HAVE_LONG_LONG) && (SIZEOF_LONG_LONG == 8))
+      PY_LONG_LONG value = PyLong_AsLongLongAndOverflow (obj, &overflow);
+#else
+      long value = PyLong_AsLongAndOverflow (obj, &overflow);
+#endif
+      if (overflow)
+        if (overflow > 0)
+          value = std::numeric_limits<int64_t>::max ();
+        else
+          value = std::numeric_limits<int64_t>::min ();
+      return static_cast<int64_t> (value);
+    }
 #if PY_VERSION_HEX < 0x03000000
   else if (PyInt_Check (obj))
     return PyInt_AsLong (obj);
