@@ -33,6 +33,50 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-types.h"
 #include "octave_to_python.h"
 
+DEFUN_DLD (__py_int64_scalar_value__, args, nargout,
+           "-*- texinfo -*-\n\
+@deftypefn  {} {} __py_int64_scalar_value__ (@var{x})\n\
+Extract a scalar int64 value from the Python integer @var{x}.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  octave_value_list retval;
+
+  int nargin = args.length ();
+  if (nargin != 1)
+    {
+      print_usage ();
+      return retval;
+    }
+
+  if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
+    error ("pyobject.int64: argument must be a Python object");
+
+  Py_Initialize ();
+
+  try
+    {
+      // FIXME: PyObject *obj = look up stored pyobject reference (args(0));
+      boost::python::object arg;
+      pytave::octvalue_to_pyobj (arg, args(0));
+      PyObject *obj = arg.ptr ();
+
+      retval(0) = octave_int64 (pytave::extract_py_int64 (obj));
+    }
+  catch (pytave::object_convert_exception const &)
+    {
+      error ("pyobject.int64: error in return value type conversion");
+    }
+  catch (boost::python::error_already_set const &)
+    {
+      std::string message = pytave::fetch_exception_message ();
+      error ("pyobject.int64: %s", message.c_str ());
+    }
+
+  return retval;
+}
+
 DEFUN_DLD (__py_struct_from_dict__, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_struct_from_dict__ (@var{dict})\n\

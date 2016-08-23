@@ -138,6 +138,10 @@ classdef pyobject < handle
       endif
     endfunction
 
+    function y = int64 (x)
+      y = __py_int64_scalar_value__ (x);
+    endfunction
+
     function y = struct (x)
       y = __py_struct_from_dict__ (x);
     endfunction
@@ -343,6 +347,14 @@ endclassdef
 %!error double (pyobject ("this is not a number"))
 %!error double (pyobject ())
 %!error double (pyeval ("[1, 2, 3]"))
+
+## Test conversion method pyobject.int64
+%!assert (int64 (pyobject (int8 (0))), int64 (0))
+%!assert (int64 (pyobject (int64 (42))), int64 (42))
+%!assert (int64 (pyobject (intmax ("int64"))), intmax ("int64"))
+%!assert (int64 (pyobject (intmin ("int64"))), intmin ("int64"))
+%!assert (int64 (pycall ("int", 1e100)), intmax ("int64"))
+%!assert (int64 (pycall ("int", -1e100)), intmin ("int64"))
 
 ## Test conversion method pyobject.struct
 %!assert (struct (pycall ("dict")), struct ())
