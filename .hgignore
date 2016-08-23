@@ -43,6 +43,7 @@ syntax: regexp
 (^|/)\.deps
 (^|/)\.libs
 
+(^|/)PKG_(ADD|DEL)
 (^|/)octave-workspace
 
 # e.g. doc/faq/OctaveFAQ.info

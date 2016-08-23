@@ -77,7 +77,7 @@ noinst_LTLIBRARIES = libpytave.la
 libpytave_la_CPPFLAGS = $(AM_CPPFLAGS)
 libpytave_la_SOURCES = $(COMMON_SOURCE_FILES) $(PYTAVE_HEADER_FILES)
 
-CLEANFILES = *.oct
+CLEANFILES = *.oct PKG_ADD PKG_DEL
 SUFFIXES = .oct
 
 AM_V_MKOCTFILE = $(am__v_MKOCTFILE_$(V))
@@ -93,7 +93,27 @@ OCT_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 %.oct: %.cc libpytave.la $(PYTAVE_HEADER_FILES)
 	$(AM_V_MKOCTFILE)$(OCT_LINK) $< $(OCT_LIBS)
 
-all-local: $(OCT_FILES)
+PKG_ADD: $(OCT_SOURCE_FILES)
+	$(AM_V_GEN)for f in $(OCT_SOURCE_FILES); do \
+	  b=$${f%.cc}; \
+	  funcs=`$(SED) -n 's/^DEFUN.*(\(\w\+\),.*/\1/p' $$f | grep -v $$b`; \
+	  if test -n "$$funcs"; then \
+	    echo "$$funcs" | $(SED) "s/.*/autoload (\"&\", \"$$b.oct\");/" > $@-t && \
+	    mv $@-t $@ || exit $?; \
+	  fi; \
+	done
+
+PKG_DEL: $(OCT_SOURCE_FILES)
+	$(AM_V_GEN)for f in $(OCT_SOURCE_FILES); do \
+	  b=$${f%.cc}; \
+	  funcs=`$(SED) -n 's/^DEFUN.*(\(\w\+\),.*/\1/p' $$f | grep -v $$b`; \
+	  if test -n "$$funcs"; then \
+	    echo "$$funcs" | $(SED) "s/.*/autoload (\"&\", which (\"&\"), \"remove\");/" > $@-t && \
+	    mv $@-t $@ || exit $?; \
+	  fi; \
+	done
+
+all-local: $(OCT_FILES) PKG_ADD PKG_DEL
 	@echo ""
 	@echo "Pytave successfully built.  Now choose from the following:"
 	@echo ""
