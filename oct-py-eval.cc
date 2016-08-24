@@ -39,19 +39,19 @@ namespace pytave
 PyObject *
 py_call_function (const std::string& func, const octave_value_list& args)
 {
-  // FIXME: factor out parsing of string into a function reference
-  boost::python::object obj;
-  get_object_from_python (func, obj);
-  return py_call_function (obj.ptr (), args);
+  PyObject *func_obj = py_find_function (func);
+  PyObject *retval = py_call_function (func_obj, args);
+  Py_DECREF (func_obj);
+  return retval;
 }
 
 PyObject *
 py_call_function (const std::string& func, PyObject *args, PyObject *kwargs)
 {
-  // FIXME: factor out parsing of string into a function reference
-  boost::python::object obj;
-  get_object_from_python (func, obj);
-  return py_call_function (obj.ptr (), args, kwargs);
+  PyObject *func_obj = py_find_function (func);
+  PyObject *retval = py_call_function (func_obj, args, kwargs);
+  Py_DECREF (func_obj);
+  return retval;
 }
 
 PyObject *

@@ -89,6 +89,10 @@ r = pycall (s.add, 4)\n\
       return retval;
     }
 
+  if (! (args(0).is_string () || (args(0).is_object ()
+                                  && args(0).class_name () == "pyobject")))
+    error ("pycall: FUNC must be a string or a Python reference");
+
   Py_Initialize ();
 
   pytave::init_exceptions ();
@@ -97,14 +101,28 @@ r = pycall (s.add, 4)\n\
 
   try
     {
-      object callable;
-      pytave::get_object_from_python (args(0), callable);
-      if (callable.is_none ())
-        error("pycall: FUNC must be a string or a Python reference");
+      PyObject *callable = 0;
+      if (args(0).is_string ())
+        callable = pytave::py_find_function (args(0).string_value ());
+      else
+        {
+          // FIXME: callable = get existing pyobject reference (args(0))
+          boost::python::object obj;
+          pytave::get_object_from_python (args(0), obj);
+          if (obj.is_none ())
+            error("pycall: FUNC must be a string or a Python reference");
+          callable = obj.ptr ();
+          Py_INCREF (callable);
+        }
+
+      if (! callable)
+        error ("pycall: no such Python function or callable: %s",
+               args(0).string_value ().c_str ());
 
       octave_value_list arglist = args.slice (1, nargin - 1);
-      PyObject *result = pytave::py_call_function (callable.ptr (), arglist);
+      PyObject *result = pytave::py_call_function (callable, arglist);
       object res = object (handle<PyObject> (result));
+      Py_DECREF (callable);
 
       // Ensure reasonable "ans" behaviour, consistent with Python's "_".
       if (nargout > 0 || ! res.is_none ())
