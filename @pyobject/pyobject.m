@@ -142,6 +142,16 @@ classdef pyobject < handle
       y = __py_int64_scalar_value__ (x);
     endfunction
 
+    function y = isa (x, typestr)
+      assert (nargin == 2);
+      assert (ischar (typestr));
+      if ((numel (typestr) > 3) && (typestr(1:3) == "py."))
+        y = __py_isinstance__ (x, typestr);
+      else
+        y = builtin ("isa", x, typestr);
+      endif
+    endfunction
+
     function y = struct (x)
       y = __py_struct_from_dict__ (x);
     endfunction
@@ -347,6 +357,20 @@ endclassdef
 %!error double (pyobject ("this is not a number"))
 %!error double (pyobject ())
 %!error double (pyeval ("[1, 2, 3]"))
+
+## Test class type check method pyobject.isa
+%!assert (isa (pyobject (), "handle"))
+%!assert (isa (pyobject (), "pyobject"))
+%!assert (! isa (pyobject (), "py.None"))
+%!assert (isa (pyobject (0), "handle"))
+%!assert (isa (pyobject (0), "pyobject"))
+%!assert (isa (pyobject (0), "py.float"))
+%!assert (isa (pyobject (int32 (0)), "py.int"))
+%!assert (isa (pyobject (true), "py.bool"))
+%!assert (isa (pyobject ("a string"), "py.str"))
+%!assert (isa (pyobject (struct ()), "py.dict"))
+%!assert (isa (pyobject (cell ()), "py.tuple"))
+%!assert (isa (pyobject ([1, 2, 3, 4]), "py.array.array"))
 
 ## Test conversion method pyobject.int64
 %!assert (int64 (pyobject (int8 (0))), int64 (0))
