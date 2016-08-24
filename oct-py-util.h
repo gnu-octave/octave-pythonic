@@ -38,6 +38,57 @@ void
 get_object_from_python (const octave_value& oct_value,
                         boost::python::object& py_object);
 
+//! Return a reference to the builtins module.
+//!
+//! @return reference to the builtins module
+PyObject *
+py_builtins_module ();
+
+//! Return a reference to the named function in the given module.
+//!
+//! @param module module to find the function in
+//! @param name name of the function
+//! @return a reference to the function, or a null pointer
+PyObject *
+py_find_function (PyObject *module, const std::string& name);
+
+//! Return a reference to the named function in the given module.
+//!
+//! @param module name of the module to find the function in
+//! @param name name of the function
+//! @return a reference to the function, or a null pointer
+PyObject *
+py_find_function (const std::string& module, const std::string& name);
+
+//! Return a reference to the fully-qualified function name.
+//!
+//! @param name fully-qualified name of the function
+//! @return a reference to the function, or a null pointer
+PyObject *
+py_find_function (const std::string& name);
+
+//! Return a reference to the fully-qualified type name.
+//!
+//! @param name fully-qualified name of the type
+//! @return a reference to the type, or a null pointer
+PyObject *
+py_find_type (const std::string& name);
+
+//! Return a reference to the named module.
+//!
+//! @param name fully-qualified name of the module
+//! @return a reference to the module, or a null pointer
+PyObject *
+py_import_module (const std::string& name);
+
+//! Check whether an object is an instance of a type.
+//!
+//! @param obj Python object
+//! @param type Python type
+//! @return @c true if @a obj is an instance of @a type, @c false otherwise
+bool
+py_isinstance (PyObject *obj, PyObject *type);
+
 std::string
 py_object_class_name (PyObject *obj);
 

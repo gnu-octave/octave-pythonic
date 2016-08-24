@@ -96,6 +96,87 @@ get_object_from_python (const octave_value& oct_value,
     }
 }
 
+PyObject *
+py_builtins_module ()
+{
+#if PY_VERSION_HEX >= 0x03000000
+  return py_import_module ("builtins");
+#else
+  return py_import_module ("__builtin__");
+#endif
+}
+
+PyObject *
+py_find_function (PyObject *module, const std::string& name)
+{
+  if (module && PyModule_Check (module))
+    {
+      PyObject *obj = PyObject_GetAttrString (module, name.c_str ());
+      if (obj && ! PyCallable_Check (obj))
+        {
+          Py_CLEAR (obj);
+        }
+
+      return obj;
+    }
+
+  return 0;
+}
+
+PyObject *
+py_find_function (const std::string& module, const std::string& name)
+{
+  PyObject *mod = py_import_module (module);
+  PyObject *func =  py_find_function (mod, name);
+  Py_XDECREF (mod);
+  return func;
+}
+
+PyObject *
+py_find_function (const std::string& name)
+{
+  std::string::size_type idx = name.rfind (".");
+  if (idx == std::string::npos)
+    {
+      PyObject *func = py_find_function ("__main__", name);
+      if (! func)
+        func = py_find_function (py_builtins_module (), name);
+      return func;
+    }
+  else
+    {
+      std::string module = name.substr (0, idx);
+      std::string function = name.substr (idx + 1);
+      return py_find_function (module, function);
+    }
+}
+
+PyObject *
+py_find_type (const std::string& name)
+{
+  PyObject *obj = py_find_function (name);
+  if (obj && PyType_Check (obj))
+    return obj;
+
+  Py_XDECREF (obj);
+  return 0;
+}
+
+PyObject *
+py_import_module (const std::string& name)
+{
+  return PyImport_ImportModule (name.c_str ());
+}
+
+bool
+py_isinstance (PyObject *obj, PyObject *type)
+{
+  if (obj && type)
+    return static_cast<bool> (PyObject_IsInstance (obj, type));
+
+  return false;
+}
+
 std::string
 py_object_class_name (PyObject *obj)
 {
