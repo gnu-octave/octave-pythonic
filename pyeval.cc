@@ -194,13 +194,6 @@ pyeval (\"dict(two=2)\")\n\
 %! assert (pyeval ("myvar", myNS1), 2)
 %! assert (pyeval ("myvar", myNS2), 3)
 
-%!test
-%! pyexec ("if 'myvar' in globals(): del myvar")
-%! % Namespaces can also be passed as strings
-%! pyexec ("myNS = {}");
-%! pyexec ("myvar = 1.", "myNS");
-%! assert (pyeval ("myvar", "myNS"), 1);
-
 %!error <NameError>
 %! pyexec ("if 'myvar' in globals(): del myvar")
 %! % Variable defined in local namespace MUST not be available globally
