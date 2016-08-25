@@ -119,12 +119,21 @@ classdef pyobject < handle
 
     function y = isa (x, typestr)
       assert (nargin == 2);
-      assert (ischar (typestr));
-      if ((numel (typestr) > 3) && (typestr(1:3) == "py."))
-        y = __py_isinstance__ (x, typestr);
-      else
-        y = builtin ("isa", x, typestr);
+      assert (ischar (typestr) || iscellstr (typestr));
+
+      if (ischar (typestr))
+        typestr = { typestr };
       endif
+
+      y = false (size (typestr));
+
+      for i = 1:numel (typestr)
+        if ((numel (typestr{i}) > 3) && (typestr{i}(1:3) == "py."))
+          y(i) = __py_isinstance__ (x, typestr{i});
+        else
+          y(i) = builtin ("isa", x, typestr{i});
+        endif
+      endfor
     endfunction
 
     function y = struct (x)
@@ -346,6 +355,7 @@ endclassdef
 %!assert (isa (pyobject (struct ()), "py.dict"))
 %!assert (isa (pyobject (cell ()), "py.tuple"))
 %!assert (isa (pyobject ([1, 2, 3, 4]), "py.array.array"))
+%!assert (all (isa (pyobject (0), {"pyobject", "py.float", "py.numbers.Number"})))
 
 ## Test conversion method pyobject.int64
 %!assert (int64 (pyobject (int8 (0))), int64 (0))
