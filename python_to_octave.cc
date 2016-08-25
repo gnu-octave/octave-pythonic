@@ -310,27 +310,6 @@ namespace pytave
       }
   }
 
-  static void
-  pyobj_to_oct_pyobject (octave_value& oct_value,
-                         const boost::python::object& py_object)
-  {
-    object main_module = import ("__main__");
-    object builtins_module;
-    pytave::get_builtins_module (builtins_module);
-    object hex_function = builtins_module.attr ("hex");
-    object id_function = builtins_module.attr ("id");
-    object idtmp = hex_function (id_function (py_object));
-    std::string id = extract<std::string> (idtmp);
-
-    // Ensure dict for Octave communication exists
-    if (! PyObject_HasAttrString (main_module.ptr (), "_in_octave"))
-      main_module.attr ("_in_octave") = boost::python::dict ();
-
-    main_module.attr ("_in_octave")[id] = py_object;
-    // Create @pyobject
-    oct_value = feval ("pyobject", ovl (0, id), 1)(0);
-  }
-
   void pyobj_to_octvalue (octave_value& oct_value,
                           const boost::python::object& py_object)
   {
@@ -351,7 +330,7 @@ namespace pytave
     else if (PyBytes_Check (py_object.ptr ()) || PyUnicode_Check (py_object.ptr ()))
       oct_value = extract_py_str (py_object.ptr ());
     else
-      pyobj_to_oct_pyobject (oct_value, py_object);
+      oct_value = pyobject_wrap_object (py_object.ptr ());
   }
 
   void pytuple_to_octlist (octave_value_list& octave_list,

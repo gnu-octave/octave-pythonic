@@ -38,6 +38,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include "exceptions.h"
 #include "octave_to_python.h"
 #include "oct-py-types.h"
+#include "oct-py-util.h"
 
 using namespace boost::python;
 
@@ -194,9 +195,8 @@ namespace pytave
       }
     else if (octvalue.is_object () && octvalue.class_name () == "pyobject")
       {
-        octave_value_list tmp = feval ("getid", ovl (octvalue), 1);
-        std::string hexid = tmp(0).string_value ();
-        py_object = boost::python::import ("__main__").attr ("_in_octave")[hexid];
+        PyObject *obj = pyobject_unwrap_object (octvalue);
+        py_object = object (handle<PyObject> (obj));
       }
     else
       throw value_convert_exception (

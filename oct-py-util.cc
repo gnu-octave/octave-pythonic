@@ -51,10 +51,8 @@ get_object_from_python (const octave_value& oct_value,
 {
   if (oct_value.is_object () && oct_value.class_name () == "pyobject")
     {
-      octave_value_list tmp = feval ("getid", ovl (oct_value), 1);
-      std::string hexid = tmp(0).string_value ();
-      object main_module = import ("__main__");
-      py_object = main_module.attr ("_in_octave")[hexid];
+      PyObject *obj = pyobject_unwrap_object (oct_value);
+      py_object = boost::python::object (boost::python::handle<> (obj));
     }
   else
     py_object = boost::python::object (); // None
@@ -147,6 +145,95 @@ py_object_class_name (PyObject *obj)
   PyObject *class_ = obj ? PyObject_GetAttrString (obj, "__class__") : 0;
   PyObject *name_ = class_ ? PyObject_GetAttrString (class_, "__name__") : 0;
   return name_ ? extract_py_str (name_): "";
+}
+
+// FIXME: could make this into a class/singleton wrapper a la Octave core
+PyObject *objstore = 0;
+
+inline PyObject *
+py_objstore ()
+{
+  if (! objstore)
+    {
+      PyObject *main = py_import_module ("__main__");
+      PyObject *ns = main ? PyObject_GetAttrString (main, "__dict__") : 0;
+      PyObject *dict = ns ? PyDict_GetItemString (ns, "_in_octave") : 0;
+
+      if (dict)
+        Py_INCREF (dict);
+
+      if (! dict)
+        {
+          dict = PyDict_New ();
+          if (dict && ns)
+            PyDict_SetItemString (ns, "_in_octave", dict);
+        }
+
+      if (! dict)
+        throw boost::python::error_already_set ();
+
+      objstore = dict;
+    }
+  return objstore;
+}
+
+void
+py_objstore_del (uint64_t key)
+{
+  PyObject *store = py_objstore ();
+  PyObject *key_obj = make_py_int (key);
+  PyObject *key_fmt = PyNumber_ToBase (key_obj, 16);
+  PyDict_DelItem (store, key_fmt);
+  Py_DECREF (key_fmt);
+  Py_DECREF (key_obj);
+}
+
+PyObject *
+py_objstore_get (uint64_t key)
+{
+  PyObject *store = py_objstore ();
+  PyObject *key_obj = make_py_int (key);
+  PyObject *key_fmt = PyNumber_ToBase (key_obj, 16);
+  PyObject *obj = PyDict_GetItem (store, key_fmt);
+  Py_DECREF (key_fmt);
+  Py_DECREF (key_obj);
+  if (obj)
+    Py_INCREF (obj);
+  return obj;
+}
+
+uint64_t
+py_objstore_put (PyObject *obj)
+{
+  PyObject *store = py_objstore ();
+  uint64_t key = reinterpret_cast<uint64_t> (obj);
+  PyObject *key_obj = make_py_int (key);
+  PyObject *key_fmt = PyNumber_ToBase (key_obj, 16);
+  PyDict_SetItem (store, key_fmt, obj);
+  Py_DECREF (key_fmt);
+  Py_DECREF (key_obj);
+  return key;
+}
+
+octave_value
+pyobject_wrap_object (PyObject *obj)
+{
+  uint64_t key = py_objstore_put (obj);
+  octave_value_list out = feval ("pyobject", ovl (0, octave_uint64 (key)), 1);
+  return out(0);
+}
+
+PyObject *
+pyobject_unwrap_object (const octave_value& value)
+{
+  if (value.is_object () && value.class_name () == "pyobject")
+    {
+      octave_value_list out = feval ("id", ovl (value), 1);
+      uint64_t key = out(0).uint64_scalar_value ();
+      return py_objstore_get (key);
+    }
+
+  return 0;
 }
 
 bool

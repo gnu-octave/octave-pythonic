@@ -92,6 +92,21 @@ py_isinstance (PyObject *obj, PyObject *type);
 std::string
 py_object_class_name (PyObject *obj);
 
+void
+py_objstore_del (uint64_t key);
+
+PyObject *
+py_objstore_get (uint64_t key);
+
+uint64_t
+py_objstore_put (PyObject *obj);
+
+octave_value
+pyobject_wrap_object (PyObject *obj);
+
+PyObject *
+pyobject_unwrap_object (const octave_value& value);
+
 bool
 is_py_kwargs_argument (PyObject *obj);
 

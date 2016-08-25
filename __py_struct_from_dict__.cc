@@ -134,6 +134,83 @@ This is a private internal function not intended for direct use.\n\
   return retval;
 }
 
+DEFUN_DLD (__py_objstore_del__, args, nargout,
+           "-*- texinfo -*-\n\
+@deftypefn {} {} __py_objstore_del__ (@var{key})\n\
+Delete the Python object stored under @var{key} from the object store.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  if (args.length () != 1)
+    print_usage ();
+
+  Py_Initialize ();
+  uint64_t key = args(0).xuint64_scalar_value ("__py_objstore_del__: KEY must be an integer");
+  pytave::py_objstore_del (key);
+
+  return ovl ();
+}
+
+DEFUN_DLD (__py_objstore_get__, args, nargout,
+           "-*- texinfo -*-\n\
+@deftypefn {} {} __py_objstore_get__ (@var{key})\n\
+Get the Python object stored under @var{key} from the object store.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  if (args.length () != 1)
+    print_usage ();
+
+  Py_Initialize ();
+  uint64_t key = args(0).xuint64_scalar_value ("__py_objstore_get__: KEY must be an integer");
+  PyObject *obj = pytave::py_objstore_get (key);
+
+  if (! obj)
+    error ("__py_objstore_get__: no existing Python object found for key %ju", key);
+
+  octave_value retval = pytave::pyobject_wrap_object (obj);
+
+  return ovl (retval);
+}
+
+DEFUN_DLD (__py_objstore_put__, args, nargout,
+           "-*- texinfo -*-\n\
+@deftypefn {} {} __py_objstore_put__ (@var{value})\n\
+Convert @var{value} to a Python value and store in the object store.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  if (args.length () != 1)
+    print_usage ();
+
+  Py_Initialize ();
+  boost::python::numeric::array::set_module_and_type ("numpy", "ndarray");
+  _import_array ();
+  // FIXME: PyObject *obj = convert argument to Python (args(0));
+  PyObject *obj = 0;
+  try
+    {
+      boost::python::object arg;
+      pytave::octvalue_to_pyobj (arg, args(0));
+      obj = arg.ptr ();
+      Py_INCREF (obj);
+    }
+  catch (pytave::value_convert_exception const &)
+    {
+    }
+
+  if (! obj)
+    error ("__py_objstore_put__: VALUE must be convertible to a Python value");
+
+  uint64_t key = pytave::py_objstore_put (obj);
+  Py_DECREF (obj);
+
+  return ovl (octave_uint64 (key));
+}
+
 DEFUN_DLD (__py_struct_from_dict__, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_struct_from_dict__ (@var{dict})\n\

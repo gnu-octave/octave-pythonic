@@ -29,7 +29,7 @@
 
 classdef pyobject < handle
   properties
-    id
+    m_id
   endproperties
 
 
@@ -37,42 +37,22 @@ classdef pyobject < handle
     function obj = pyobject (x, id)
       if (nargin == 0)
         obj = pyeval ("None");
-        return
-      endif
-
-      if (nargin == 1)
+      elseif (nargin == 1)
         ## Convert the input to a pyobject
         if (isa (x, "pyobject"))
           obj = x;
         else
-          ## Ensure dict for Octave communication exists
-          cmd = [ "if not getattr(__import__('__main__'), '_in_octave', None):\n" ...
-                  "    __import__('__main__')._in_octave = dict()" ];
-          pyexec (cmd);
-
-          ## Function to insert and return the hex id
-          cmd = [ "def _in_octave_insert(x):\n" ...
-                  "    h = hex(id(x))\n" ...
-                  "    __import__('__main__')._in_octave[h] = x\n" ...
-                  "    return h" ];
-          pyexec (cmd);
-
-          id = pycall ("_in_octave_insert", x);
-          obj = pyobject (0, id);
+          obj.m_id = __py_objstore_put__ (x);
         endif
-        return
-      endif
-
-      if (nargin == 2)
+      elseif (nargin == 2)
         ## The actual constructor.  Nicer to split this off to static method
         ## like `pyobject.new` but I don't know how to call from pycall.cc.
         ## Warning: not intended for casual use: you must also insert the
-        ## object into the Python `_in_octave` dict with key `id`.
-        obj.id = id;
-        return
+        ## object into the Python object store with key `id`.
+        obj.m_id = id;
+      else
+        error ("pyobject: unexpected input to the constructor")
       endif
-
-      error ("pyobject: unexpected input to the constructor")
     endfunction
 
     function delete (x)
@@ -93,9 +73,7 @@ classdef pyobject < handle
 
       #disp ("delete")
 
-      ## throws KeyError if it wasn't in there for some reason
-      cmd = sprintf ("__import__('__main__')._in_octave.pop('%s')", x.id);
-      pyexec (cmd)
+      __py_objstore_del__ (x.m_id);
     endfunction
 
     # methods defined in external files
@@ -103,8 +81,8 @@ classdef pyobject < handle
     display (x)
     subsref (x, idx)
 
-    function r = getid (x)
-      r = x.id;
+    function r = id (x);
+      r = x.m_id;
     endfunction
 
     function s = char (x)
