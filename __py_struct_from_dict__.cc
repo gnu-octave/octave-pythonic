@@ -78,6 +78,39 @@ This is a private internal function not intended for direct use.\n\
   return retval;
 }
 
+DEFUN_DLD (__py_is_none__, args, nargout,
+           "-*- texinfo -*-\n\
+@deftypefn  {} {} __py_is_none__ (@var{x})\n\
+Check whether the Python object @var{obj} is the @code{None} object.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  if (args.length () != 1)
+    print_usage ();
+
+  Py_Initialize ();
+
+  PyObject *obj = pytave::pyobject_unwrap_object (args(0));
+
+  bool retval = (obj && (obj == Py_None));
+  Py_XDECREF (obj);
+
+  return ovl (retval);
+}
+
+/*
+%!assert (__py_is_none__ (pyobject ()))
+%!assert (__py_is_none__ (pyeval ("None")))
+%!assert (! __py_is_none__ (1))
+%!assert (! __py_is_none__ ("None"))
+%!assert (! __py_is_none__ (pyobject (1)))
+%!assert (! __py_is_none__ (pyobject ("None")))
+
+%!error __py_is_none__ ()
+%!error __py_is_none__ (1, 2)
+*/
+
 DEFUN_DLD (__py_isinstance__, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_isinstance__ (@var{x})\n\

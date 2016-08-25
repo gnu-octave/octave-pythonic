@@ -96,8 +96,7 @@ function varargout = subsref (x, idx)
   endif
 
   ## unpack results, ensure "ans" works (see also pycall)
-  is_none = pyeval ("lambda x: x is None");
-  if (nargout == 0 && ! pycall (is_none, r))
+  if (nargout == 0 && ! __py_is_none__ (r))
     varargout{1} = r;
   elseif (nargout == 1)
     varargout{1} = r;
