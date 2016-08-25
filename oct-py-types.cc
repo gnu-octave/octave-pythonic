@@ -99,7 +99,7 @@ extract_py_float (PyObject *obj)
   return PyFloat_AsDouble (obj);
 }
 
-inline PyObject *
+PyObject *
 make_py_int (int32_t value)
 {
 #if PY_VERSION_HEX >= 0x03000000
@@ -109,13 +109,13 @@ make_py_int (int32_t value)
 #endif
 }
 
-inline PyObject *
+PyObject *
 make_py_int (uint32_t value)
 {
   return PyLong_FromUnsignedLong (value);
 }
 
-inline PyObject *
+PyObject *
 make_py_int (int64_t value)
 {
 #if (defined (HAVE_LONG_LONG) && (SIZEOF_LONG_LONG > SIZEOF_LONG))
@@ -125,7 +125,7 @@ make_py_int (int64_t value)
 #endif
 }
 
-inline PyObject *
+PyObject *
 make_py_int (uint64_t value)
 {
 #if (defined (HAVE_LONG_LONG) && (SIZEOF_LONG_LONG > SIZEOF_LONG))
