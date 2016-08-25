@@ -92,7 +92,7 @@ endfunction
 %! L{2} = "Octave";
 %! assert (length (L) == 2)
 %! assert (L{1}, 10)
-%! assert (L{2}, "Octave")
+%! assert (char (L{2}), "Octave")
 
 %!test
 %! % dict assignment, adding new keys

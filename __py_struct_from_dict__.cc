@@ -211,6 +211,47 @@ This is a private internal function not intended for direct use.\n\
   return ovl (octave_uint64 (key));
 }
 
+DEFUN_DLD (__py_string_value__, args, nargout,
+           "-*- texinfo -*-\n\
+@deftypefn {} {} __py_string_value__ (@var{obj})\n\
+Return the string value or representation of the Python object @var{obj}.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  if (args.length () != 1)
+    print_usage ();
+
+  if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
+    error ("pyobject.char: argument must be a valid Python object");
+
+  Py_Initialize ();
+
+  PyObject *obj = pytave::pyobject_unwrap_object (args(0));
+  if (! obj)
+    error ("pyobject.char: argument must be a valid Python object");
+
+  std::string str;
+
+  if (PyBytes_Check (obj) || PyUnicode_Check (obj))
+    str = pytave::extract_py_str (obj);
+  else if (Py_TYPE (obj)->tp_str != NULL)
+    {
+      PyObject *s = PyObject_Str (obj);
+      str = pytave::extract_py_str (s);
+      Py_DECREF (s);
+    }
+  else
+    {
+      Py_DECREF (obj);
+      error ("pyobject.char: cannot convert Python object to string");
+    }
+
+  Py_DECREF (obj);
+
+  return ovl (str);
+}
+
 DEFUN_DLD (__py_struct_from_dict__, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_struct_from_dict__ (@var{dict})\n\

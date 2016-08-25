@@ -327,8 +327,6 @@ namespace pytave
       oct_value = extract_py_complex (py_object.ptr ());
     else if (arrayx.check ())
       pyarr_to_octvalue (oct_value, (PyArrayObject*)py_object.ptr ());
-    else if (PyBytes_Check (py_object.ptr ()) || PyUnicode_Check (py_object.ptr ()))
-      oct_value = extract_py_str (py_object.ptr ());
     else
       oct_value = pyobject_wrap_object (py_object.ptr ());
   }

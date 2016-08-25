@@ -77,16 +77,13 @@ classdef pyobject < handle
     endfunction
 
     # methods defined in external files
+    char (x)
     dummy (x)
     display (x)
     subsref (x, idx)
 
     function r = id (x);
       r = x.m_id;
-    endfunction
-
-    function s = char (x)
-      s = pycall ("str", x);
     endfunction
 
     function varargout = disp (x)

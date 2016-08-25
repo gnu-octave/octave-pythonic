@@ -42,7 +42,9 @@
 ##     @{
 ##       [1,1] =  10
 ##       [1,2] =  20
-##       [1,3] = hello
+##             = [pyobject ...]
+##
+##                 hello
 ##     @}
 ## @end group
 ## @end example
@@ -84,7 +86,7 @@ endfunction
 %!assert (cell (pyeval ("[1.]")), {1})
 %!assert (cell (pyeval ("[1., 2., 3.]")), {1, 2, 3})
 %!assert (cell (pyeval ("(1., 2., 3.)")), {1, 2, 3})
-%!assert (cell (pyobject ("asdf")), {"a", "s", "d", "f"})
+%!assert (cellfun (@char, cell (pyobject ("asdf")), "uniformoutput", false), {"a", "s", "d", "f"})
 
 %!test
 %! c = cell (pyeval ("range(10)"));

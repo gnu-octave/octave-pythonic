@@ -147,13 +147,13 @@ r = pycall (s.add, 4)\n\
 }
 
 /*
-%!assert (ischar (pycall ("os.getcwd")))
 %!assert (isreal (pycall ("random.random")))
 %!assert (double (pycall ("math.exp", 3)), exp (3))
 %!assert (double (pycall ("math.trunc", pi)), fix (pi))
 %!assert (double (pycall ("math.sqrt", 2)), sqrt (2))
 %!assert (double (pycall ("cmath.sqrt", 2j)), sqrt (2j))
 %!assert (double (pycall ("int", 10.2)), 10)
+%!assert (isa (pycall ("os.getcwd"), "pyobject"))
 %!assert (isa (pycall ("object"), "pyobject"))
 %!assert (isa (pycall ("dict"), "pyobject"))
 %!assert (isa (pycall ("list"), "pyobject"))
@@ -166,14 +166,14 @@ r = pycall (s.add, 4)\n\
 %!          "    if s == 'long':\n" ...
 %!          "        return 'int'\n" ...
 %!          "    return s"]);
-%!assert (pycall ("typename", 0), "float")
-%!assert (pycall ("typename", pi), "float")
-%!assert (pycall ("typename", 2j), "complex")
-%!assert (pycall ("typename", int32 (0)), "int")
-%!assert (pycall ("typename", false), "bool")
-%!assert (pycall ("typename", true), "bool")
-%!assert (pycall ("typename", "Hello world"), "str")
-%!assert (pycall ("typename", char ([1, 2, 3])), "str")
+%!assert (char (pycall ("typename", 0)), "float")
+%!assert (char (pycall ("typename", pi)), "float")
+%!assert (char (pycall ("typename", 2j)), "complex")
+%!assert (char (pycall ("typename", int32 (0))), "int")
+%!assert (char (pycall ("typename", false)), "bool")
+%!assert (char (pycall ("typename", true)), "bool")
+%!assert (char (pycall ("typename", "Hello world")), "str")
+%!assert (char (pycall ("typename", char ([1, 2, 3]))), "str")
 
 ## Test construction of sequence types from cell arrays
 %!assert (char (pycall ("list")), "[]")
@@ -190,7 +190,7 @@ r = pycall (s.add, 4)\n\
 ## Test construction of dict from pyargs
 %!test
 %! a = pycall ("dict", pyargs ("a", 1, "b", 2, "c", 3));
-%! assert (sort (cell (pycall ("list", a.keys ()))), {"a", "b", "c"})
+%! assert (sort (cellfun (@char, cell (pycall ("list", a.keys ())), "uniformoutput", false)), {"a", "b", "c"})
 %! assert (sort (double (pycall ("array.array", "d", a.values ()))), [1, 2, 3])
 
 ## Test copy construction of dict from dict
@@ -208,7 +208,7 @@ r = pycall (s.add, 4)\n\
 ## Test round trip type preservation / conversion
 %!test
 %! pyexec ("def roundtrip(x): return x");
-%! values = { 0, pi, 2j, eps, false, true, version, "Hello world" };
+%! values = { 0, pi, 2j, eps, false, true };
 %! for i = 1:numel (values)
 %!   assert (pycall ("roundtrip", values{i}), values{i});
 %! endfor

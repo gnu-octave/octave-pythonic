@@ -140,7 +140,7 @@ endfunction
 %! [a, b, c] = L{:};
 %! assert (a, 1)
 %! assert (b, 2)
-%! assert (c, "Octave")
+%! assert (char (c), "Octave")
 
 %!test
 %! % 2D array indexing
@@ -174,7 +174,7 @@ endfunction
 %!test
 %! % dict: floating point keys should work
 %! d = pyeval ("{5.5:'ok'}");
-%! assert (d{5.5}, "ok")
+%! assert (char (d{5.5}), "ok")
 
 %!test
 %! % dict: make sure key ":" doesn't break anything
@@ -209,7 +209,8 @@ endfunction
 %! pyexec ("import sys")
 %! s = pyeval ("set({sys})");
 %! ver = s.pop ().version;
-%! assert (ischar (ver))
+%! assert (isa (ver, "pyobject"))
+%! assert (ischar (char (ver)))
 
 %!test
 %! % don't set "ans" if no return value

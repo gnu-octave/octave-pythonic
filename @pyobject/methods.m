@@ -79,12 +79,12 @@ function mtds = methods (x)
     is_module = pyeval ("lambda x: isinstance(x, __import__('types').ModuleType)");
 
     if (pycall (is_module, x))
-      modulename = pycall ("getattr", x, "__name__");
+      modulename = char (pycall ("getattr", x, "__name__"));
       printf ("Methods for Python module '%s':\n", modulename);
     else
       ## FIXME: should be `class (x)`
       classref = pycall ("getattr", x, "__class__");
-      classname = pycall ("getattr", classref, "__name__");
+      classname = char (pycall ("getattr", classref, "__name__"));
       printf ("Methods for Python class '%s':\n", classname);
     endif
     disp (list_in_columns (mtds_list));

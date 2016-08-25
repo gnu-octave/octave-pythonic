@@ -27,7 +27,7 @@ function p = py ()
 endfunction
 
 %!assert (py.math.sqrt (2), sqrt (2))
-%!assert (ischar (py.sys.version))
+%!assert (ischar (char (py.sys.version)))
 
 %!test
 %! if (double (py.sys.hexversion) >= 0x03000000)

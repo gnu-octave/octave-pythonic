@@ -140,7 +140,8 @@
 ##   @result{} ans =
 ##       @{
 ##         [1,1] =  42
-##         [1,2] = hello
+##               = [pyobject ...]
+##                 hello
 ##               = [pyobject ...]
 ##                 <module 'sys' (built-in)>
 ##       @}
@@ -152,7 +153,7 @@
 ## For example:
 ## @example
 ## @group
-## pycall ("repr", sysmodule)
+## char (pycall ("repr", sysmodule))
 ##   @result{} <module 'sys' (built-in)>
 ## @end group
 ## @end example

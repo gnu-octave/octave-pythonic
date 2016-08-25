@@ -125,8 +125,8 @@ pyeval (\"dict(two=2)\")\n\
 %!assert (iscomplex (pyeval ("2j")))
 %!assert (pyeval ("2j"), 2j)
 
-%!assert (ischar (pyeval ("\"I <3 Octave\"")))
-%!assert (pyeval ("\"I <3 Octave\""), "I <3 Octave")
+%!assert (ischar (char (pyeval ("\"I <3 Octave\""))))
+%!assert (char (pyeval ("\"I <3 Octave\"")), "I <3 Octave")
 
 %!assert (islogical (pyeval ("True")))
 %!assert (islogical (pyeval ("False")))

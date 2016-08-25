@@ -32,7 +32,7 @@
 ## py.dict (pyargs ("one", 1, "two", 2))
 ##       @result{} [pyobject ...]
 ##           @{...@}
-## sort (cell (py.list (ans.keys ())))
+## sort (cellfun (@@char, cell (py.list (ans.keys ())), "uniformoutput", false))
 ##       @result{}
 ##           @{
 ##             [1,1] = one
@@ -90,9 +90,9 @@ endfunction
 
 
 %!assert (isa (pyargs (), "pyobject"))
-%!assert (sort (cell (py.list (py.dict (pyargs ()).keys ()))), cell (1, 0))
-%!xtest assert (sort (cell (py.list (py.dict (pyargs ("one", 1)).keys ()))), {"one"})
-%!assert (sort (cell (py.list (py.dict (pyargs ("one", 1, "two", 2)).keys ()))), {"one", "two"})
+%!assert (cell (py.list (py.dict (pyargs ()).keys ())), cell (1, 0))
+%!assert (sort (cellfun (@char, cell (py.list (py.dict (pyargs ("one", 1)).keys ())), "uniformoutput", false)), {"one"})
+%!assert (sort (cellfun (@char, cell (py.list (py.dict (pyargs ("one", 1, "two", 2)).keys ())), "uniformoutput", false)), {"one", "two"})
 
 %!error pyargs (1)
 %!error pyargs (1, 2)
