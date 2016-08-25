@@ -60,8 +60,7 @@ function varargout = subsref (x, idx)
   ## is a Python callable, then call it with no arguments to be compatible
   ## with how Octave functions are evaluated.
   if (idx(end).type == ".")
-    is_callable = pyeval ("lambda x: isinstance(x, __import__('collections').Callable)");
-    if (pycall (is_callable, y))
+    if (isa (y, "py.collections.Callable"))
       y = pycall (y);
     endif
   endif

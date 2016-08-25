@@ -104,8 +104,7 @@ classdef pyobject < handle
     endfunction
 
     function y = double (x)
-      fn = pyeval ("lambda x: isinstance(x, __import__('array').array)");
-      if (pycall (fn, x))
+      if (isa (x, "py.array.array"))
         c = cell (x);
         y = cellfun (@(t) eval ("double (t)"), c);
       else

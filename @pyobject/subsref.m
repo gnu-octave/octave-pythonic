@@ -45,12 +45,9 @@ function varargout = subsref (x, idx)
 
     case "{}"
       ## Determine the types and protocols that we are able to index into
-      x_is_mapping = pycall (pyeval (
-        "lambda x: isinstance(x, __import__('collections').Mapping)"), x);
-      x_is_sequence = pycall (pyeval (
-        ["lambda x: isinstance(x, (__import__('collections').Sequence, " ...
-                                  "__import__('array').array, " ...
-                                  "__import__('numpy').ndarray))"]), x);
+      x_is_mapping = isa (x, "py.collections.Mapping");
+      x_is_sequence = any (isa (x, {"py.collections.Sequence", ...
+                                    "py.array.array", "py.numpy.ndarray"}));
 
       if (! (x_is_mapping || x_is_sequence))
         error ("subsref: cannot index Python object, not sequence or mapping");

@@ -75,10 +75,7 @@ function mtds = methods (x)
   mtds_list = cellfun (@char, cell (mtds_list_obj), "uniformoutput", false);
 
   if (nargout == 0)
-    ## FIXME: should this be available as @pyobject/ismodule.m ?
-    is_module = pyeval ("lambda x: isinstance(x, __import__('types').ModuleType)");
-
-    if (pycall (is_module, x))
+    if (isa (x, "py.types.ModuleType"))
       modulename = char (pycall ("getattr", x, "__name__"));
       printf ("Methods for Python module '%s':\n", modulename);
     else
