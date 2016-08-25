@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 Abhinav Tripathi
+Copyright (C) 2016 Mike Miller
 
 This file is part of Pytave.
 
@@ -30,33 +30,11 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-types.h"
 #include "oct-py-util.h"
 
-using namespace boost::python;
+// FIXME: only here for boost::python::error_already_set
+#include <boost/python.hpp>
 
 namespace pytave
 {
-
-void
-get_builtins_module (boost::python::object& builtins_module)
-{
-#if PY_VERSION_HEX >= 0x03000000
-  builtins_module = import ("builtins");
-#else
-  builtins_module = import ("__builtin__");
-#endif
-}
-
-void
-get_object_from_python (const octave_value& oct_value,
-                        boost::python::object& py_object)
-{
-  if (oct_value.is_object () && oct_value.class_name () == "pyobject")
-    {
-      PyObject *obj = pyobject_unwrap_object (oct_value);
-      py_object = boost::python::object (boost::python::handle<> (obj));
-    }
-  else
-    py_object = boost::python::object (); // None
-}
 
 PyObject *
 py_builtins_module ()

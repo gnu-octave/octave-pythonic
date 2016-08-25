@@ -73,24 +73,19 @@ pyexec (\"print(42)\")\n\
 
   Py_Initialize ();
 
-  object main_module = import ("__main__");
-  object main_namespace = main_module.attr ("__dict__");
-  object local_namespace;
+  PyObject *local_namespace = 0;
   if (nargin > 1)
-  {
-    pytave::get_object_from_python (args(1), local_namespace);
-    if (local_namespace.is_none ())
-      error ("pyexec: NAMESPACE must be a string or a Python reference");
-  }
-  else
-    local_namespace = main_namespace;
+    {
+      local_namespace = pytave::pyobject_unwrap_object (args(1));
+      if (! local_namespace)
+        error ("pyexec: NAMESPACE must be a valid Python reference");
+    }
 
   try
     {
       // FIXME: figure out exec return code:
       // http://www.boost.org/doc/libs/1_38_0/libs/python/doc/v2/exec.html
-      pytave::py_exec_string (code, main_namespace.ptr (),
-                              local_namespace.ptr ());
+      pytave::py_exec_string (code, 0, local_namespace);
     }
   catch (pytave::object_convert_exception const &)
     {

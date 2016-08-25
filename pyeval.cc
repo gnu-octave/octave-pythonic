@@ -77,26 +77,19 @@ pyeval (\"dict(two=2)\")\n\
 
   std::string code = args(0).string_value ();
 
-  std::string id;
-
   Py_Initialize ();
 
-  object main_module = import ("__main__");
-  object main_namespace = main_module.attr ("__dict__");
-  object local_namespace;
+  PyObject *local_namespace = 0;
   if (nargin > 1)
-  {
-    pytave::get_object_from_python (args(1), local_namespace);
-    if (local_namespace.is_none ())
-      error ("pyeval: NAMESPACE must be a string or a Python reference");
-  }
-  else
-    local_namespace = main_namespace;
+    {
+      local_namespace = pytave::pyobject_unwrap_object (args(1));
+      if (! local_namespace)
+        error ("pyeval: NAMESPACE must be a valid Python reference");
+    }
 
   try
     {
-      PyObject *obj = pytave::py_eval_string (code, main_namespace.ptr (),
-                                              local_namespace.ptr ());
+      PyObject *obj = pytave::py_eval_string (code, 0, local_namespace);
       boost::python::object res { boost::python::handle<> (obj) };
 
       if (nargout > 0 || ! res.is_none ())

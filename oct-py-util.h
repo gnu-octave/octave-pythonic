@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 Abhinav Tripathi
+Copyright (C) 2016 Mike Miller
 
 This file is part of Pytave.
 
@@ -23,20 +23,14 @@ along with Pytave; see the file COPYING.  If not, see
 #if ! defined (pytave_oct_py_util_h)
 #define pytave_oct_py_util_h
 
+#include <Python.h>
+#include <stdint.h>
 #include <string>
-#include <boost/python.hpp>
 
 class octave_value;
 
 namespace pytave
 {
-
-void
-get_builtins_module (boost::python::object& builtins_module);
-
-void
-get_object_from_python (const octave_value& oct_value,
-                        boost::python::object& py_object);
 
 //! Return a reference to the builtins module.
 //!
