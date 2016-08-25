@@ -105,7 +105,9 @@ py_run_string_safe (const std::string& expr, int start, PyObject *globals,
 
   if (! globals || (globals == Py_None))
     {
-      globals = PyEval_GetGlobals ();
+      PyObject *main = py_import_module ("__main__");
+      globals = PyModule_GetDict (main);
+      Py_DECREF (main);
       if (! globals)
         {
           globals = PyDict_New ();
