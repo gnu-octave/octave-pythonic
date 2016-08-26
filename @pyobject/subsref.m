@@ -42,9 +42,10 @@ function varargout = subsref (x, idx)
 
     case "()"
       ## Determine the types and protocols that we are able to index into
-      x_is_callable = isa (x, "py.collections.Callable");
-      x_is_sequence = any (isa (x, {"py.collections.Sequence", ...
-                                    "py.array.array", "py.numpy.ndarray"}));
+      x_is_callable = __py_isinstance__ (x, "py.collections.Callable");
+      x_is_sequence = __py_isinstance__ (x, "py.collections.Sequence") ...
+                      | __py_isinstance__ (x, "py.array.array") ...
+                      | __py_isinstance__ (x, "py.numpy.ndarray");
 
       if (! (x_is_callable || x_is_sequence))
         error ("subsref: cannot index Python object, not sequence or callable");
@@ -58,9 +59,10 @@ function varargout = subsref (x, idx)
 
     case "{}"
       ## Determine the types and protocols that we are able to index into
-      x_is_mapping = isa (x, "py.collections.Mapping");
-      x_is_sequence = any (isa (x, {"py.collections.Sequence", ...
-                                    "py.array.array", "py.numpy.ndarray"}));
+      x_is_mapping = __py_isinstance__ (x, "py.collections.Mapping");
+      x_is_sequence = __py_isinstance__ (x, "py.collections.Sequence") ...
+                      | __py_isinstance__ (x, "py.array.array") ...
+                      | __py_isinstance__ (x, "py.numpy.ndarray");
 
       if (! (x_is_mapping || x_is_sequence))
         error ("subsref: cannot index Python object, not sequence or mapping");
