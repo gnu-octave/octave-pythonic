@@ -36,14 +36,20 @@ along with Pytave; see the file COPYING.  If not, see
 namespace pytave
 {
 
+inline std::string
+py_builtins_module_name ()
+{
+#if PY_VERSION_HEX >= 0x03000000
+  return "builtins";
+#else
+  return "__builtin__";
+#endif
+}
+
 PyObject *
 py_builtins_module ()
 {
-#if PY_VERSION_HEX >= 0x03000000
-  return py_import_module ("builtins");
-#else
-  return py_import_module ("__builtin__");
-#endif
+  return py_import_module (py_builtins_module_name ());
 }
 
 PyObject *
