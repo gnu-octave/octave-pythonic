@@ -96,11 +96,8 @@ classdef pyobject < handle
     endfunction
 
     function s = class (x)
-      idx = struct ("type", ".", "subs", "__class__");
-      class_ref = subsref (x, idx);
-      idx = struct ("type", ".", "subs", "__name__");
-      s = subsref (class_ref, idx);
-      s = sprintf ("py.%s", char (s));
+      s = __py_class_name__ (x);
+      s = sprintf ("py.%s", s);
     endfunction
 
     function y = double (x)

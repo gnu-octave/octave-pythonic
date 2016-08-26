@@ -34,6 +34,41 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-util.h"
 #include "octave_to_python.h"
 
+DEFUN_DLD (__py_class_name__, args, ,
+           "-*- texinfo -*-\n\
+@deftypefn  {} {} __py_class_name__ (@var{obj})\n\
+Return the name of the class of the Python object @var{obj}.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  if (args.length () != 1)
+    print_usage ();
+
+  if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
+    error ("__py_class_name__: argument must be a valid Python object");
+
+  Py_Initialize ();
+
+  PyObject *obj = pytave::pyobject_unwrap_object (args(0));
+  std::string name = pytave::py_object_class_name (obj);
+  Py_DECREF (obj);
+
+  return ovl (name);
+}
+
+/*
+%!assert (__py_class_name__ (pyeval ("None")), "NoneType")
+%!assert (__py_class_name__ (pyeval ("0")), "int")
+%!assert (__py_class_name__ (pyeval ("'Octave'")), "str")
+%!assert (__py_class_name__ (pyeval ("[]")), "list")
+%!assert (__py_class_name__ (pyeval ("__import__('array').array('d')")), "array.array")
+
+%!error __py_class_name__ ()
+%!error __py_class_name__ (1)
+%!error __py_class_name__ (1, 2)
+*/
+
 DEFUN_DLD (__py_int64_scalar_value__, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_int64_scalar_value__ (@var{x})\n\

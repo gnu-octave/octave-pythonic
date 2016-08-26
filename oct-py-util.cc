@@ -126,9 +126,33 @@ py_isinstance (PyObject *obj, PyObject *type)
 std::string
 py_object_class_name (PyObject *obj)
 {
-  PyObject *class_ = obj ? PyObject_GetAttrString (obj, "__class__") : 0;
-  PyObject *name_ = class_ ? PyObject_GetAttrString (class_, "__name__") : 0;
-  return name_ ? extract_py_str (name_): "";
+  std::string retval;
+
+  PyObject *type = obj ? PyObject_GetAttrString (obj, "__class__") : 0;
+  if (type)
+    {
+      PyObject *mod = PyObject_GetAttrString (type, "__module__");
+
+      PyObject *name = 0;
+      if (PyObject_HasAttrString (type, "__qualname__"))
+        name = PyObject_GetAttrString (type, "__qualname__");
+      else
+        name = PyObject_GetAttrString (type, "__name__");
+
+      std::string mod_str = mod ? extract_py_str (mod) : "";
+      std::string name_str = name ? extract_py_str (name) : "";
+
+      Py_DECREF (type);
+      Py_XDECREF (mod);
+      Py_XDECREF (name);
+
+      if (mod_str == py_builtins_module_name ())
+        retval = name_str;
+      else
+        retval = mod_str + "." + name_str;
+    }
+
+  return retval;
 }
 
 // FIXME: could make this into a class/singleton wrapper a la Octave core
@@ -223,7 +247,7 @@ pyobject_unwrap_object (const octave_value& value)
 bool
 is_py_kwargs_argument (PyObject *obj)
 {
-  if (obj && py_object_class_name (obj) == "_OctaveKwargs"
+  if (obj && py_object_class_name (obj) == "__main__._OctaveKwargs"
       && PyObject_HasAttrString (obj, "is_kwargs_argument"))
     {
       PyObject *flag = PyObject_GetAttrString (obj, "is_kwargs_argument");

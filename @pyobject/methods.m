@@ -79,10 +79,7 @@ function mtds = methods (x)
       modulename = char (pycall ("getattr", x, "__name__"));
       printf ("Methods for Python module '%s':\n", modulename);
     else
-      ## FIXME: should be `class (x)`
-      classref = pycall ("getattr", x, "__class__");
-      classname = char (pycall ("getattr", classref, "__name__"));
-      printf ("Methods for Python class '%s':\n", classname);
+      printf ("Methods for Python class '%s':\n", __py_class_name__ (x));
     endif
     disp (list_in_columns (mtds_list));
   else
