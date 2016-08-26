@@ -95,7 +95,6 @@ r = pycall (s.add, 4)\n\
 
   Py_Initialize ();
 
-  pytave::init_exceptions ();
   numeric::array::set_module_and_type ("numpy", "ndarray");
   _import_array ();
 
