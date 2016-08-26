@@ -35,13 +35,26 @@
 function varargout = subsref (x, idx)
 
   t = idx(1);
-  switch t.type
-    case "()"
-      r = pycall (x, t.subs{:});
-
+  switch (t.type)
     case "."
       assert (ischar (t.subs))
       r = pycall ("getattr", x, t.subs);
+
+    case "()"
+      ## Determine the types and protocols that we are able to index into
+      x_is_callable = isa (x, "py.collections.Callable");
+      x_is_sequence = any (isa (x, {"py.collections.Sequence", ...
+                                    "py.array.array", "py.numpy.ndarray"}));
+
+      if (! (x_is_callable || x_is_sequence))
+        error ("subsref: cannot index Python object, not sequence or callable");
+      endif
+
+      if (x_is_sequence)
+        error ("subsref: slice indexing of Python objects not yet implemented");
+      endif
+
+      r = pycall (x, t.subs{:});
 
     case "{}"
       ## Determine the types and protocols that we are able to index into
@@ -54,7 +67,7 @@ function varargout = subsref (x, idx)
       endif
 
       ## Subtract one from index: do this for lists, arrays, numpy arrays, etc
-      for i = 1:length(t.subs)
+      for i = 1:length (t.subs)
         j = t.subs{i};
         if (isindex (j) && isnumeric (j) && x_is_sequence)
           t.subs{i} = cast (j, class (sizemax ())) - 1;
@@ -73,16 +86,15 @@ function varargout = subsref (x, idx)
         ind = pycall ("tuple", t.subs);
       endif
 
-      gi = pycall ("getattr", x, "__getitem__");   # x.__getitem__
       if (isempty (ind) && x_is_sequence)
-        r = pyeval ("None");
+        r = pyobject ();
       elseif (isnumeric (ind) && length (ind) > 1)
         r = {};
         for k = 1:length (ind)
-          r(end+1) = pycall (gi, ind(k));
+          r(end+1) = pycall ("operator.getitem", x, ind(k));
         endfor
       else
-        r = pycall (gi, ind);
+        r = pycall ("operator.getitem", x, ind);
       endif
 
     otherwise

@@ -65,8 +65,7 @@ function r = subsasgn(x, idx, rhs)
         ind = pycall ("tuple", idx.subs);
       endif
 
-      xsi = pycall ("getattr", x, "__setitem__");   # x.__setitem__
-      pycall (xsi, ind, rhs);
+      pycall ("operator.setitem", x, ind, rhs);
       r = x;
 
     otherwise
