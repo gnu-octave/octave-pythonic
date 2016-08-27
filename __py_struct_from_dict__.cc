@@ -59,9 +59,10 @@ This is a private internal function not intended for direct use.\n\
 
 /*
 %!assert (__py_class_name__ (pyeval ("None")), "NoneType")
-%!assert (__py_class_name__ (pyeval ("0")), "int")
 %!assert (__py_class_name__ (pyeval ("'Octave'")), "str")
+%!assert (__py_class_name__ (pyeval ("{}")), "dict")
 %!assert (__py_class_name__ (pyeval ("[]")), "list")
+%!assert (__py_class_name__ (pyeval ("()")), "tuple")
 %!assert (__py_class_name__ (pyeval ("__import__('array').array('d')")), "array.array")
 
 %!error __py_class_name__ ()
