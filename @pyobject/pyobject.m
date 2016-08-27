@@ -109,8 +109,40 @@ classdef pyobject < handle
       endif
     endfunction
 
+    function y = single (x)
+      y = single (double (x));
+    endfunction
+
+    function y = int8 (x)
+      y = int8 (__py_int64_scalar_value__ (x));
+    endfunction
+
+    function y = int16 (x)
+      y = int16 (__py_int64_scalar_value__ (x));
+    endfunction
+
+    function y = int32 (x)
+      y = int32 (__py_int64_scalar_value__ (x));
+    endfunction
+
     function y = int64 (x)
       y = __py_int64_scalar_value__ (x);
+    endfunction
+
+    function y = uint8 (x)
+      y = uint8 (__py_uint64_scalar_value__ (x));
+    endfunction
+
+    function y = uint16 (x)
+      y = uint16 (__py_uint64_scalar_value__ (x));
+    endfunction
+
+    function y = uint32 (x)
+      y = uint32 (__py_uint64_scalar_value__ (x));
+    endfunction
+
+    function y = uint64 (x)
+      y = __py_uint64_scalar_value__ (x);
     endfunction
 
     function y = isa (x, typestr)

@@ -411,6 +411,43 @@ extract_py_int64 (PyObject *obj)
   return 0;
 }
 
+uint64_t
+extract_py_uint64 (PyObject *obj)
+{
+  if (! obj)
+    throw object_convert_exception ("failed to extract integer: null object");
+
+  if (PyLong_Check (obj))
+    {
+      // FIXME: if (value < 0), may be very implementation dependent
+      if (Py_SIZE (obj) < 0)
+        return 0;
+
+#if (defined (HAVE_LONG_LONG) && (SIZEOF_LONG_LONG == 8))
+      unsigned PY_LONG_LONG value = PyLong_AsUnsignedLongLong (obj);
+      bool overflow = (value == static_cast<unsigned PY_LONG_LONG> (-1));
+#else
+      unsigned long value = PyLong_AsUnsignedLong (obj);
+      bool overflow = (value == static_cast<unsigned long> (-1));
+#endif
+      if (overflow)
+        {
+          value = std::numeric_limits<uint64_t>::max ();
+          PyErr_Clear ();
+        }
+
+      return static_cast<uint64_t> (value);
+    }
+#if PY_VERSION_HEX < 0x03000000
+  else if (PyInt_Check (obj))
+    return static_cast<uint64_t> (PyInt_AsLong (obj));
+#endif
+  else
+    throw object_convert_exception ("failed to extract integer: wrong type");
+
+  return 0;
+}
+
 PyObject *
 make_py_tuple (const Cell& cell)
 {

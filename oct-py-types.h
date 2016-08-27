@@ -103,6 +103,13 @@ make_py_dict (const octave_scalar_map& map);
 int64_t
 extract_py_int64 (PyObject *obj);
 
+//! Extract the integer value of the given Python int or long object.
+//!
+//! @param obj Python int or long object
+//! @return integer value of @a obj
+uint64_t
+extract_py_uint64 (PyObject *obj);
+
 //! Create a Python int object with the value of the given @c int32_t value.
 //!
 //! @param value integer value
