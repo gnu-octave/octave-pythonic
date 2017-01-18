@@ -135,7 +135,8 @@ endfunction
 %!assert (methods (pyeval ("object()")), cell (0, 1))
 %!assert (ismember ("append", methods (pyeval ("[]"))))
 %!assert (ismember ("keys", methods (pyeval ("{}"))))
-%!assert (! ismember ("__getslice__", methods (pyeval ("[]"))))
 
-%!assert (ismember ("__getslice__", methods (pyeval ("[]"), "-all")))
-%!assert (ismember ("__repr__", methods (pyeval ("{}"), "-all")))
+%!assert (! ismember ("__reversed__", methods (pyeval ("[]"))))
+%!assert (ismember ("__reversed__", methods (pyeval ("[]"), "-all")))
+%!assert (! ismember ("__contains__", methods (pyeval ("{}"))))
+%!assert (ismember ("__contains__", methods (pyeval ("{}"), "-all")))
