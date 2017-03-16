@@ -39,7 +39,12 @@
 
 function display (x)
 
-  loose = ! __compactformat__ ();
+  try
+    [~, spacing] = format ();
+    loose = strcmp (spacing, "loose");
+  catch
+    loose = ! __compactformat__ ();
+  end_try_catch
 
   printf ("%s = [pyobject 0x%x]\n", inputname (1), id (x));
   s = char (x);
