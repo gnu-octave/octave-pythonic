@@ -41,7 +41,7 @@ function display (x)
 
   loose = ! __compactformat__ ();
 
-  printf ("%s = [pyobject 0x%x]\n", inputname (1), id (x));
+  printf ("%s = [Python object of type %s]\n", inputname (1), __py_class_name__ (x));
   s = char (x);
   s = make_indented (s);
   if (loose), printf ("\n"); endif
