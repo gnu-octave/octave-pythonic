@@ -153,4 +153,6 @@ all-local: $(OCT_FILES) PKG_ADD PKG_DEL
 	@echo ""
 
 check-local: $(M_FILES) $(TST_FILES)
-	octave-cli --path="$(abs_builddir)" --path="$(abs_srcdir)" __py_tests__.m $(M_FILES) $(TST_FILES)
+	$(OCTAVE) --no-gui-libs --no-history --no-window-system --norc \
+		  --path="$(abs_builddir)" --path="$(abs_srcdir)" \
+		  __py_tests__.m $(M_FILES) $(TST_FILES)

@@ -79,17 +79,27 @@ AC_DEFUN([AX_OCTAVE],[
 	OCTAVE_LIBRARYDIR=
 
 	AC_ARG_VAR([MKOCTFILE], [mkoctfile command])
+	AC_ARG_VAR([OCTAVE], [octave command])
 	AC_ARG_VAR([OCTAVE_CONFIG], [octave-config command])
+	AC_ARG_VAR([OCTAVE_VERSION], [the full version of Octave to use])
+
+	AS_IF([test -n "$OCTAVE_VERSION"],
+	      [ax_octave_suffix="-$OCTAVE_VERSION"],
+	      [ax_octave_suffix=""])
 
 	AC_ARG_WITH([octave],
 		    AS_HELP_STRING([--with-octave],
 				   [specify root directory of Octave installation]))
-	AS_IF([test -z "$MKOCTFILE" && test -f "$with_octave/bin/mkoctfile"],
-	      [MKOCTFILE="$with_octave/bin/mkoctfile"])
-	AS_IF([test -z "$OCTAVE_CONFIG" && test -f "$with_octave/bin/octave-config"],
-	      [OCTAVE_CONFIG="$with_octave/bin/octave-config"])
-
-        AC_CHECK_TOOLS([MKOCTFILE], [mkoctfile])
+	AS_IF([test -n "$with_octave"],
+	      [AS_IF([test -z "$MKOCTFILE" && test -f "$with_octave/bin/mkoctfile$ax_octave_suffix"],
+		     [MKOCTFILE="$with_octave/bin/mkoctfile$ax_octave_suffix"])
+	       AS_IF([test -z "$OCTAVE" && test -f "$with_octave/bin/octave$ax_octave_suffix"],
+		     [OCTAVE="$with_octave/bin/octave$ax_octave_suffix"])
+	       AS_IF([test -z "$OCTAVE_CONFIG" && test -f "$with_octave/bin/octave-config$ax_octave_suffix"],
+		     [OCTAVE_CONFIG="$with_octave/bin/octave-config$ax_octave_suffix"])],
+	      [AC_CHECK_TOOLS([MKOCTFILE], [mkoctfile$ax_octave_suffix])
+               AC_CHECK_TOOLS([OCTAVE], [octave$ax_octave_suffix])
+               AC_CHECK_TOOLS([OCTAVE_CONFIG], [octave-config$ax_octave_suffix])])
 
 	ax_octave_config="[$]$1"
 	ax_octave_ok=
