@@ -50,18 +50,17 @@ namespace pytave
   std::string fetch_exception_message (void)
   {
     PyObject *ptype, *pvalue, *ptraceback;
-    PyObject *formatted_list, *pargs;
-
     PyErr_Fetch (&ptype, &pvalue, &ptraceback);
     PyErr_NormalizeException (&ptype, &pvalue, &ptraceback);
-    std::string message;
 
-    pargs = PyTuple_New (2);
-    PyTuple_SetItem (pargs, 0, ptype);
-    PyTuple_SetItem (pargs, 1, pvalue);
-    formatted_list = py_call_function \
-      ("traceback.format_exception_only", pargs);
-    Py_DECREF (pargs);
+    PyObject *args = PyTuple_New (2);
+    PyTuple_SetItem (args, 0, ptype);
+    PyTuple_SetItem (args, 1, pvalue);
+    PyObject *formatted_list = py_call_function
+                               ("traceback.format_exception_only", args);
+    Py_DECREF (args);
+
+    std::string message;
 
     if (formatted_list && PyList_Check (formatted_list))
       {
@@ -75,8 +74,9 @@ namespace pytave
       {
         PyErr_Restore (ptype, pvalue, ptraceback);
         PyErr_Print ();
-        message = std::string ("exceptions.cc (pytave::fetch_exception_message): Cannot call 'format_exceptions_only' for the traceback");
+        message = "exceptions.cc (pytave::fetch_exception_message): cannot call 'format_exceptions_only' for the traceback";
       }
+
     return message;
   }
 }
