@@ -25,8 +25,9 @@ along with Pytave; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
-#include <boost/python.hpp>
 #include "exceptions.h"
+#include "oct-py-eval.h"
+#include "oct-py-types.h"
 
 namespace pytave
 {
@@ -48,30 +49,33 @@ namespace pytave
 
   std::string fetch_exception_message (void)
   {
-    using namespace boost::python;
-
     PyObject *ptype, *pvalue, *ptraceback;
+    PyObject *formatted_list, *pargs;
+
     PyErr_Fetch (&ptype, &pvalue, &ptraceback);
     PyErr_NormalizeException (&ptype, &pvalue, &ptraceback);
     std::string message;
 
-    try
+    pargs = PyTuple_New (2);
+    PyTuple_SetItem (pargs, 0, ptype);
+    PyTuple_SetItem (pargs, 1, pvalue);
+    formatted_list = py_call_function \
+      ("traceback.format_exception_only", pargs);
+    Py_DECREF (pargs);
+
+    if (formatted_list && PyList_Check (formatted_list))
       {
-        handle<> htype (ptype);
-        handle<> hval (allow_null (pvalue));
+        int len = PyList_Size (formatted_list);
 
-        object traceback = import ("traceback");
-        object format_exception_only = traceback.attr ("format_exception_only");
-
-        object formatted_list = format_exception_only (htype, hval);
-        object formatted = str ("").join (formatted_list).strip ();
-        message = extract<std::string> (formatted);
+        for (int i = 0; i < len; i++)
+          message.append (extract_py_str (PyList_GetItem (formatted_list, i)));
+        Py_DECREF (formatted_list);
       }
-    catch (error_already_set const &)
+    else
       {
         PyErr_Restore (ptype, pvalue, ptraceback);
         PyErr_Print ();
-        message = std::string ("Something weird happened. See traceback above ^");
+        message = std::string ("exceptions.cc (pytave::fetch_exception_message): Cannot call 'format_exceptions_only' for the traceback");
       }
     return message;
   }
