@@ -42,7 +42,12 @@ function retval = __run_py_tests__ (varargin)
         f = varargin{i};
         if (has_tests (f))
           print_test_file_name (f);
-          [p, n, xf, sk, rtsk] = test (f, "quiet", fid);
+          if (nargout ("test") < 5)
+            rtsk = 0;
+            [p, n, xf, sk] = test (f, "quiet", fid);
+          else
+            [p, n, xf, sk, rtsk] = test (f, "quiet", fid);
+          endif
           print_pass_fail (p, n, xf, sk, rtsk);
           dp += p;
           dn += n;
