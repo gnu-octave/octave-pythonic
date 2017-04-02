@@ -39,6 +39,22 @@ DOC_FILES = \
   INSTALL.md \
   README.md
 
+M_FILES = \
+  @py/py.m \
+  @py/subsref.m \
+  @pyobject/cell.m \
+  @pyobject/char.m \
+  @pyobject/display.m \
+  @pyobject/dummy.m \
+  @pyobject/fieldnames.m \
+  @pyobject/methods.m \
+  @pyobject/pyobject.m \
+  @pyobject/subsasgn.m \
+  @pyobject/subsref.m \
+  __py_tests__.m \
+  pyargs.m \
+  pyversion.m
+
 OCT_FILES = \
   __py_struct_from_dict__.oct \
   pycall.oct \
@@ -63,6 +79,8 @@ PY_FILES = \
   test/exceptions.py \
   test/test.py
 
+TST_FILES = $(addsuffix -tst,$(OCT_SOURCE_FILES))
+
 EXTRA_DIST = $(DOC_FILES) $(OCT_SOURCE_FILES) $(PY_FILES)
 
 EXTRA_libdir = $(PYTAVE_MODULE_INSTALL_PATH)
@@ -77,7 +95,7 @@ noinst_LTLIBRARIES = libpytave.la
 libpytave_la_CPPFLAGS = $(AM_CPPFLAGS)
 libpytave_la_SOURCES = $(COMMON_SOURCE_FILES) $(PYTAVE_HEADER_FILES)
 
-CLEANFILES = *.oct PKG_ADD PKG_DEL
+CLEANFILES = *.oct *-tst PKG_ADD PKG_DEL fntests.log
 SUFFIXES = .oct
 
 AM_V_MKOCTFILE = $(am__v_MKOCTFILE_$(V))
@@ -92,6 +110,13 @@ OCT_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 
 %.oct: %.cc libpytave.la $(PYTAVE_HEADER_FILES)
 	$(AM_V_MKOCTFILE)$(OCT_LINK) $< $(OCT_LIBS)
+
+%.cc-tst: %.cc
+	$(AM_V_GEN)rm -f $@-t $@ && \
+	( echo "## DO NOT EDIT!  Generated automatically from $(<F) by Make."; \
+	  $(GREP) '^%!' $< \
+	) > $@-t && \
+	mv $@-t $@
 
 PKG_ADD: $(OCT_SOURCE_FILES)
 	$(AM_V_GEN)for f in $(OCT_SOURCE_FILES); do \
@@ -127,6 +152,5 @@ all-local: $(OCT_FILES) PKG_ADD PKG_DEL
 	@echo "    PYTHONPATH=\"\$$(pwd)/.libs:\$$(pwd)/package\" python"
 	@echo ""
 
-check-local:
-	PYTHONPATH="$(abs_srcdir)/package:$$(pwd)/package:$$(pwd)/.libs" $(PYTHON) $(srcdir)/test/exceptions.py
-	PYTHONPATH="$(abs_srcdir)/package:$$(pwd)/package:$$(pwd)/.libs" $(PYTHON) $(srcdir)/test/test.py
+check-local: $(M_FILES) $(TST_FILES)
+	octave-cli --path="$(abs_builddir)" --path="$(abs_srcdir)" __py_tests__.m $(M_FILES) $(TST_FILES)

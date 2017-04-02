@@ -46,6 +46,9 @@ syntax: regexp
 (^|/)PKG_(ADD|DEL)
 (^|/)octave-workspace
 
+(^|/)fntests\.log$
+(^|/).*\.cc-tst$
+
 # e.g. doc/faq/OctaveFAQ.info
 #      doc/interpreter/octave.info-4
 ^doc/.*\.info(-\d)?$
