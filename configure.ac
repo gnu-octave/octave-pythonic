@@ -29,8 +29,8 @@ AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_CC
 
-# Load our custom m4 scripts (from the m4 directory)
-AC_CONFIG_MACRO_DIR(m4)
+AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([oct-py-eval.cc])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile])
