@@ -77,14 +77,6 @@ TST_FILES = $(addsuffix -tst,$(OCT_SOURCE_FILES))
 
 EXTRA_DIST = $(DOC_FILES) $(M_FILES) $(OCT_SOURCE_FILES)
 
-EXTRA_libdir = $(PYTAVE_MODULE_INSTALL_PATH)
-EXTRA_lib_LTLIBRARIES = _pytave.la
-
-_pytave_la_CPPFLAGS = $(AM_CPPFLAGS)
-_pytave_la_LDFLAGS = -module -L$(OCTAVE_LIBRARYDIR)
-_pytave_la_LIBADD = libpytave.la -l$(BOOST_PYTHON_LIB) $(OCTAVE_LIBS)
-_pytave_la_SOURCES = pytave.cc
-
 noinst_LTLIBRARIES = libpytave.la
 libpytave_la_CPPFLAGS = $(AM_CPPFLAGS)
 libpytave_la_SOURCES = $(COMMON_SOURCE_FILES) $(PYTAVE_HEADER_FILES)

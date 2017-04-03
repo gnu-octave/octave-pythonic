@@ -31,7 +31,7 @@ AC_PROG_CC
 
 # Load our custom m4 scripts (from the m4 directory)
 AC_CONFIG_MACRO_DIR(m4)
-AC_CONFIG_SRCDIR([pytave.cc])
+AC_CONFIG_SRCDIR([oct-py-eval.cc])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile])
 
@@ -78,12 +78,6 @@ AC_TYPE_UINT64_T
 # Checks for library functions.
 AC_CHECK_FUNCS([uselocale], [pytave_have_uselocale=yes],
                             [pytave_have_uselocale=no])
-
-# This needs a more usable, less unusual solution.
-AS_IF([test "x${prefix}" == "xNONE"],
-      [PYTAVE_MODULE_INSTALL_PATH=/../invalidpath],
-      [PYTAVE_MODULE_INSTALL_PATH=${prefix}])
-AC_SUBST(PYTAVE_MODULE_INSTALL_PATH)
 
 AC_OUTPUT
 
