@@ -32,11 +32,6 @@ namespace pytave
   class pytave_exception
   {
   public:
-    static void translate_exception (const pytave_exception& py_ex)
-    {
-      PyErr_SetString (PyExc_Exception, py_ex.error.c_str ());
-    }
-
     pytave_exception (const std::string& err) { error = err; };
 
   private:
@@ -46,20 +41,6 @@ namespace pytave
   class octave_error_exception
   {
   public:
-    static bool init ()
-    {
-      excclass = PyErr_NewException (const_cast<char*> ("pytave.OctaveError"),
-                                     PyExc_RuntimeError, 0);
-      return (excclass != 0);
-    };
-
-    static void translate_exception (const octave_error_exception& py_ex)
-    {
-      PyErr_SetString (excclass, py_ex.error.c_str ());
-    }
-
-    static PyObject *excclass;
-
     octave_error_exception (const std::string& err) { error = err; };
 
   private:
@@ -69,20 +50,6 @@ namespace pytave
   class octave_parse_exception
   {
   public:
-    static bool init ()
-    {
-      excclass = PyErr_NewException (const_cast<char*> ("pytave.ParseError"),
-                                     PyExc_RuntimeError, 0);
-      return (excclass != 0);
-    };
-
-    static void translate_exception (const octave_parse_exception& py_ex)
-    {
-      PyErr_SetString (excclass, py_ex.error.c_str ());
-    }
-
-    static PyObject *excclass;
-
     octave_parse_exception (const std::string& err) { error = err; };
 
   private:
@@ -92,20 +59,6 @@ namespace pytave
   class value_convert_exception
   {
   public:
-    static bool init ()
-    {
-      excclass = PyErr_NewException (const_cast<char*> ("pytave.ValueConvertError"),
-                                     PyExc_TypeError, 0);
-      return (excclass != 0);
-    };
-
-    static void translate_exception (const value_convert_exception& py_ex)
-    {
-      PyErr_SetString (excclass, py_ex.error.c_str ());
-    }
-
-    static PyObject *excclass;
-
     value_convert_exception (const std::string& err) { error = err; };
 
   private:
@@ -115,20 +68,6 @@ namespace pytave
   class object_convert_exception
   {
   public:
-    static bool init ()
-    {
-      excclass = PyErr_NewException (const_cast<char*> ("pytave.ObjectConvertError"),
-                                     PyExc_TypeError, 0);
-      return (excclass != 0);
-    };
-
-    static void translate_exception (const object_convert_exception& py_ex)
-    {
-      PyErr_SetString (excclass, py_ex.error.c_str ());
-    }
-
-    static PyObject *excclass;
-
     object_convert_exception (const std::string& err) { error = err; };
 
   private:
@@ -138,27 +77,12 @@ namespace pytave
   class variable_name_exception
   {
   public:
-    static bool init ()
-    {
-      excclass = PyErr_NewException (const_cast<char*> ("pytave.VarNameError"),
-                                     PyExc_RuntimeError, 0);
-      return (excclass != 0);
-    };
-
-    static void translate_exception (const variable_name_exception& py_ex)
-    {
-      PyErr_SetString (excclass, py_ex.error.c_str ());
-    }
-
-    static PyObject *excclass;
-
     variable_name_exception (const std::string& err) { error = err; };
 
   private:
     std::string error;
   };
 
-  bool init_exceptions (void);
   std::string fetch_exception_message (void);
 }
 

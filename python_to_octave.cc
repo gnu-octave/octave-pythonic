@@ -330,15 +330,4 @@ namespace pytave
     else
       oct_value = pyobject_wrap_object (py_object.ptr ());
   }
-
-  void pytuple_to_octlist (octave_value_list& octave_list,
-                           const boost::python::tuple& python_tuple)
-  {
-    int length = extract<int> (python_tuple.attr ("__len__") ());
-
-    for (int i = 0; i < length; i++)
-      {
-        pyobj_to_octvalue (octave_list(i), python_tuple[i]);
-      }
-  }
 }

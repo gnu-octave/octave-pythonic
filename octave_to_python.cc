@@ -202,20 +202,4 @@ namespace pytave
       throw value_convert_exception (
         "Conversion from Octave value not implemented");
   }
-
-  void octlist_to_pytuple (boost::python::tuple& python_tuple,
-                           const octave_value_list& octave_list)
-  {
-    boost::python::list seq;
-    int length = octave_list.length ();
-
-    for (int i = 0; i < length; i++)
-      {
-        boost::python::object py_object;
-        octvalue_to_pyobj (py_object, octave_list(i));
-        seq.append (py_object);
-      }
-
-    python_tuple = tuple (seq);
-  }
 }

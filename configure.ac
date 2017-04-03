@@ -40,7 +40,6 @@ AX_OCTAVE([OCTAVE_CONFIG], [],
           [AC_MSG_FAILURE([unable to find Octave development files])])
 pytave_save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS=$OCTAVE_CPPFLAGS
-AC_CHECK_HEADERS([octave/call-stack.h])
 CPPFLAGS=$pytave_save_CPPFLAGS
 
 # Pick a Python library to use
@@ -58,9 +57,6 @@ fi
 AM_INIT_AUTOMAKE([foreign -Wno-portability])
 LT_INIT
 
-# Checks for header files.
-AC_CHECK_HEADERS([locale.h])
-
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_CONST
@@ -75,10 +71,6 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 
-# Checks for library functions.
-AC_CHECK_FUNCS([uselocale], [pytave_have_uselocale=yes],
-                            [pytave_have_uselocale=no])
-
 AC_OUTPUT
 
 AC_MSG_NOTICE([
@@ -92,15 +84,4 @@ Dependencies
     executable ....... $PYTHON
   Boost::Python ...... $BOOST_PYTHON_LIB
 
-Features
-  uselocale .......... $pytave_have_uselocale
-
 ========================================================================])
-
-AS_IF([test "x$pytave_have_uselocale" = "xno"],
-      [AC_MSG_WARN([This system doesn't have uselocale support.
-           The Octave interpreter will NOT work correctly in any
-           locale but the C (POSIX) locale.  Pytave would use the
-           uselocale function to work around this limitation.  Pytave
-           can be compiled without it but will only work correcly in C
-           (POSIX) locale.])])

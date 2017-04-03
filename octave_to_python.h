@@ -55,17 +55,6 @@ namespace pytave
   */
   void octvalue_to_pyobj (boost::python::object& py_object,
                           const octave_value& oct_value);
-
-  //! Octave value list objects are converted to Python tuples.
-  /*!
-    \param py_tuple a reference to boost::python::tuple to store
-    the result of the conversion.
-    \param oct_list a constant reference to a octave_value_list
-    that contains the tuple to be converted.
-    \see pytuple_to_octlist
-  */
-  void octlist_to_pytuple (boost::python::tuple& py_tuple,
-                           const octave_value_list& oct_list);
 }
 
 #endif

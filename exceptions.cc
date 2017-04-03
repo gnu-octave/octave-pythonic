@@ -31,22 +31,6 @@ along with Pytave; see the file COPYING.  If not, see
 
 namespace pytave
 {
-
-  PyObject *octave_error_exception::excclass = 0;
-  PyObject *value_convert_exception::excclass = 0;
-  PyObject *object_convert_exception::excclass = 0;
-  PyObject *octave_parse_exception::excclass = 0;
-  PyObject *variable_name_exception::excclass = 0;
-
-  bool init_exceptions (void)
-  {
-    return (octave_error_exception::init ()
-            && value_convert_exception::init ()
-            && object_convert_exception::init ()
-            && octave_parse_exception::init ()
-            && variable_name_exception::init ());
-  }
-
   std::string fetch_exception_message (void)
   {
     PyObject *ptype, *pvalue, *ptraceback;
