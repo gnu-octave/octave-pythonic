@@ -73,15 +73,9 @@ PYTAVE_HEADER_FILES = \
   octave_to_python.h \
   python_to_octave.h
 
-PY_FILES = \
-  package/__init__.py \
-  package/pytave.py \
-  test/exceptions.py \
-  test/test.py
-
 TST_FILES = $(addsuffix -tst,$(OCT_SOURCE_FILES))
 
-EXTRA_DIST = $(DOC_FILES) $(OCT_SOURCE_FILES) $(PY_FILES)
+EXTRA_DIST = $(DOC_FILES) $(OCT_SOURCE_FILES)
 
 EXTRA_libdir = $(PYTAVE_MODULE_INSTALL_PATH)
 EXTRA_lib_LTLIBRARIES = _pytave.la
@@ -147,9 +141,6 @@ all-local: $(OCT_FILES) PKG_ADD PKG_DEL
 	@echo ""
 	@echo "  * run an Octave session with py* functions"
 	@echo "    octave --path=\"\$$(pwd)\""
-	@echo ""
-	@echo "  * run a Python session with pytave package"
-	@echo "    PYTHONPATH=\"\$$(pwd)/.libs:\$$(pwd)/package\" python"
 	@echo ""
 
 check-local: $(M_FILES) $(TST_FILES)
