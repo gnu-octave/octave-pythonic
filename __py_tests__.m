@@ -26,10 +26,12 @@ function retval = __run_py_tests__ (varargin)
   files_with_tests = {};
 
   pso = page_screen_output ();
+  orig_wstate = warning ();
 
   logfile = make_absolute_filename ("fntests.log");
   unwind_protect
     page_screen_output (false);
+    warning ("off", "Octave:data-file-in-path");
     try
       fid = fopen (logfile, "wt");
       if (fid < 0)
@@ -104,6 +106,8 @@ function retval = __run_py_tests__ (varargin)
       disp (lasterr ());
     end_try_catch
   unwind_protect_cleanup
+    warning ("off", "all");
+    warning (orig_wstate);
     page_screen_output (pso);
   end_unwind_protect
   retval = (nfail != 0);

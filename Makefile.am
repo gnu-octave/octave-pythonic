@@ -75,7 +75,7 @@ PYTAVE_HEADER_FILES = \
 
 TST_FILES = $(addsuffix -tst,$(OCT_SOURCE_FILES))
 
-EXTRA_DIST = $(DOC_FILES) $(OCT_SOURCE_FILES)
+EXTRA_DIST = $(DOC_FILES) $(M_FILES) $(OCT_SOURCE_FILES)
 
 EXTRA_libdir = $(PYTAVE_MODULE_INSTALL_PATH)
 EXTRA_lib_LTLIBRARIES = _pytave.la
@@ -115,7 +115,8 @@ OCT_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 PKG_ADD: $(OCT_SOURCE_FILES)
 	$(AM_V_GEN)for f in $(OCT_SOURCE_FILES); do \
 	  b=$${f%.cc}; \
-	  funcs=`$(SED) -n 's/^DEFUN.*(\(\w\+\),.*/\1/p' $$f | grep -v $$b`; \
+	  if test -f $$f; then d=.; else d=$(srcdir); fi; \
+	  funcs=`$(SED) -n 's/^DEFUN.*(\(\w\+\),.*/\1/p' $$d/$$f | grep -v $$b`; \
 	  if test -n "$$funcs"; then \
 	    echo "$$funcs" | $(SED) "s/.*/autoload (\"&\", \"$$b.oct\");/" > $@-t && \
 	    mv $@-t $@ || exit $?; \
@@ -125,7 +126,8 @@ PKG_ADD: $(OCT_SOURCE_FILES)
 PKG_DEL: $(OCT_SOURCE_FILES)
 	$(AM_V_GEN)for f in $(OCT_SOURCE_FILES); do \
 	  b=$${f%.cc}; \
-	  funcs=`$(SED) -n 's/^DEFUN.*(\(\w\+\),.*/\1/p' $$f | grep -v $$b`; \
+	  if test -f $$f; then d=.; else d=$(srcdir); fi; \
+	  funcs=`$(SED) -n 's/^DEFUN.*(\(\w\+\),.*/\1/p' $$d/$$f | grep -v $$b`; \
 	  if test -n "$$funcs"; then \
 	    echo "$$funcs" | $(SED) "s/.*/autoload (\"&\", which (\"&\"), \"remove\");/" > $@-t && \
 	    mv $@-t $@ || exit $?; \
@@ -146,4 +148,4 @@ all-local: $(OCT_FILES) PKG_ADD PKG_DEL
 check-local: $(M_FILES) $(TST_FILES)
 	$(OCTAVE) --no-gui-libs --no-history --no-window-system --norc \
 		  --path="$(abs_builddir)" --path="$(abs_srcdir)" \
-		  __py_tests__.m $(M_FILES) $(TST_FILES)
+		  $(srcdir)/__py_tests__.m $(M_FILES) $(TST_FILES)
