@@ -65,6 +65,9 @@ This is a private internal function not intended for direct use.\n\
 %!assert (__py_class_name__ (pyeval ("()")), "tuple")
 %!assert (__py_class_name__ (pyeval ("__import__('array').array('d')")), "array.array")
 
+%% Test an anonymous class with its __module__ property set to None
+%!assert (__py_class_name__ (pyeval ("[[t() for t.__module__ in (None,)][0] for t in (type('foo', (), {}),)][0]")), "foo")
+
 %!error __py_class_name__ ()
 %!error __py_class_name__ (1)
 %!error __py_class_name__ (1, 2)

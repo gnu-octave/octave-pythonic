@@ -139,14 +139,14 @@ py_object_class_name (PyObject *obj)
       else
         name = PyObject_GetAttrString (type, "__name__");
 
-      std::string mod_str = mod ? extract_py_str (mod) : "";
+      std::string mod_str = (mod && mod != Py_None) ? extract_py_str (mod) : "";
       std::string name_str = name ? extract_py_str (name) : "";
 
       Py_DECREF (type);
       Py_XDECREF (mod);
       Py_XDECREF (name);
 
-      if (mod_str == py_builtins_module_name ())
+      if (mod_str.empty () || mod_str == py_builtins_module_name ())
         retval = name_str;
       else
         retval = mod_str + "." + name_str;
