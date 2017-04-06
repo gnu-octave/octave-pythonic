@@ -1,0 +1,11 @@
+image: mtmiller/octave-snapshot
+
+pipelines:
+  default:
+    - step:
+        script:
+          - apt-get update && apt-get install -y libboost-python-dev python-numpy
+          - autoreconf -i
+          - ./configure PYTHON_VERSION=2
+          - make
+          - make check
