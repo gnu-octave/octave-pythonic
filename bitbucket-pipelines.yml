@@ -4,9 +4,13 @@ pipelines:
   default:
     - step:
         script:
-          - apt-get update && apt-get install -y libboost-python-dev python-numpy
+          - apt-get update
+          - apt-get install -y libboost-python-dev python-numpy python3-numpy
           - autoreconf -i
-          - mkdir -p py2
+          - mkdir -p py2 py3
           - ( cd py2 && ../configure PYTHON_VERSION=2 )
           - make -C py2 all
           - make -C py2 check
+          - ( cd py3 && ../configure PYTHON_VERSION=3 )
+          - make -C py3 all
+          - make -C py3 check
