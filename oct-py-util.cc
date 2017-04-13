@@ -29,6 +29,7 @@ along with Pytave; see the file COPYING.  If not, see
 
 #include "oct-py-types.h"
 #include "oct-py-util.h"
+#include "oct-py-object.h"
 
 // FIXME: only here for boost::python::error_already_set
 #include <boost/python.hpp>
@@ -72,9 +73,8 @@ py_find_function (PyObject *module, const std::string& name)
 PyObject *
 py_find_function (const std::string& module, const std::string& name)
 {
-  PyObject *mod = py_import_module (module);
+  python_object mod = py_import_module (module);
   PyObject *func =  py_find_function (mod, name);
-  Py_XDECREF (mod);
   return func;
 }
 
@@ -100,11 +100,10 @@ py_find_function (const std::string& name)
 PyObject *
 py_find_type (const std::string& name)
 {
-  PyObject *obj = py_find_function (name);
+  python_object obj = py_find_function (name);
   if (obj && PyType_Check (obj))
-    return obj;
+    return obj.release ();
 
-  Py_XDECREF (obj);
   return 0;
 }
 
@@ -128,23 +127,19 @@ py_object_class_name (PyObject *obj)
 {
   std::string retval;
 
-  PyObject *type = obj ? PyObject_GetAttrString (obj, "__class__") : 0;
+  python_object type = obj ? PyObject_GetAttrString (obj, "__class__") : 0;
   if (type)
     {
-      PyObject *mod = PyObject_GetAttrString (type, "__module__");
+      python_object mod = PyObject_GetAttrString (type, "__module__");
 
-      PyObject *name = 0;
+      python_object name;
       if (PyObject_HasAttrString (type, "__qualname__"))
         name = PyObject_GetAttrString (type, "__qualname__");
       else
         name = PyObject_GetAttrString (type, "__name__");
 
-      std::string mod_str = (mod && mod != Py_None) ? extract_py_str (mod) : "";
+      std::string mod_str = !mod.is_none () ? extract_py_str (mod) : "";
       std::string name_str = name ? extract_py_str (name) : "";
-
-      Py_DECREF (type);
-      Py_XDECREF (mod);
-      Py_XDECREF (name);
 
       if (mod_str.empty () || mod_str == py_builtins_module_name ())
         retval = name_str;
@@ -163,8 +158,8 @@ py_objstore ()
 {
   if (! objstore)
     {
-      PyObject *main = py_import_module ("__main__");
-      PyObject *ns = main ? PyObject_GetAttrString (main, "__dict__") : 0;
+      python_object main = py_import_module ("__main__");
+      python_object ns = main ? PyObject_GetAttrString (main, "__dict__") : 0;
       PyObject *dict = ns ? PyDict_GetItemString (ns, "_in_octave") : 0;
 
       if (dict)
@@ -188,23 +183,21 @@ py_objstore ()
 void
 py_objstore_del (uint64_t key)
 {
-  PyObject *store = py_objstore ();
-  PyObject *key_obj = make_py_int (key);
-  PyObject *key_fmt = PyNumber_ToBase (key_obj, 16);
+  python_object store = py_objstore ();
+  python_object key_obj = make_py_int (key);
+  python_object key_fmt = PyNumber_ToBase (key_obj, 16);
   PyDict_DelItem (store, key_fmt);
-  Py_DECREF (key_fmt);
-  Py_DECREF (key_obj);
+  store.release ();
 }
 
 PyObject *
 py_objstore_get (uint64_t key)
 {
-  PyObject *store = py_objstore ();
-  PyObject *key_obj = make_py_int (key);
-  PyObject *key_fmt = PyNumber_ToBase (key_obj, 16);
+  python_object store = py_objstore ();
+  python_object key_obj = make_py_int (key);
+  python_object key_fmt = PyNumber_ToBase (key_obj, 16);
   PyObject *obj = PyDict_GetItem (store, key_fmt);
-  Py_DECREF (key_fmt);
-  Py_DECREF (key_obj);
+  store.release ();
   if (obj)
     Py_INCREF (obj);
   return obj;
@@ -213,13 +206,12 @@ py_objstore_get (uint64_t key)
 uint64_t
 py_objstore_put (PyObject *obj)
 {
-  PyObject *store = py_objstore ();
+  python_object store = py_objstore ();
   uint64_t key = reinterpret_cast<uint64_t> (obj);
-  PyObject *key_obj = make_py_int (key);
-  PyObject *key_fmt = PyNumber_ToBase (key_obj, 16);
+  python_object key_obj = make_py_int (key);
+  python_object key_fmt = PyNumber_ToBase (key_obj, 16);
   PyDict_SetItem (store, key_fmt, obj);
-  Py_DECREF (key_fmt);
-  Py_DECREF (key_obj);
+  store.release ();
   return key;
 }
 

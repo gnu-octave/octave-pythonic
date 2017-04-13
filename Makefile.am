@@ -71,7 +71,8 @@ PYTAVE_HEADER_FILES = \
   oct-py-types.h \
   oct-py-util.h \
   octave_to_python.h \
-  python_to_octave.h
+  python_to_octave.h \
+  oct-py-object.h
 
 TST_FILES = $(addsuffix -tst,$(OCT_SOURCE_FILES))
 
