@@ -382,7 +382,9 @@ endclassdef
 %!assert (isa (pyobject ("a string"), "py.str"))
 %!assert (isa (pyobject (struct ()), "py.dict"))
 %!assert (isa (pyobject (cell ()), "py.tuple"))
+%!assert (isa (pyobject ([]), "py.array.array"))
 %!assert (isa (pyobject ([1, 2, 3, 4]), "py.array.array"))
+%!assert (isa (pyobject ([1; 2; 3; 4]), "py.array.array"))
 %!assert (all (isa (pyobject (0), {"pyobject", "py.float", "py.numbers.Number"})))
 
 ## Test conversion method pyobject.int64

@@ -281,7 +281,7 @@ PyObject *
 make_py_array (const octave_value& value)
 {
   if (value.is_numeric_type () && ! value.is_complex_type ()
-      && value.ndims () == 2 && (value.columns () == 1 || value.rows () == 1))
+      && value.ndims () == 2 && (value.columns () <= 1 || value.rows () <= 1))
     {
       if (value.is_double_type ())
         return make_py_array (value.array_value ());
