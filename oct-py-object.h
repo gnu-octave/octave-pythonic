@@ -21,7 +21,7 @@ along with Pytave; see the file COPYING.  If not, see
 */
 
 #if ! defined (pytave_oct_py_object_h)
-#define pytave_oct_py_object_h
+#define pytave_oct_py_object_h 1
 
 #include <Python.h>
 
@@ -51,7 +51,8 @@ namespace pytave
         Py_DECREF (pyobj);
     }
 
-    python_object& operator= (const python_object& oth)
+    python_object&
+    operator = (const python_object& oth)
     {
       if (isowned)
         Py_DECREF (pyobj);
@@ -62,7 +63,8 @@ namespace pytave
       return *this;
     }
 
-    python_object& operator= (PyObject *obj)
+    python_object&
+    operator = (PyObject *obj)
     {
       if (isowned)
         Py_DECREF (pyobj);
@@ -78,17 +80,19 @@ namespace pytave
       return isowned;
     }
 
-    operator PyObject *()
+    operator PyObject * ()
     {
       return pyobj;
     }
 
-    bool is_none ()
+    bool
+    is_none () const
     {
       return pyobj && pyobj == Py_None;
     }
 
-    PyObject *release ()
+    PyObject *
+    release ()
     {
       isowned = false;
       PyObject *ret = pyobj;
