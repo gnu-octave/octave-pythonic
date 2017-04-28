@@ -31,10 +31,10 @@ namespace pytave
   class python_object
   {
   public:
-    python_object (PyObject *obj = 0)
+    python_object (PyObject *obj = nullptr)
     {
       pyobj = obj;
-      isowned = pyobj != 0;
+      isowned = pyobj != nullptr;
     }
 
     python_object (const python_object& oth)
@@ -69,7 +69,7 @@ namespace pytave
       if (isowned)
         Py_DECREF (pyobj);
       pyobj = obj;
-      isowned = pyobj != 0;
+      isowned = pyobj != nullptr;
       if (isowned)
         Py_INCREF (pyobj);
       return *this;
@@ -96,7 +96,7 @@ namespace pytave
     {
       isowned = false;
       PyObject *ret = pyobj;
-      pyobj = 0;
+      pyobj = nullptr;
       return ret;
     }
 

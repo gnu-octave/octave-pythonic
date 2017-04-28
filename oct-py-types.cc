@@ -344,8 +344,8 @@ namespace pytave
     octave_scalar_map map;
 
     Py_ssize_t pos = 0;
-    PyObject *py_key = 0;
-    PyObject *py_value = 0;
+    PyObject *py_key = nullptr;
+    PyObject *py_value = nullptr;
 
     while (PyDict_Next (obj, &pos, &py_key, &py_value))
       {

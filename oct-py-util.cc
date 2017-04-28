@@ -151,7 +151,7 @@ namespace pytave
   }
 
   // FIXME: could make this into a class/singleton wrapper a la Octave core
-  PyObject *objstore = 0;
+  PyObject *objstore = nullptr;
 
   inline PyObject *
   py_objstore ()

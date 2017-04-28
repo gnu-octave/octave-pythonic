@@ -57,7 +57,7 @@ namespace pytave
   PyObject *
   py_call_function (PyObject *callable, const octave_value_list& args)
   {
-    PyObject *kwargs = 0;
+    PyObject *kwargs = nullptr;
     PyObject *args_list = PyList_New (0);
     if (! args_list)
       octave_throw_bad_alloc ();

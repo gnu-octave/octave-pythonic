@@ -73,7 +73,7 @@ pyexec (\"print(42)\")\n\
 
   Py_Initialize ();
 
-  PyObject *local_namespace = 0;
+  PyObject *local_namespace = nullptr;
   if (nargin > 1)
     {
       local_namespace = pytave::pyobject_unwrap_object (args(1));

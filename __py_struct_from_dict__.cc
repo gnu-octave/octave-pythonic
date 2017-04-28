@@ -323,7 +323,7 @@ This is a private internal function not intended for direct use.\n\
   boost::python::numeric::array::set_module_and_type ("numpy", "ndarray");
   _import_array ();
   // FIXME: PyObject *obj = convert argument to Python (args(0));
-  PyObject *obj = 0;
+  PyObject *obj = nullptr;
   try
     {
       boost::python::object arg;
@@ -368,7 +368,7 @@ This is a private internal function not intended for direct use.\n\
 
   if (PyBytes_Check (obj) || PyUnicode_Check (obj))
     str = pytave::extract_py_str (obj);
-  else if (Py_TYPE (obj)->tp_str != NULL)
+  else if (Py_TYPE (obj)->tp_str != nullptr)
     {
       PyObject *s = PyObject_Str (obj);
       str = pytave::extract_py_str (s);

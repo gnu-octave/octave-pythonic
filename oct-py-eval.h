@@ -56,7 +56,7 @@ namespace pytave
   //! @return return value of @a func
   PyObject *
   py_call_function (const std::string& func, PyObject *args,
-                    PyObject *kwargs = 0);
+                    PyObject *kwargs = nullptr);
 
   //! Call a Python function with the given argument list.
   //!
@@ -76,15 +76,16 @@ namespace pytave
   //! @param kwargs dictionary of keyword arguments
   //! @return return value of @a func
   PyObject *
-  py_call_function (PyObject *callable, PyObject *args, PyObject *kwargs = 0);
+  py_call_function (PyObject *callable, PyObject *args,
+                    PyObject *kwargs = nullptr);
 
   PyObject *
-  py_eval_string (const std::string& expr, PyObject *globals = 0,
-                  PyObject *locals = 0);
+  py_eval_string (const std::string& expr, PyObject *globals = nullptr,
+                  PyObject *locals = nullptr);
 
   PyObject *
-  py_exec_string (const std::string& expr, PyObject *globals = 0,
-                  PyObject *locals = 0);
+  py_exec_string (const std::string& expr, PyObject *globals = nullptr,
+                  PyObject *locals = nullptr);
 
 }
 

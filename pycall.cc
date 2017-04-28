@@ -100,7 +100,7 @@ r = pycall (s.add, 4)\n\
 
   try
     {
-      PyObject *callable = 0;
+      PyObject *callable = nullptr;
       if (args(0).is_string ())
         {
           callable = pytave::py_find_function (args(0).string_value ());
