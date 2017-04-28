@@ -27,6 +27,7 @@ along with Pytave; see the file COPYING.  If not, see
 
 #include "exceptions.h"
 #include "oct-py-eval.h"
+#include "oct-py-object.h"
 #include "oct-py-types.h"
 
 namespace pytave
@@ -37,12 +38,9 @@ namespace pytave
     PyErr_Fetch (&ptype, &pvalue, &ptraceback);
     PyErr_NormalizeException (&ptype, &pvalue, &ptraceback);
 
-    PyObject *args = PyTuple_New (2);
-    PyTuple_SetItem (args, 0, ptype);
-    PyTuple_SetItem (args, 1, pvalue);
-    PyObject *formatted_list = py_call_function
-                               ("traceback.format_exception_only", args);
-    Py_DECREF (args);
+    python_object args = PyTuple_Pack (2, ptype, pvalue);
+    python_object formatted_list = py_call_function
+                                   ("traceback.format_exception_only", args);
 
     std::string message;
 
@@ -52,7 +50,6 @@ namespace pytave
 
         for (int i = 0; i < len; i++)
           message.append (extract_py_str (PyList_GetItem (formatted_list, i)));
-        Py_DECREF (formatted_list);
       }
     else
       {

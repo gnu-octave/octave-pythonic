@@ -30,6 +30,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/ovl.h>
 
 #include "oct-py-eval.h"
+#include "oct-py-object.h"
 #include "oct-py-util.h"
 #include "octave_to_python.h"
 
@@ -39,26 +40,24 @@ namespace pytave
   PyObject *
   py_call_function (const std::string& func, const octave_value_list& args)
   {
-    PyObject *func_obj = py_find_function (func);
-    PyObject *retval = py_call_function (func_obj, args);
-    Py_DECREF (func_obj);
-    return retval;
+    python_object func_obj = py_find_function (func);
+    python_object retval = py_call_function (func_obj, args);
+    return retval.release ();
   }
 
   PyObject *
   py_call_function (const std::string& func, PyObject *args, PyObject *kwargs)
   {
-    PyObject *func_obj = py_find_function (func);
-    PyObject *retval = py_call_function (func_obj, args, kwargs);
-    Py_DECREF (func_obj);
-    return retval;
+    python_object func_obj = py_find_function (func);
+    python_object retval = py_call_function (func_obj, args, kwargs);
+    return retval.release ();
   }
 
   PyObject *
   py_call_function (PyObject *callable, const octave_value_list& args)
   {
-    PyObject *kwargs = nullptr;
-    PyObject *args_list = PyList_New (0);
+    python_object kwargs;
+    python_object args_list = PyList_New (0);
     if (! args_list)
       octave_throw_bad_alloc ();
 
@@ -77,24 +76,21 @@ namespace pytave
           }
       }
 
-    PyObject *args_tuple = PyList_AsTuple (args_list);
-    Py_DECREF (args_list);
+    python_object args_tuple = PyList_AsTuple (args_list);
 
-    PyObject *retval =  py_call_function (callable, args_tuple, kwargs);
-    Py_DECREF (args_tuple);
-    Py_XDECREF (kwargs);
+    python_object retval = py_call_function (callable, args_tuple, kwargs);
 
-    return retval;
+    return retval.release ();
   }
 
   PyObject *
   py_call_function (PyObject *callable, PyObject *args, PyObject *kwargs)
   {
-    PyObject *retval = PyEval_CallObjectWithKeywords (callable, args, kwargs);
+    python_object retval = PyEval_CallObjectWithKeywords (callable, args, kwargs);
     if (! retval)
       throw boost::python::error_already_set ();
 
-    return retval;
+    return retval.release ();
   }
 
   PyObject *
@@ -105,9 +101,8 @@ namespace pytave
 
     if (! globals || (globals == Py_None))
       {
-        PyObject *main = py_import_module ("__main__");
+        python_object main = py_import_module ("__main__");
         globals = PyModule_GetDict (main);
-        Py_DECREF (main);
         if (! globals)
           {
             globals = PyDict_New ();
@@ -121,8 +116,8 @@ namespace pytave
     // Evaluate all expressions under "from __future__ import print_function"
     PyCompilerFlags flags { CO_FUTURE_PRINT_FUNCTION };
 
-    PyObject *retval = PyRun_StringFlags (expr.c_str (), start, globals, locals,
-                                          &flags);
+    python_object retval = PyRun_StringFlags (expr.c_str (), start, globals, locals,
+                                              &flags);
 
     if (alloc)
       Py_DECREF (globals);
@@ -130,7 +125,7 @@ namespace pytave
     if (! retval)
       throw boost::python::error_already_set ();
 
-    return retval;
+    return retval.release ();
   }
 
   PyObject *

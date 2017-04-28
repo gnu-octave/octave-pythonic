@@ -30,6 +30,7 @@ along with Pytave; see the file COPYING.  If not, see
 #define PYTAVE_DO_DECLARE_SYMBOL
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
+#include "oct-py-object.h"
 #include "oct-py-types.h"
 #include "oct-py-util.h"
 #include "octave_to_python.h"
@@ -50,9 +51,8 @@ This is a private internal function not intended for direct use.\n\
 
   Py_Initialize ();
 
-  PyObject *obj = pytave::pyobject_unwrap_object (args(0));
+  pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
   std::string name = pytave::py_object_class_name (obj);
-  Py_DECREF (obj);
 
   return ovl (name);
 }
@@ -89,7 +89,7 @@ This is a private internal function not intended for direct use.\n\
 
   Py_Initialize ();
 
-  PyObject *obj = pytave::pyobject_unwrap_object (args(0));
+  pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
   if (! obj)
     error ("pyobject.int64: argument must be a valid Python object");
 
@@ -108,7 +108,6 @@ This is a private internal function not intended for direct use.\n\
       std::string message = pytave::fetch_exception_message ();
       error ("pyobject.int64: %s", message.c_str ());
     }
-  Py_DECREF (obj);
 
   return ovl (retval);
 }
@@ -142,7 +141,7 @@ This is a private internal function not intended for direct use.\n\
 
   Py_Initialize ();
 
-  PyObject *obj = pytave::pyobject_unwrap_object (args(0));
+  pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
   if (! obj)
     error ("pyobject.uint64: argument must be a valid Python object");
 
@@ -161,7 +160,6 @@ This is a private internal function not intended for direct use.\n\
       std::string message = pytave::fetch_exception_message ();
       error ("pyobject.uint64: %s", message.c_str ());
     }
-  Py_DECREF (obj);
 
   return ovl (retval);
 }
@@ -191,12 +189,9 @@ This is a private internal function not intended for direct use.\n\
 
   Py_Initialize ();
 
-  PyObject *obj = pytave::pyobject_unwrap_object (args(0));
+  pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
 
-  bool retval = (obj && (obj == Py_None));
-  Py_XDECREF (obj);
-
-  return ovl (retval);
+  return ovl (obj.is_none ());
 }
 
 /*
@@ -250,9 +245,8 @@ This is a private internal function not intended for direct use.\n\
       pytave::octvalue_to_pyobj (arg, args(0));
       PyObject *obj = arg.ptr ();
 
-      PyObject *type = pytave::py_find_type (typestr);
+      pytave::python_object type = pytave::py_find_type (typestr);
       retval(0) = pytave::py_isinstance (obj, type);
-      Py_XDECREF (type);
     }
   catch (pytave::object_convert_exception const &)
     {
@@ -360,7 +354,7 @@ This is a private internal function not intended for direct use.\n\
 
   Py_Initialize ();
 
-  PyObject *obj = pytave::pyobject_unwrap_object (args(0));
+  pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
   if (! obj)
     error ("pyobject.char: argument must be a valid Python object");
 
@@ -370,17 +364,11 @@ This is a private internal function not intended for direct use.\n\
     str = pytave::extract_py_str (obj);
   else if (Py_TYPE (obj)->tp_str != nullptr)
     {
-      PyObject *s = PyObject_Str (obj);
+      pytave::python_object s = PyObject_Str (obj);
       str = pytave::extract_py_str (s);
-      Py_DECREF (s);
     }
   else
-    {
-      Py_DECREF (obj);
-      error ("pyobject.char: cannot convert Python object to string");
-    }
-
-  Py_DECREF (obj);
+    error ("pyobject.char: cannot convert Python object to string");
 
   return ovl (str);
 }

@@ -34,6 +34,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "oct-py-eval.h"
+#include "oct-py-object.h"
 #include "oct-py-util.h"
 #include "octave_to_python.h"
 #include "python_to_octave.h"
@@ -100,7 +101,7 @@ r = pycall (s.add, 4)\n\
 
   try
     {
-      PyObject *callable = nullptr;
+      pytave::python_object callable;
       if (args(0).is_string ())
         {
           callable = pytave::py_find_function (args(0).string_value ());
@@ -118,7 +119,6 @@ r = pycall (s.add, 4)\n\
       octave_value_list arglist = args.slice (1, nargin - 1);
       PyObject *result = pytave::py_call_function (callable, arglist);
       object res = object (handle<PyObject> (result));
-      Py_DECREF (callable);
 
       // Ensure reasonable "ans" behaviour, consistent with Python's "_".
       if (nargout > 0 || ! res.is_none ())

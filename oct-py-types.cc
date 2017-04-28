@@ -31,6 +31,7 @@ along with Pytave; see the file COPYING.  If not, see
 
 #include "exceptions.h"
 #include "oct-py-eval.h"
+#include "oct-py-object.h"
 #include "oct-py-types.h"
 
 // FIXME: only here to bootstrap nested conversions needed in this file
@@ -143,26 +144,24 @@ namespace pytave
         ("unable to create array from Octave data");
 
     std::string arg { typecode };
-    PyObject *array = py_call_function ("array.array", ovl (arg));
+    python_object array = py_call_function ("array.array", ovl (arg));
 
     if (len > 0)
       {
         // create a byte buffer containing a copy of the array binary data
         const char *cdata = reinterpret_cast<const char *> (data);
-        PyObject *buf = PyBytes_FromStringAndSize (cdata, len);
+        python_object buf = PyBytes_FromStringAndSize (cdata, len);
         if (! buf)
           octave_throw_bad_alloc ();
 
         PyObject *frombytes = (PyObject_HasAttrString (array, "frombytes") ?
                                PyObject_GetAttrString (array, "frombytes") :
                                PyObject_GetAttrString (array, "fromstring"));
-        PyObject *args = PyTuple_Pack (1, buf);
+        python_object args = PyTuple_Pack (1, buf.release ());
         py_call_function (frombytes, args);
-        Py_DECREF (args);
-        Py_DECREF (buf);
       }
 
-    return array;
+    return array.release ();
   }
 
   // Prefer the 'q' and 'Q' typecodes if they are available (if Python 3 and
@@ -485,18 +484,10 @@ namespace pytave
       }
     else if (PyUnicode_Check (obj))
       {
-        bool ok = false;
-        PyObject *enc = PyUnicode_AsUTF8String (obj);
-        if (enc)
-          {
-            if (PyBytes_Check (enc))
-              {
-                ok = true;
-                retval.assign (PyBytes_AsString (enc), PyBytes_Size (enc));
-              }
-            Py_DECREF (enc);
-          }
-        if (! ok)
+        python_object enc = PyUnicode_AsUTF8String (obj);
+        if (enc && PyBytes_Check (enc))
+          retval.assign (PyBytes_AsString (enc), PyBytes_Size (enc));
+        else
           throw object_convert_exception
             ("failed to extract string: UTF-8 error");
       }
