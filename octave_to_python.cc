@@ -164,6 +164,9 @@ namespace pytave
     if (octvalue.is_undefined ())
       throw value_convert_exception (
         "Octave value `undefined'. Can not convert to a Python object");
+    else if (octvalue.is_string () && octvalue.rows () > 1)
+      throw value_convert_exception (
+        "Octave multirow char array cannot be converted to a Python object");
     else if (octvalue.is_string ())
       {
         PyObject *obj = make_py_str (octvalue.string_value ());

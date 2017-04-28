@@ -186,6 +186,10 @@ r = pycall (s.add, 4)\n\
 %!error (pycall ("list", {1, 2, 3; 4, 5, 6}))
 %!error (pycall ("dict", {1, 2, 3}))
 
+## Test failure to convert char arrays to strings
+%!error (pycall ("str", ("hello")'))
+%!error (pycall ("str", ["hello"; "world"]))
+
 ## Test construction of dict from pyargs
 %!test
 %! a = pycall ("dict", pyargs ("a", 1, "b", 2, "c", 3));
