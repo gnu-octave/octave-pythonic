@@ -68,11 +68,11 @@ PYTAVE_HEADER_FILES = \
   config.h \
   exceptions.h \
   oct-py-eval.h \
+  oct-py-object.h \
   oct-py-types.h \
   oct-py-util.h \
   octave_to_python.h \
-  python_to_octave.h \
-  oct-py-object.h
+  python_to_octave.h
 
 TST_FILES = $(addsuffix -tst,$(OCT_SOURCE_FILES))
 

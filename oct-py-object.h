@@ -23,6 +23,8 @@ along with Pytave; see the file COPYING.  If not, see
 #if ! defined (pytave_oct_py_object_h)
 #define pytave_oct_py_object_h
 
+#include <Python.h>
+
 namespace pytave
 {
 
@@ -102,4 +104,3 @@ namespace pytave
 }
 
 #endif
-

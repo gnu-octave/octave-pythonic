@@ -27,9 +27,9 @@ along with Pytave; see the file COPYING.  If not, see
 #include <oct.h>
 #include <octave/parse.h>
 
+#include "oct-py-object.h"
 #include "oct-py-types.h"
 #include "oct-py-util.h"
-#include "oct-py-object.h"
 
 // FIXME: only here for boost::python::error_already_set
 #include <boost/python.hpp>
