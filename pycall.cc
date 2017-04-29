@@ -30,10 +30,9 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/oct.h>
 #include <octave/parse.h>
 
-#define PYTAVE_DO_DECLARE_SYMBOL
-#include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "oct-py-eval.h"
+#include "oct-py-init.h"
 #include "oct-py-object.h"
 #include "oct-py-util.h"
 #include "octave_to_python.h"
@@ -94,10 +93,7 @@ r = pycall (s.add, 4)\n\
                                   && args(0).class_name () == "pyobject")))
     error ("pycall: FUNC must be a string or a Python reference");
 
-  Py_Initialize ();
-
-  numeric::array::set_module_and_type ("numpy", "ndarray");
-  _import_array ();
+  pytave::py_init ();
 
   try
     {

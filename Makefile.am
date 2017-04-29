@@ -31,6 +31,7 @@ COMMON_SOURCE_FILES = \
   exceptions.cc \
   octave_to_python.cc \
   oct-py-eval.cc \
+  oct-py-init.cc \
   oct-py-types.cc \
   oct-py-util.cc \
   python_to_octave.cc
@@ -68,6 +69,7 @@ PYTAVE_HEADER_FILES = \
   config.h \
   exceptions.h \
   oct-py-eval.h \
+  oct-py-init.h \
   oct-py-object.h \
   oct-py-types.h \
   oct-py-util.h \

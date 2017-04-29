@@ -27,9 +27,8 @@ along with Pytave; see the file COPYING.  If not, see
 #include <Python.h>
 #include <octave/oct.h>
 
-#define PYTAVE_DO_DECLARE_SYMBOL
-#include "arrayobjectdefs.h"
 #include "exceptions.h"
+#include "oct-py-init.h"
 #include "oct-py-object.h"
 #include "oct-py-types.h"
 #include "oct-py-util.h"
@@ -49,7 +48,7 @@ This is a private internal function not intended for direct use.\n\
   if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
     error ("__py_class_name__: argument must be a valid Python object");
 
-  Py_Initialize ();
+  pytave::py_init ();
 
   pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
   std::string name = pytave::py_object_class_name (obj);
@@ -87,7 +86,7 @@ This is a private internal function not intended for direct use.\n\
   if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
     error ("pyobject.int64: argument must be a Python object");
 
-  Py_Initialize ();
+  pytave::py_init ();
 
   pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
   if (! obj)
@@ -139,7 +138,7 @@ This is a private internal function not intended for direct use.\n\
   if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
     error ("pyobject.uint64: argument must be a Python object");
 
-  Py_Initialize ();
+  pytave::py_init ();
 
   pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
   if (! obj)
@@ -187,7 +186,7 @@ This is a private internal function not intended for direct use.\n\
   if (args.length () != 1)
     print_usage ();
 
-  Py_Initialize ();
+  pytave::py_init ();
 
   pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
 
@@ -236,7 +235,7 @@ This is a private internal function not intended for direct use.\n\
 
   typestr = typestr.substr (3);
 
-  Py_Initialize ();
+  pytave::py_init ();
 
   try
     {
@@ -272,7 +271,8 @@ This is a private internal function not intended for direct use.\n\
   if (args.length () != 1)
     print_usage ();
 
-  Py_Initialize ();
+  pytave::py_init ();
+
   uint64_t key = args(0).xuint64_scalar_value ("__py_objstore_del__: KEY must be an integer");
   pytave::py_objstore_del (key);
 
@@ -290,7 +290,8 @@ This is a private internal function not intended for direct use.\n\
   if (args.length () != 1)
     print_usage ();
 
-  Py_Initialize ();
+  pytave::py_init ();
+
   uint64_t key = args(0).xuint64_scalar_value ("__py_objstore_get__: KEY must be an integer");
   PyObject *obj = pytave::py_objstore_get (key);
 
@@ -313,9 +314,8 @@ This is a private internal function not intended for direct use.\n\
   if (args.length () != 1)
     print_usage ();
 
-  Py_Initialize ();
-  boost::python::numeric::array::set_module_and_type ("numpy", "ndarray");
-  _import_array ();
+  pytave::py_init ();
+
   // FIXME: PyObject *obj = convert argument to Python (args(0));
   PyObject *obj = nullptr;
   try
@@ -352,7 +352,7 @@ This is a private internal function not intended for direct use.\n\
   if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
     error ("pyobject.char: argument must be a valid Python object");
 
-  Py_Initialize ();
+  pytave::py_init ();
 
   pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
   if (! obj)
@@ -395,7 +395,7 @@ This is a private internal function not intended for direct use.\n\
   if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
     error ("pyobject.struct: argument must be a Python object");
 
-  Py_Initialize ();
+  pytave::py_init ();
 
   try
     {

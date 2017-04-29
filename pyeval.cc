@@ -31,10 +31,9 @@ along with Pytave; see the file COPYING.  If not, see
 #include <oct.h>
 #include <octave/parse.h>
 
-#define PYTAVE_DO_DECLARE_SYMBOL
-#include "arrayobjectdefs.h"
 #include "exceptions.h"
 #include "oct-py-eval.h"
+#include "oct-py-init.h"
 #include "oct-py-util.h"
 #include "python_to_octave.h"
 
@@ -77,7 +76,7 @@ pyeval (\"dict(two=2)\")\n\
 
   std::string code = args(0).string_value ();
 
-  Py_Initialize ();
+  pytave::py_init ();
 
   PyObject *local_namespace = nullptr;
   if (nargin > 1)
