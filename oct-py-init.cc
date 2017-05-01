@@ -37,10 +37,21 @@ along with Pytave; see the file COPYING.  If not, see
 namespace pytave
 {
 
+#if PY_VERSION_HEX >= 0x03000000
+  wchar_t *sys_argv[] { L"", nullptr };
+#else
+  char *sys_argv[] { "", nullptr };
+#endif
+
   void
   py_init ()
   {
+    bool is_initialized = Py_IsInitialized ();
+
     Py_Initialize ();
+
+    if (! is_initialized)
+      PySys_SetArgvEx (1, sys_argv, 0);
 
     // FIXME: these are only needed for Boost.Python implicit conversion
     // of Octave arrays to NumPy arrays
