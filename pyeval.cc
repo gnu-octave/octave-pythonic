@@ -37,8 +37,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-util.h"
 #include "python_to_octave.h"
 
-using namespace boost::python;
-
 DEFUN_DLD (pyeval, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} pyeval (@var{expr})\n\
@@ -102,7 +100,7 @@ pyeval (\"dict(two=2)\")\n\
     {
       error ("pyexec: error in return value type conversion");
     }
-  catch (error_already_set const &)
+  catch (boost::python::error_already_set const &)
     {
       std::string message = pytave::fetch_exception_message ();
       error ("pyeval: %s", message.c_str ());

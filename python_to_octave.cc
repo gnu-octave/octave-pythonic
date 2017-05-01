@@ -44,8 +44,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-util.h"
 #include "python_to_octave.h"
 
-using namespace boost::python;
-
 namespace pytave
 {
   template <class PythonPrimitive, class OctaveBase>
@@ -295,7 +293,7 @@ namespace pytave
               // Create a new view of the NumPy array.
               PyArrayObject *view = (PyArrayObject *)PyArray_View (pyarr, view_descr, 0);
               // Store in a handle to ensure proper destruction.
-              handle<PyObject> view_handle (allow_null ((PyObject *)view));
+              boost::python::handle<> view_handle (boost::python::allow_null ((PyObject *)view));
               // Call recursively.
               pyarr_to_octvalue (octvalue, view);
             }
@@ -313,7 +311,7 @@ namespace pytave
   void pyobj_to_octvalue (octave_value& oct_value,
                           const boost::python::object& py_object)
   {
-    extract<numeric::array> arrayx (py_object);
+    boost::python::extract<boost::python::numeric::array> arrayx (py_object);
 
     if (PyBool_Check (py_object.ptr ()))
       oct_value = extract_py_bool (py_object.ptr ());

@@ -40,8 +40,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-types.h"
 #include "oct-py-util.h"
 
-using namespace boost::python;
-
 namespace pytave
 {
 
@@ -155,7 +153,8 @@ namespace pytave
                      const octave_value& octvalue)
   {
     PyArrayObject *pyarr = octvalue_to_pyarrobj (octvalue);
-    py_object = object (handle<PyObject> ((PyObject *)pyarr));
+    py_object = boost::python::object
+        { boost::python::handle<> ((PyObject *)pyarr) };
   }
 
   void octvalue_to_pyobj (boost::python::object& py_object,
@@ -170,23 +169,23 @@ namespace pytave
     else if (octvalue.is_string ())
       {
         PyObject *obj = make_py_str (octvalue.string_value ());
-        py_object = object (handle<PyObject> (obj));
+        py_object = boost::python::object { boost::python::handle<> (obj) };
       }
     else if (octvalue.is_scalar_type ())
       {
         PyObject *obj = make_py_numeric_value (octvalue);
-        py_object = object (handle<PyObject> (obj));
+        py_object = boost::python::object { boost::python::handle<> (obj) };
       }
     else if (octvalue.is_cell ())
       {
         PyObject *obj = make_py_tuple (octvalue.cell_value ());
-        py_object = object (handle<PyObject> (obj));
+        py_object = boost::python::object { boost::python::handle<> (obj) };
       }
     else if (octvalue.is_numeric_type () && octvalue.ndims () == 2
              && (octvalue.columns () <= 1 || octvalue.rows () <= 1))
       {
         PyObject *obj = make_py_array (octvalue);
-        py_object = object (handle<PyObject> (obj));
+        py_object = boost::python::object { boost::python::handle<> (obj) };
       }
     else if (octvalue.is_numeric_type () || octvalue.is_string ()
              || octvalue.is_bool_type ())
@@ -194,12 +193,12 @@ namespace pytave
     else if (octvalue.is_map () && octvalue.numel () == 1)
       {
         PyObject *obj = make_py_dict (octvalue.scalar_map_value ());
-        py_object = object (handle<PyObject> (obj));
+        py_object = boost::python::object { boost::python::handle<> (obj) };
       }
     else if (octvalue.is_object () && octvalue.class_name () == "pyobject")
       {
         PyObject *obj = pyobject_unwrap_object (octvalue);
-        py_object = object (handle<PyObject> (obj));
+        py_object = boost::python::object { boost::python::handle<> (obj) };
       }
     else
       throw value_convert_exception (

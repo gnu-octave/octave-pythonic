@@ -38,8 +38,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include "octave_to_python.h"
 #include "python_to_octave.h"
 
-using namespace boost::python;
-
 DEFUN_DLD (pycall, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} pycall (@var{func})\n\
@@ -114,7 +112,7 @@ r = pycall (s.add, 4)\n\
 
       octave_value_list arglist = args.slice (1, nargin - 1);
       PyObject *result = pytave::py_call_function (callable, arglist);
-      object res = object (handle<PyObject> (result));
+      boost::python::object res { boost::python::handle<> (result) };
 
       // Ensure reasonable "ans" behaviour, consistent with Python's "_".
       if (nargout > 0 || ! res.is_none ())
@@ -132,7 +130,7 @@ r = pycall (s.add, 4)\n\
     {
       error ("pycall: error in argument type conversion");
     }
-  catch (error_already_set const &)
+  catch (boost::python::error_already_set const &)
     {
       std::string message = pytave::fetch_exception_message ();
       error ("pycall: %s", message.c_str ());
