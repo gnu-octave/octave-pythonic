@@ -237,25 +237,9 @@ This is a private internal function not intended for direct use.\n\
 
   pytave::py_init ();
 
-  try
-    {
-      // FIXME: PyObject *obj = look up stored pyobject reference (args(0));
-      boost::python::object arg;
-      pytave::octvalue_to_pyobj (arg, args(0));
-      PyObject *obj = arg.ptr ();
-
-      pytave::python_object type = pytave::py_find_type (typestr);
-      retval(0) = pytave::py_isinstance (obj, type);
-    }
-  catch (pytave::object_convert_exception const &)
-    {
-      error ("pyobject.isa: error in return value type conversion");
-    }
-  catch (boost::python::error_already_set const &)
-    {
-      std::string message = pytave::fetch_exception_message ();
-      error ("pyobject.isa: %s", message.c_str ());
-    }
+  pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
+  pytave::python_object type = pytave::py_find_type (typestr);
+  retval(0) = pytave::py_isinstance (obj, type);
 
   return retval;
 }
@@ -397,24 +381,8 @@ This is a private internal function not intended for direct use.\n\
 
   pytave::py_init ();
 
-  try
-    {
-      // FIXME: PyObject *obj = look up stored pyobject reference (args(0));
-      boost::python::object arg;
-      pytave::octvalue_to_pyobj (arg, args(0));
-      PyObject *obj = arg.ptr ();
-
-      retval(0) = pytave::extract_py_scalar_map (obj);
-    }
-  catch (pytave::object_convert_exception const &)
-    {
-      error ("pyobject.struct: error in return value type conversion");
-    }
-  catch (boost::python::error_already_set const &)
-    {
-      std::string message = pytave::fetch_exception_message ();
-      error ("pyobject.struct: %s", message.c_str ());
-    }
+  pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
+  retval(0) = pytave::extract_py_scalar_map (obj);
 
   return retval;
 }

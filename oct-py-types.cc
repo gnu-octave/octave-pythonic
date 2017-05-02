@@ -335,10 +335,10 @@ namespace pytave
   extract_py_scalar_map (PyObject *obj)
   {
     if (! obj)
-      throw object_convert_exception ("failed to extract map: null object");
+      error ("unable to convert to an Octave struct, invalid Python object");
 
     if (! PyDict_Check (obj))
-      throw object_convert_exception ("failed to extract map: wrong type");
+      error ("unable to convert to an Octave struct, must be a Python dict");
 
     octave_scalar_map map;
 
@@ -349,8 +349,8 @@ namespace pytave
     while (PyDict_Next (obj, &pos, &py_key, &py_value))
       {
         if (! PyBytes_Check (py_key) && ! PyUnicode_Check (py_key))
-          throw object_convert_exception
-            ("failed to extract map: bad key type");
+          error ("unable to convert Python dict to Octave struct, "
+                 "all keys in the dict must be strings");
 
         std::string key = extract_py_str (py_key);
         octave_value value = wrap_pyobj_to_octvalue (py_value);

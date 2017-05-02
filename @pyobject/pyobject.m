@@ -409,6 +409,11 @@ endclassdef
 %! c = struct (b);
 %! assert (c, a)
 
+%!error struct (pyeval ("{1:2, 3:4}"));
+%!error struct (pyobject ("this is not a dict"))
+%!error struct (pyobject ({1, 2, 3}))
+%!error struct (pyobject ())
+
 ## Octave fails to resolve function overloads via function handles
 %!xtest
 %! fn = @double;
