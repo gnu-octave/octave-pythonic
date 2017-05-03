@@ -63,7 +63,6 @@ OCT_FILES = \
 OCT_SOURCE_FILES = $(patsubst %.oct, %.cc, $(OCT_FILES))
 
 PYTAVE_HEADER_FILES = \
-  arrayobjectdefs.h \
   config.h \
   exceptions.h \
   oct-py-eval.h \

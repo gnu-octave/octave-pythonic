@@ -28,12 +28,6 @@ along with Pytave; see the file COPYING.  If not, see
 
 #include "oct-py-init.h"
 
-// FIXME: the following are only needed for Boost.Python library and NumPy
-// library initialization
-#define PYTAVE_DO_DECLARE_SYMBOL
-#include <boost/python.hpp>
-#include "arrayobjectdefs.h"
-
 namespace pytave
 {
 
@@ -52,9 +46,6 @@ namespace pytave
 
     if (! is_initialized)
       PySys_SetArgvEx (1, sys_argv, 0);
-
-    // FIXME: this is needed for use of NumPy array object C API
-    _import_array ();
   }
 
 }
