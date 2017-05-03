@@ -238,8 +238,7 @@ This is a private internal function not intended for direct use.\n\
   pytave::py_init ();
 
   pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
-  pytave::python_object type = pytave::py_find_type (typestr);
-  retval(0) = pytave::py_isinstance (obj, type);
+  retval(0) = pytave::py_isinstance (obj, typestr);
 
   return retval;
 }

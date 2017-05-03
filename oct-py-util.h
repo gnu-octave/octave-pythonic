@@ -83,6 +83,18 @@ namespace pytave
   bool
   py_isinstance (PyObject *obj, PyObject *type);
 
+  //! Check whether an object is an instance of a type.
+  //!
+  //! @param obj Python object
+  //! @param typestr name of a Python type
+  //! @return @c true if @a obj is an instance of the type named by @a typestr,
+  //!         @c false otherwise
+  inline bool
+  py_isinstance (PyObject *obj, const std::string& typestr)
+  {
+    return py_isinstance (obj, py_find_type (typestr));
+  }
+
   std::string
   py_object_class_name (PyObject *obj);
 
