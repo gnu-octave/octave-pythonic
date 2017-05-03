@@ -53,9 +53,7 @@ namespace pytave
     if (! is_initialized)
       PySys_SetArgvEx (1, sys_argv, 0);
 
-    // FIXME: these are only needed for Boost.Python implicit conversion
-    // of Octave arrays to NumPy arrays
-    boost::python::numeric::array::set_module_and_type ("numpy", "ndarray");
+    // FIXME: this is needed for use of NumPy array object C API
     _import_array ();
   }
 

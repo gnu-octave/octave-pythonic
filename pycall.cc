@@ -25,7 +25,6 @@ along with Pytave; see the file COPYING.  If not, see
 #endif
 
 #include <boost/python.hpp>
-#include <boost/python/numeric.hpp>
 
 #include <octave/oct.h>
 #include <octave/parse.h>

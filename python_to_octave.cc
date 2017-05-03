@@ -28,7 +28,6 @@ along with Pytave; see the file COPYING.  If not, see
 
 #include <iostream>
 #include <boost/python.hpp>
-#include <boost/python/numeric.hpp>
 #include <boost/type_traits/integral_constant.hpp>
 
 #include <octave/oct.h>

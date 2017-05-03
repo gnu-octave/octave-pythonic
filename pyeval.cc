@@ -26,7 +26,6 @@ along with Pytave; see the file COPYING.  If not, see
 
 #include <dlfcn.h>
 #include <boost/python.hpp>
-#include <boost/python/numeric.hpp>
 
 #include <oct.h>
 #include <octave/parse.h>
