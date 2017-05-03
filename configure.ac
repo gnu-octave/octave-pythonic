@@ -45,9 +45,6 @@ CPPFLAGS=$pytave_save_CPPFLAGS
 # Pick a Python library to use
 AX_PYTHON_DEVEL
 
-# Look for numpy headers
-AX_PYTHON_NUMPY([], [AC_MSG_FAILURE([unable to find NumPy development files])])
-
 # Look for boost::python
 AX_BOOST_PYTHON
 if test -z "$BOOST_PYTHON_LIB"; then
