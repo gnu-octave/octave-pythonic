@@ -28,15 +28,16 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/Cell.h>
 #include <octave/oct-map.h>
 #include <octave/quit.h>
+#include <octave/ov-null-mat.h>
 
 #include "exceptions.h"
 #include "oct-py-eval.h"
 #include "oct-py-object.h"
 #include "oct-py-types.h"
+#include "oct-py-util.h"
 
-// FIXME: only here to bootstrap nested conversions needed in this file
-#include "octave_to_python.h"
-#include "python_to_octave.h"
+// FIXME: only here for exception types still used in this file
+#include <boost/python/errors.hpp>
 
 namespace pytave
 {
@@ -311,26 +312,6 @@ namespace pytave
     return 0;
   }
 
-  inline PyObject *
-  wrap_octvalue_to_pyobj (const octave_value& value)
-  {
-    boost::python::object obj;
-    octvalue_to_pyobj (obj, value);
-    PyObject *ptr = obj.ptr ();
-    Py_INCREF (ptr);
-    return ptr;
-  }
-
-  inline octave_value
-  wrap_pyobj_to_octvalue (PyObject *obj)
-  {
-    boost::python::object objref
-      { boost::python::handle<> (boost::python::borrowed (obj)) };
-    octave_value value;
-    pyobj_to_octvalue (value, objref);
-    return value;
-  }
-
   octave_scalar_map
   extract_py_scalar_map (PyObject *obj)
   {
@@ -353,7 +334,7 @@ namespace pytave
                  "all keys in the dict must be strings");
 
         std::string key = extract_py_str (py_key);
-        octave_value value = wrap_pyobj_to_octvalue (py_value);
+        octave_value value = py_implicitly_convert_return_value (py_value);
         map.setfield (key, value);
       }
 
@@ -373,7 +354,7 @@ namespace pytave
         if (! key)
           octave_throw_bad_alloc ();
 
-        PyObject *item = wrap_octvalue_to_pyobj (map.contents (p));
+        PyObject *item = py_implicitly_convert_argument (map.contents (p));
 
         if (PyDict_SetItem (dict, key, item) < 0)
           throw boost::python::error_already_set ();
@@ -464,7 +445,7 @@ namespace pytave
 
     for (octave_idx_type i = 0; i < size; ++i)
       {
-        PyObject *item = wrap_octvalue_to_pyobj (cell.xelem (i));
+        PyObject *item = py_implicitly_convert_argument (cell.xelem (i));
         PyTuple_SET_ITEM (tuple, i, item);
       }
 
@@ -505,6 +486,47 @@ namespace pytave
 #else
     return PyString_FromStringAndSize (str.data (), str.size ());
 #endif
+  }
+
+  PyObject *
+  py_implicitly_convert_argument (const octave_value& value)
+  {
+    if (value.is_object () && value.class_name () == "pyobject")
+      return pyobject_unwrap_object (value);
+    else if (value.is_string () && value.rows () > 1)
+      error ("unable to convert multirow char array to a Python object");
+    else if (value.is_string ())
+      return make_py_str (value.string_value ());
+    else if (value.is_scalar_type ())
+      return make_py_numeric_value (value);
+    else if (value.is_cell ())
+      return make_py_tuple (value.cell_value ());
+    else if (value.is_numeric_type () && value.ndims () == 2
+             && (value.columns () <= 1 || value.rows () <= 1))
+      return make_py_array (value);
+    else if (value.is_map () && value.numel () == 1)
+      return make_py_dict (value.scalar_map_value ());
+    else
+      error ("unable to convert unhandled Octave type to a Python object");
+
+    return nullptr;
+  }
+
+  octave_value
+  py_implicitly_convert_return_value (PyObject *obj)
+  {
+    if (PyBool_Check (obj))
+      return octave_value {extract_py_bool (obj)};
+#if PY_VERSION_HEX < 0x03000000
+    else if (PyInt_Check (obj))
+      return octave_value {octave_int64 (extract_py_int64 (obj))};
+#endif
+    else if (PyComplex_Check (obj))
+      return octave_value {extract_py_complex (obj)};
+    else if (PyFloat_Check (obj))
+      return octave_value {extract_py_float (obj)};
+    else
+      return pyobject_wrap_object (obj);
   }
 
 }

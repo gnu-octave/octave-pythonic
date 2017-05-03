@@ -33,9 +33,8 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-eval.h"
 #include "oct-py-init.h"
 #include "oct-py-object.h"
+#include "oct-py-types.h"
 #include "oct-py-util.h"
-#include "octave_to_python.h"
-#include "python_to_octave.h"
 
 DEFUN_DLD (pycall, args, nargout,
            "-*- texinfo -*-\n\
@@ -110,16 +109,11 @@ r = pycall (s.add, 4)\n\
         }
 
       octave_value_list arglist = args.slice (1, nargin - 1);
-      PyObject *result = pytave::py_call_function (callable, arglist);
-      boost::python::object res { boost::python::handle<> (result) };
+      pytave::python_object res = pytave::py_call_function (callable, arglist);
 
       // Ensure reasonable "ans" behaviour, consistent with Python's "_".
       if (nargout > 0 || ! res.is_none ())
-        {
-          octave_value val;
-          pytave::pyobj_to_octvalue (val, res);
-          retval(0) = val;
-        }
+        retval(0) = pytave::py_implicitly_convert_return_value (res);
     }
   catch (pytave::object_convert_exception const &)
     {
@@ -231,7 +225,7 @@ r = pycall (s.add, 4)\n\
 %!assert (pycall (pyeval ("lambda x: type(x) == type(2**64) and x ==        0"), intmin ("uint64")))
 %!assert (pycall (pyeval ("lambda x: type(x) == type(2**64) and x ==  2**64-1"), intmax ("uint64")))
 
-%!error <argument type conversion>
+%!error <unable to convert unhandled Octave type>
 %! pyexec ("def intwrapper(x): return int(x)");
 %! pycall ("intwrapper", ftp ());
 

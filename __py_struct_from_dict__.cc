@@ -32,7 +32,9 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-object.h"
 #include "oct-py-types.h"
 #include "oct-py-util.h"
-#include "octave_to_python.h"
+
+// FIXME: only here for exception types still used in this file
+#include <boost/python/errors.hpp>
 
 DEFUN_DLD (__py_class_name__, args, ,
            "-*- texinfo -*-\n\
@@ -299,24 +301,12 @@ This is a private internal function not intended for direct use.\n\
 
   pytave::py_init ();
 
-  // FIXME: PyObject *obj = convert argument to Python (args(0));
-  PyObject *obj = nullptr;
-  try
-    {
-      boost::python::object arg;
-      pytave::octvalue_to_pyobj (arg, args(0));
-      obj = arg.ptr ();
-      Py_INCREF (obj);
-    }
-  catch (pytave::value_convert_exception const &)
-    {
-    }
+  pytave::python_object obj = pytave::py_implicitly_convert_argument (args(0));
 
   if (! obj)
     error ("__py_objstore_put__: VALUE must be convertible to a Python value");
 
-  uint64_t key = pytave::py_objstore_put (obj);
-  Py_DECREF (obj);
+  uint64_t key = pytave::py_objstore_put (obj.release ());
 
   return ovl (octave_uint64 (key));
 }

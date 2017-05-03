@@ -29,12 +29,10 @@ export INCFLAGS
 
 COMMON_SOURCE_FILES = \
   exceptions.cc \
-  octave_to_python.cc \
   oct-py-eval.cc \
   oct-py-init.cc \
   oct-py-types.cc \
-  oct-py-util.cc \
-  python_to_octave.cc
+  oct-py-util.cc
 
 DOC_FILES = \
   INSTALL.md \
@@ -72,9 +70,7 @@ PYTAVE_HEADER_FILES = \
   oct-py-init.h \
   oct-py-object.h \
   oct-py-types.h \
-  oct-py-util.h \
-  octave_to_python.h \
-  python_to_octave.h
+  oct-py-util.h
 
 TST_FILES = $(addsuffix -tst,$(OCT_SOURCE_FILES))
 

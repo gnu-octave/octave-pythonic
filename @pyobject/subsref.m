@@ -152,7 +152,8 @@ endfunction
 %! assert (b, 2)
 %! assert (char (c), "Octave")
 
-%!test
+## Test that depends on implicit creation of NumPy arrays, do we want this?
+%!xtest
 %! % 2D array indexing
 %! A = pyobject ([1. 2.; 3. 4.]);
 %! assert (A{1, 1}, 1)

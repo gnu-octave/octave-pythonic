@@ -33,7 +33,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-eval.h"
 #include "oct-py-init.h"
 #include "oct-py-util.h"
-#include "python_to_octave.h"
 
 DEFUN_DLD (pyexec, args, nargout,
            "-*- texinfo -*-\n\

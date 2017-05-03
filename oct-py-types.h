@@ -217,6 +217,52 @@ namespace pytave
   PyObject *
   make_py_str (const std::string& str);
 
+  //! Perform an implicit conversion of the given Octave @c value to a Python
+  //! argument.
+  //!
+  //! The following implicit type conversions are implemented by this function:
+  //!
+  //! @arg @c bool from Octave logical scalar,
+  //! @arg @c complex from Octave double or single precision complex scalar,
+  //! @arg @c float from Octave double or single precision scalar,
+  //! @arg @c int from any Octave integer-valued scalar,
+  //! @arg @c long from Octave @c uint32, @c int64, or @c uint64, and only if
+  //!         running against Python 2,
+  //! @arg @c str from Octave string (@c char row vector),
+  //! @arg @c array.array from Octave numeric column or row vector,
+  //! @arg @c dict from Octave scalar map (consisting entirely of implicitly
+  //!         convertible elements),
+  //! @arg @c tuple from Octave cell array (consisting entirely of implicitly
+  //!         convertible elements).
+  //!
+  //! If @c value refers to a previously created Python object, then a reference
+  //! to the existing object is returned.
+  //!
+  //! Otherwise, a conversion error is raised.
+  //!
+  //! @param value Octave value
+  //! @return Python object
+  PyObject *
+  py_implicitly_convert_argument (const octave_value& value);
+
+  //! Perform an implicit conversion of the given Python object to an Octave
+  //! return value.
+  //!
+  //! The following implicit type conversions are implemented by this function:
+  //!
+  //! @arg @c logical scalar from Python @c bool,
+  //! @arg @c complex @c double from Python @c complex,
+  //! @arg @c double from Python @c float,
+  //! @arg @c int64 from Python @c int, only if running against Python 2.
+  //!
+  //! Otherwise, @c obj is left unconverted, a reference is maintained to it,
+  //! and an Octave value containing that reference is returned.
+  //!
+  //! @param obj Python object
+  //! @return Octave value
+  octave_value
+  py_implicitly_convert_return_value (PyObject *obj);
+
 }
 
 #endif

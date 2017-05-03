@@ -32,7 +32,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-eval.h"
 #include "oct-py-object.h"
 #include "oct-py-util.h"
-#include "octave_to_python.h"
+#include "oct-py-types.h"
 
 namespace pytave
 {
@@ -63,17 +63,12 @@ namespace pytave
 
     for (int i = 0; i < args.length (); ++i)
       {
-        boost::python::object arg;
-        pytave::octvalue_to_pyobj (arg, args(i));
-        PyObject *obj = arg.ptr ();
+        python_object obj = py_implicitly_convert_argument (args(i));
 
         if (pytave::is_py_kwargs_argument (obj))
           kwargs = pytave::update_py_dict (kwargs, obj);
         else
-          {
-            Py_INCREF (obj);
-            PyList_Append (args_list, obj);
-          }
+          PyList_Append (args_list, obj.release ());
       }
 
     python_object args_tuple = PyList_AsTuple (args_list);

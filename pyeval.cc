@@ -33,8 +33,9 @@ along with Pytave; see the file COPYING.  If not, see
 #include "exceptions.h"
 #include "oct-py-eval.h"
 #include "oct-py-init.h"
+#include "oct-py-object.h"
+#include "oct-py-types.h"
 #include "oct-py-util.h"
-#include "python_to_octave.h"
 
 DEFUN_DLD (pyeval, args, nargout,
            "-*- texinfo -*-\n\
@@ -85,15 +86,10 @@ pyeval (\"dict(two=2)\")\n\
 
   try
     {
-      PyObject *obj = pytave::py_eval_string (code, 0, local_namespace);
-      boost::python::object res { boost::python::handle<> (obj) };
+      pytave::python_object res = pytave::py_eval_string (code, 0, local_namespace);
 
       if (nargout > 0 || ! res.is_none ())
-        {
-          octave_value val;
-          pytave::pyobj_to_octvalue (val, res);
-          retval(0) = val;
-        }
+        retval(0) = pytave::py_implicitly_convert_return_value (res);
     }
   catch (pytave::object_convert_exception const &)
     {
