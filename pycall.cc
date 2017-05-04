@@ -24,8 +24,8 @@ along with Pytave; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
+#include <Python.h>
 #include <octave/oct.h>
-#include <octave/parse.h>
 
 #include "exceptions.h"
 #include "oct-py-eval.h"

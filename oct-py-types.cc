@@ -24,6 +24,7 @@ along with Pytave; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
+#include <Python.h>
 #include <limits>
 #include <octave/Cell.h>
 #include <octave/oct-map.h>
