@@ -71,7 +71,7 @@ This is a private internal function not intended for direct use.\n\
 %!error __py_class_name__ (1, 2)
 */
 
-DEFUN_DLD (__py_int64_scalar_value__, args, nargout,
+DEFUN_DLD (__py_int64_scalar_value__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_int64_scalar_value__ (@var{x})\n\
 Extract a scalar int64 value from the Python integer @var{x}.\n\
@@ -123,7 +123,7 @@ This is a private internal function not intended for direct use.\n\
 %!error __py_int64_scalar_value__ (1, 2)
 */
 
-DEFUN_DLD (__py_uint64_scalar_value__, args, nargout,
+DEFUN_DLD (__py_uint64_scalar_value__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_uint64_scalar_value__ (@var{x})\n\
 Extract a scalar uint64 value from the Python integer @var{x}.\n\
@@ -174,7 +174,7 @@ This is a private internal function not intended for direct use.\n\
 %!error __py_uint64_scalar_value__ (1, 2)
 */
 
-DEFUN_DLD (__py_is_none__, args, nargout,
+DEFUN_DLD (__py_is_none__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_is_none__ (@var{x})\n\
 Check whether the Python object @var{obj} is the @code{None} object.\n\
@@ -204,7 +204,7 @@ This is a private internal function not intended for direct use.\n\
 %!error __py_is_none__ (1, 2)
 */
 
-DEFUN_DLD (__py_isinstance__, args, nargout,
+DEFUN_DLD (__py_isinstance__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_isinstance__ (@var{x})\n\
 Check whether the Python object @var{obj} is an instance of a Python type\n\
@@ -242,7 +242,7 @@ This is a private internal function not intended for direct use.\n\
   return retval;
 }
 
-DEFUN_DLD (__py_objstore_del__, args, nargout,
+DEFUN_DLD (__py_objstore_del__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_objstore_del__ (@var{key})\n\
 Delete the Python object stored under @var{key} from the object store.\n\
@@ -261,7 +261,7 @@ This is a private internal function not intended for direct use.\n\
   return ovl ();
 }
 
-DEFUN_DLD (__py_objstore_get__, args, nargout,
+DEFUN_DLD (__py_objstore_get__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_objstore_get__ (@var{key})\n\
 Get the Python object stored under @var{key} from the object store.\n\
@@ -285,7 +285,7 @@ This is a private internal function not intended for direct use.\n\
   return ovl (retval);
 }
 
-DEFUN_DLD (__py_objstore_put__, args, nargout,
+DEFUN_DLD (__py_objstore_put__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_objstore_put__ (@var{value})\n\
 Convert @var{value} to a Python value and store in the object store.\n\
@@ -308,7 +308,7 @@ This is a private internal function not intended for direct use.\n\
   return ovl (octave_uint64 (key));
 }
 
-DEFUN_DLD (__py_string_value__, args, nargout,
+DEFUN_DLD (__py_string_value__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_string_value__ (@var{obj})\n\
 Return the string value or representation of the Python object @var{obj}.\n\
@@ -343,7 +343,7 @@ This is a private internal function not intended for direct use.\n\
   return ovl (str);
 }
 
-DEFUN_DLD (__py_struct_from_dict__, args, nargout,
+DEFUN_DLD (__py_struct_from_dict__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_struct_from_dict__ (@var{dict})\n\
 Extract a scalar struct from the Python dict @var{dict}.\n\

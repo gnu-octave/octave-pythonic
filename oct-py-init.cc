@@ -32,9 +32,11 @@ namespace pytave
 {
 
 #if PY_VERSION_HEX >= 0x03000000
-  wchar_t *sys_argv[] { L"", nullptr };
+  static wchar_t sys_argv0[] {L'\0'};
+  static wchar_t *sys_argv[] {sys_argv0, nullptr};
 #else
-  char *sys_argv[] { "", nullptr };
+  static char sys_argv0[] {'\0'};
+  static char *sys_argv[] {sys_argv0, nullptr};
 #endif
 
   void

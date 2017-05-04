@@ -31,7 +31,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-init.h"
 #include "oct-py-util.h"
 
-DEFUN_DLD (pyexec, args, nargout,
+DEFUN_DLD (pyexec, args, ,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} pyexec (@var{expr})\n\
 @deftypefnx {} {} pyexec (@var{expr}, @var{localns})\n\

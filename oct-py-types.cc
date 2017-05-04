@@ -42,16 +42,15 @@ namespace pytave
   PyObject *
   make_py_bool (bool value)
   {
-    if (value)
-      Py_RETURN_TRUE;
-    else
-      Py_RETURN_FALSE;
+    python_object retval = value ? Py_True : Py_False;
+    Py_INCREF (retval);
+    return retval.release ();
   }
 
   PyObject *
   make_py_complex (std::complex<double> value)
   {
-    Py_complex& py_complex_value = reinterpret_cast<Py_complex&> (value);
+    Py_complex py_complex_value {value.real (), value.imag ()};
     return PyComplex_FromCComplex (py_complex_value);
   }
 
@@ -83,7 +82,7 @@ namespace pytave
       throw object_convert_exception ("failed to extract complex: wrong type");
 
     Py_complex value = PyComplex_AsCComplex (obj);
-    return reinterpret_cast<std::complex<double>&> (value);
+    return std::complex<double> {value.real, value.imag};
   }
 
   double
@@ -375,10 +374,12 @@ namespace pytave
         long value = PyLong_AsLongAndOverflow (obj, &overflow);
 #endif
         if (overflow)
-          if (overflow > 0)
-            value = std::numeric_limits<int64_t>::max ();
-          else
-            value = std::numeric_limits<int64_t>::min ();
+          {
+            if (overflow > 0)
+              value = std::numeric_limits<int64_t>::max ();
+            else
+              value = std::numeric_limits<int64_t>::min ();
+          }
         return static_cast<int64_t> (value);
       }
 #if PY_VERSION_HEX < 0x03000000
