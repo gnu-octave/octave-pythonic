@@ -3,66 +3,36 @@ syntax: regexp
 # to mean "at any directory" while the ^ idiom means "from the
 # project's top-level directory".
 
-(^|/).*\.pyc$
-(^|/).*\.dvi$
-(^|/).*\.pdf$
-(^|/).*\.o$
-(^|/).*\.oct$
-(^|/).*\.octlink$
-(^|/)octave-core$
-(^|/).*\.tar\.gz$
-(^|/).*\.html
+# These directories and files are created by GNU autotools
+^Makefile\.in$
+^aclocal\.m4$
+^autom4te\.cache($|/)
+^build-aux($|/)
+^config\.h\.in$
+^configure$
 
-# some common files that the geometry package deals with
-# and are rarely meant to be actually committed
-(^|/).*\.png
-(^|/).*\.svg
-(^|/).*\.eps
-(^|/).*\.fig
+# This directory contains m4 files managed by GNU libtool, but also contains
+# some files maintained in the repository
+^m4/(libtool|lt.+)\.m4$
 
-(^|/)m4
-(^|/)aclocal\.m4$
-(^|/).*\.in$
-(^|/).*\.guess$
-(^|/).*\.sub$
-(^|/)Makefile
-(^|/)depcomp
-(^|/)missing
-(^|/)install-sh
-(^|/)libtool
-(^|/)ltmain.sh
-(^|/)stamp-h1
-
-
+# These files are created by running configure
+(^|/)Makefile$
 (^|/)config\.h$
 (^|/)config\.log$
 (^|/)config\.status$
-(^|/)configure$
-(^|/)autom4te\.cache($|/)
+(^|/)libtool$
+(^|/)stamp-h1$
 
-(^|/)\.deps
-(^|/)\.libs
-
-(^|/)PKG_(ADD|DEL)
-(^|/)octave-workspace
-
+# These files are normal build system artifacts
+(^|/).+\.cc-tst$
+(^|/).+\.l?[ao]$
+(^|/).+\.oct$
+(^|/).+\.tar\.gz$
+(^|/)PKG_(ADD|DEL)$
+(^|/)\.deps($|/)
+(^|/)\.libs($|/)
 (^|/)fntests\.log$
-(^|/).*\.cc-tst$
+(^|/)octave-workspace$
 
-# e.g. doc/faq/OctaveFAQ.info
-#      doc/interpreter/octave.info-4
-^doc/.*\.info(-\d)?$
-
-^doc/\w*/stamp-vti$
-^doc/\w*/stamp-vti$
-
-^doc/latex
-^doc/html
-^doc/.*\.db$
-
-# Emacs tools create these
-(^|/)TAGS$
-(^|/)semantic.cache$
-
-# Other text editors often create these
-(^|/).*~$
+# This directory contains Doxygen generated documentation
+^doc($|/)
