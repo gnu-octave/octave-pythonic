@@ -24,8 +24,6 @@ along with Pytave; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
-#include <boost/python.hpp>
-
 #include <octave/oct.h>
 #include <octave/parse.h>
 
@@ -123,7 +121,7 @@ r = pycall (s.add, 4)\n\
     {
       error ("pycall: error in argument type conversion");
     }
-  catch (boost::python::error_already_set const &)
+  catch (pytave::error_already_set const &)
     {
       std::string message = pytave::fetch_exception_message ();
       error ("pycall: %s", message.c_str ());

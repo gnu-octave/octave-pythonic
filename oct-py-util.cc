@@ -27,12 +27,10 @@ along with Pytave; see the file COPYING.  If not, see
 #include <oct.h>
 #include <octave/parse.h>
 
+#include "exceptions.h"
 #include "oct-py-object.h"
 #include "oct-py-types.h"
 #include "oct-py-util.h"
-
-// FIXME: only here for boost::python::error_already_set
-#include <boost/python.hpp>
 
 namespace pytave
 {
@@ -173,7 +171,7 @@ namespace pytave
           }
 
         if (! dict)
-          throw boost::python::error_already_set ();
+          throw pytave::error_already_set ();
 
         objstore = dict;
       }

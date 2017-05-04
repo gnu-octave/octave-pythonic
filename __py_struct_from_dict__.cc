@@ -33,9 +33,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-types.h"
 #include "oct-py-util.h"
 
-// FIXME: only here for exception types still used in this file
-#include <boost/python/errors.hpp>
-
 DEFUN_DLD (__py_class_name__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_class_name__ (@var{obj})\n\
@@ -104,7 +101,7 @@ This is a private internal function not intended for direct use.\n\
     {
       error ("pyobject.int64: argument must be a Python int or long object");
     }
-  catch (boost::python::error_already_set const &)
+  catch (pytave::error_already_set const &)
     {
       std::string message = pytave::fetch_exception_message ();
       error ("pyobject.int64: %s", message.c_str ());
@@ -156,7 +153,7 @@ This is a private internal function not intended for direct use.\n\
     {
       error ("pyobject.uint64: argument must be a Python int or long object");
     }
-  catch (boost::python::error_already_set const &)
+  catch (pytave::error_already_set const &)
     {
       std::string message = pytave::fetch_exception_message ();
       error ("pyobject.uint64: %s", message.c_str ());

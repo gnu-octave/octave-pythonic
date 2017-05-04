@@ -24,9 +24,6 @@ along with Pytave; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
-#include <dlfcn.h>
-#include <boost/python.hpp>
-
 #include <oct.h>
 #include <octave/parse.h>
 
@@ -95,7 +92,7 @@ pyeval (\"dict(two=2)\")\n\
     {
       error ("pyexec: error in return value type conversion");
     }
-  catch (boost::python::error_already_set const &)
+  catch (pytave::error_already_set const &)
     {
       std::string message = pytave::fetch_exception_message ();
       error ("pyeval: %s", message.c_str ());

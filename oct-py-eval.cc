@@ -25,10 +25,10 @@ along with Pytave; see the file COPYING.  If not, see
 #endif
 
 #include <string>
-#include <boost/python.hpp>
 #include <octave/ov.h>
 #include <octave/ovl.h>
 
+#include "exceptions.h"
 #include "oct-py-eval.h"
 #include "oct-py-object.h"
 #include "oct-py-util.h"
@@ -83,7 +83,7 @@ namespace pytave
   {
     python_object retval = PyEval_CallObjectWithKeywords (callable, args, kwargs);
     if (! retval)
-      throw boost::python::error_already_set ();
+      throw pytave::error_already_set ();
 
     return retval.release ();
   }
@@ -118,7 +118,7 @@ namespace pytave
       Py_DECREF (globals);
 
     if (! retval)
-      throw boost::python::error_already_set ();
+      throw pytave::error_already_set ();
 
     return retval.release ();
   }

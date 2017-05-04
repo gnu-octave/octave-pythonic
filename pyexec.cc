@@ -24,9 +24,6 @@ along with Pytave; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
-#include <dlfcn.h>
-#include <boost/python.hpp>
-
 #include <oct.h>
 
 #include "exceptions.h"
@@ -79,14 +76,13 @@ pyexec (\"print(42)\")\n\
   try
     {
       // FIXME: figure out exec return code:
-      // http://www.boost.org/doc/libs/1_38_0/libs/python/doc/v2/exec.html
       pytave::py_exec_string (code, 0, local_namespace);
     }
   catch (pytave::object_convert_exception const &)
     {
       error ("pyexec: error in return value type conversion");
     }
-  catch (boost::python::error_already_set const &)
+  catch (pytave::error_already_set const &)
     {
       std::string message = pytave::fetch_exception_message ();
       error ("pyexec: %s", message.c_str ());

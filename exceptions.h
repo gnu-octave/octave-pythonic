@@ -83,6 +83,10 @@ namespace pytave
     std::string error;
   };
 
+  class error_already_set
+  {
+  };
+
   std::string fetch_exception_message (void);
 }
 

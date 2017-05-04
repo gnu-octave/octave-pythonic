@@ -36,9 +36,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include "oct-py-types.h"
 #include "oct-py-util.h"
 
-// FIXME: only here for exception types still used in this file
-#include <boost/python/errors.hpp>
-
 namespace pytave
 {
 
@@ -357,7 +354,7 @@ namespace pytave
         PyObject *item = py_implicitly_convert_argument (map.contents (p));
 
         if (PyDict_SetItem (dict, key, item) < 0)
-          throw boost::python::error_already_set ();
+          throw pytave::error_already_set ();
       }
 
     return dict;
