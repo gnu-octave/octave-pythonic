@@ -6,7 +6,7 @@ pipelines:
         script:
           - apt-get update
           - apt-get install -y python-dev python3-dev
-          - apt-get install -y libboost-python-dev python-numpy python3-numpy
+          - apt-get install -y python-numpy python3-numpy
           - autoreconf -i
           - mkdir -p py2 py3
           - ( cd py2 && ../configure PYTHON_VERSION=2 )

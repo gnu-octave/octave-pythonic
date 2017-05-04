@@ -45,12 +45,6 @@ CPPFLAGS=$pytave_save_CPPFLAGS
 # Pick a Python library to use
 AX_PYTHON_DEVEL
 
-# Look for boost::python
-AX_BOOST_PYTHON
-if test -z "$BOOST_PYTHON_LIB"; then
-  AC_MSG_FAILURE([unable to find Boost::Python development files])
-fi
-
 AM_INIT_AUTOMAKE([foreign -Wno-portability])
 LT_INIT
 
@@ -79,6 +73,5 @@ Dependencies
   Python ............. $PYTHON_CPPFLAGS
     library .......... $PYTHON_LIBS
     executable ....... $PYTHON
-  Boost::Python ...... $BOOST_PYTHON_LIB
 
 ========================================================================])
