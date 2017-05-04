@@ -44,6 +44,13 @@ CPPFLAGS=$pytave_save_CPPFLAGS
 
 # Pick a Python library to use
 AX_PYTHON_DEVEL
+for opt in $PYTHON_LIBS; do
+  case "$opt" in #(
+    -L/usr*) : ;; #(
+    -L*) PYTHON_LIBS="-R${opt#-L} $PYTHON_LIBS" ;; #(
+    *) : ;;
+  esac
+done
 
 AM_INIT_AUTOMAKE([foreign -Wno-portability])
 LT_INIT
