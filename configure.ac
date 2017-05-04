@@ -1,8 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl Copyright (C) 2015-2016 Mike Miller
-dnl Copyright (C) 2008 David Grundberg, Håkan Fors Nilsson
-dnl Copyright (C) 2009 Jaroslav Hajek, VZLU Prague
+dnl Copyright (C) 2015-2017 Mike Miller
 ###
 ### This file is part of Pytave.
 ###
@@ -23,26 +21,29 @@ dnl Copyright (C) 2009 Jaroslav Hajek, VZLU Prague
 AC_PREREQ(2.61)
 AC_INIT(pytave, dev, [[https://bitbucket.org/mtmiller/pytave/issues]])
 
-# Some important programs.
-AC_LANG(C++)
-AC_PROG_CXX
-AC_PROG_CPP
-AC_PROG_CC
-
 AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_FILES([Makefile])
+AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([oct-py-eval.cc])
-AC_CONFIG_HEADER([config.h])
-AC_CONFIG_FILES([Makefile])
 
-# Find Octave
+AM_INIT_AUTOMAKE([foreign -Wno-portability])
+
+AC_USE_SYSTEM_EXTENSIONS
+
+LT_INIT
+
+AC_PROG_CXX
+
+AC_LANG(C++)
+
+### Check for Octave library and mkoctfile
+
 AX_OCTAVE([OCTAVE_CONFIG], [],
           [AC_MSG_FAILURE([unable to find Octave development files])])
-pytave_save_CPPFLAGS=$CPPFLAGS
-CPPFLAGS=$OCTAVE_CPPFLAGS
-CPPFLAGS=$pytave_save_CPPFLAGS
 
-# Pick a Python library to use
+### Check for Python library and interpreter
+
 AX_PYTHON_DEVEL
 for opt in $PYTHON_LIBS; do
   case "$opt" in #(
@@ -52,33 +53,15 @@ for opt in $PYTHON_LIBS; do
   esac
 done
 
-AM_INIT_AUTOMAKE([foreign -Wno-portability])
-LT_INIT
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_C_CONST
-AC_C_INLINE
-AC_TYPE_INT8_T
-AC_TYPE_INT16_T
-AC_TYPE_INT32_T
-AC_TYPE_INT64_T
-AC_TYPE_SIZE_T
-AC_TYPE_UINT8_T
-AC_TYPE_UINT16_T
-AC_TYPE_UINT32_T
-AC_TYPE_UINT64_T
-
 AC_OUTPUT
 
 AC_MSG_NOTICE([
-========================================================================
-Pytave is configured with the following setup
 
-Dependencies
-  Octave ............. $OCTAVE_INCLUDEDIR
-  Python ............. $PYTHON_CPPFLAGS
-    library .......... $PYTHON_LIBS
-    executable ....... $PYTHON
+Pytave is now configured for the following
 
-========================================================================])
+  Octave header files:  $OCTAVE_INCLUDEDIR
+  Octave libraries:     $OCTAVE_LIBRARYDIR
+  Python header files:  $PYTHON_CPPFLAGS
+  Python library:       $PYTHON_LIBS
+  Python executable:    $PYTHON
+])
