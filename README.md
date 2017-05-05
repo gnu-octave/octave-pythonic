@@ -1,190 +1,84 @@
-Pytave README
-=============
+Octave Python Interface
+=======================
 
-For installation instructions specific for Pytave, please see the
-[INSTALL.md](INSTALL.md) file.
-
-Contents of this document
--------------------------
-
-  1. What is Pytave?
-  2. Gotchas
-  3. Pytave and multi-threading
-  4. Python/Octave cheat sheet
-
-What is Pytave?
-===============
-
-Pytave enables Python scripts to use existing m-files (Octave/Matlab
-scripts) for numerical calculations. The Octave language interpreter is
-embedded as a module to Python.
-
-Example use
------------
-
-Calling Octave code in the interactive Python interpreter:
-
-    >>> import pytave
-    >>> pytave.feval(1, "cos", 0)
-    (1.0,)
+This project is for development of a native Python calling interface for
+[GNU Octave](http://www.octave.org).
 
 Goals
 -----
 
-Pytave strives to uphold these points
+The goals of this extension include
 
-  * Good out of the box experience
-  * Good-natured implicit type conversions, no strange PyApple ->
-    octave_orange -> PyBanana chains
+* call any loadable Python modules, classes, and functions
+* automatic translation of certain Octave data types into Python
+  arguments
+* hold reference to and performing operations on any Python data type as
+  Octave variables
+* automatic translation of certain Python data types into Octave return
+  values
+* be as compatible as possible with Matlab's own Python calling
+  interface
 
-Features
+Examples
 --------
 
-A short list of what Pytave is capable of
+A few examples are listed here to give a brief introduction to how the
+Python runtime is translated to Octave.
 
-  * Implicit type conversions between Python and Octave. Supports all
-    NumPy integer and floating point matrices
-  * Architecture independent - no assumption on endian type or integer
-    sizes
-  * Supports cell <-> list and struct <-> dict conversions.
+Add a directory to the Python module search path
 
-Project homepage
-----------------
+    py.sys.path.insert (int32 (0), "/path/to/module");
 
-[https://bitbucket.org/mtmiller/pytave](https://bitbucket.org/mtmiller/pytave)
+Use a vectorized NumPy function
 
-Using/hacking
--------------
+    x = py.numpy.sqrt (1:10);
 
-You need the Mercurial version control software (hg). Clone the repo
-with:
+Call a function with keyword arguments
 
-    $ hg clone https://bitbucket.org/mtmiller/pytave
+    a = py.int ("5ba0", pyargs ("base", int32 (16)));
 
-You will now have a directory called `pytave` with source code for the
-module. Read the [INSTALL.md](INSTALL.md) file for building instructions.
+Read an entire text file into a string
 
-Gotchas
-=======
+    s = py.str ().join (py.open ("/etc/passwd").readlines ());
 
-Unfortunately, the implicit conversion is not bijective (there is not a
-one-to-one relation between Octave and Python values). Pytave users
-should be aware of the following cases.
+Installation
+------------
 
-Numeric row vectors to Octave matrices
---------------------------------------
+There is currently no support for installing this project as an Octave
+package or in a system or user directory for regular use. This is
+intentional, since the project is still being developed and is not
+stable enough for actual use yet.
 
-Numeric row vectors are converted to Octave 1xN matrices; returned 1xN
-matrices will become 1xN numerical arrays, not row vectors. As an
-example, a NumPy array with shape == (3,) will become (1, 3) when
-converted back and forth.
+What is supported is building and running the project from the build
+directory. Building requires Octave and Python development libraries and
+GNU autotools.
 
-Octave cells to Python lists
-----------------------------
+1. `hg clone https://bitbucket.org/mtmiller/pytave`
+2. `cd pytave`
+3. `autoreconf -i`
+4. `./configure`
+5. `make`
+6. Run Octave with the build directory added to the load path
 
-Only row cell arrays can be converted to Python lists.
+Development
+-----------
 
-Python dictionaries to Octave structures
-----------------------------------------
+We welcome all contributors, bug reports, test results, and ideas for
+improvement. Contributions in any of the following forms, in no
+particular order, are needed and appreciated.
 
-Dictionaries converted to structures must only have string keys. This is
-because Octave structures only allow string keys. Keys must also be
-valid Octave identifiers.
+* Testing on different operating systems and in different environments
+* Testing for full functionality with a variety of Python libraries
+* Bug reports detailing problems encountered or unexpected behavior
+* Code contributions
+* Documentation in the form of examples, improvements to help texts, or
+  some sort of user manual
 
-As Octave structures are built using cells, simple variables are
-upgraded to cells when a dictionary is converted. A dictionary
+Other Resources
+---------------
 
-    {"name": "Pytave"}
+Please discuss or ask questions about this project on the Octave
+[maintainers mailing list](https://lists.gnu.org/mailman/listinfo/octave-maintainers).
 
-thus will become
-
-    ans =
-    {
-      name = Pytave
-    }
-
-in Octave. In this listing, Octave is hiding the fact that the value is
-wrapped in a cell. Converted back, cells are converted to Python lists.
-The re-converted Python dictionary will read
-
-    {"name": ["Pytave"]}
-
-which is natural effect because of the way Octave handles structures.
-
-The list values in dictionaries to be converted must be of equal length.
-All restrictions demanded by the Octave `struct` built-in applies.
-
-Pytave and multi-threading
-==========================
-
-Pytave does not handle reentrant calls. It is not thread-safe, and you
-cannot make several Pytave calls in parallel. There are no safety
-harnesses in Pytave (unlike e.g. PySqlite), and Pytave will not stop you
-if you try to make concurrent calls. The behavior is undefined. It is
-not possible to run several calculations in parallel.
-
-That being said, it is possible to do other things while one Pytave call
-is running. Pytave is aware of the Global Interpreter Lock. The lock
-will be released while the Octave interpreter is running, allowing you
-to have other Python threads to run in parallel with the one Octave
-call.
-
-Python/Octave cheat sheet
-=========================
-
-Octave and Python share some syntax elements, which unfortunately makes
-it harder to distinguish between the languages. Here are some examples
-in both languages, showing how to build related constructs.
-
-Create a 2x3 matrix
--------------------
-
-    octave:1> [1, 1, 1; 2, 2, 2]
-    python>>> array([[1, 1, 1], [2, 2, 2]])
-
-Create a 3x2 matrix
--------------------
-
-    octave:1> [1, 1; 2, 2; 3, 3]
-    python>>> array([[1, 1], [2, 2], [3, 3]])
-
-Create a 1x3 matrix
--------------------
-
-    octave:1> [1, 1, 1]
-    python>>> array([[1, 1, 1]])
-
-Create a row vector
--------------------
-
-Not applicable to Octave.
-
-    python>>> array([1, 1, 1])
-
-Note: Python row vectors will be converted to Octave 1xN matrices.
-
-Create a 3x1 matrix
--------------------
-
-    octave:1> [1; 2; 3]
-    python>>> array([[1], [2], [3]])
-
-Create a 1x1 structure/dictionary
----------------------------------
-
-    octave:1> struct("x", 1, "y", 2)
-    python>>> {"x": 1, "y": 2}
-
-Create a 1x2 structure array/dictionary containing lists of length 2
---------------------------------------------------------------------
-
-    octave:1> struct("firstname", {"David", "Håkan"}, ...
-                     "lastname", {"Grundberg", "Fors Nilsson"})
-    python>>> {"firstname": ["David", "Håkan"], \
-               "lastname": ["Grundberg", "Fors Nilsson"]}
-
-Create a 1x3 cell array/list
-----------------------------
-
-    octave:1> {"foo", "bar", "baz"}
-    python>>> ["foo", "bar", "baz"]
+The [wiki page](http://wiki.octave.org/Python_interface) contains more
+examples and ideas about the project.

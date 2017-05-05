@@ -36,7 +36,7 @@ COMMON_SOURCE_FILES = \
   oct-py-util.cc
 
 DOC_FILES = \
-  INSTALL.md \
+  CONTRIBUTORS.md \
   README.md
 
 M_FILES = \
