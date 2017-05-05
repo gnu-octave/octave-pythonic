@@ -79,10 +79,6 @@ pyexec (\"print(42)\")\n\
       // FIXME: figure out exec return code:
       pytave::py_exec_string (code, 0, local_namespace);
     }
-  catch (pytave::object_convert_exception const &)
-    {
-      error ("pyexec: error in return value type conversion");
-    }
   catch (pytave::error_already_set const &)
     {
       std::string message = pytave::fetch_exception_message ();

@@ -29,60 +29,6 @@ along with Pytave; see the file COPYING.  If not, see
 
 namespace pytave
 {
-  class pytave_exception
-  {
-  public:
-    pytave_exception (const std::string& err) { error = err; };
-
-  private:
-    std::string error;
-  };
-
-  class octave_error_exception
-  {
-  public:
-    octave_error_exception (const std::string& err) { error = err; };
-
-  private:
-    std::string error;
-  };
-
-  class octave_parse_exception
-  {
-  public:
-    octave_parse_exception (const std::string& err) { error = err; };
-
-  private:
-    std::string error;
-  };
-
-  class value_convert_exception
-  {
-  public:
-    value_convert_exception (const std::string& err) { error = err; };
-
-  private:
-    std::string error;
-  };
-
-  class object_convert_exception
-  {
-  public:
-    object_convert_exception (const std::string& err) { error = err; };
-
-  private:
-    std::string error;
-  };
-
-  class variable_name_exception
-  {
-  public:
-    variable_name_exception (const std::string& err) { error = err; };
-
-  private:
-    std::string error;
-  };
-
   class error_already_set
   {
   };

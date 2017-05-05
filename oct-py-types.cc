@@ -32,6 +32,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/ov-null-mat.h>
 
 #include "exceptions.h"
+#include "oct-py-error.h"
 #include "oct-py-eval.h"
 #include "oct-py-object.h"
 #include "oct-py-types.h"
@@ -65,10 +66,10 @@ namespace pytave
   extract_py_bool (PyObject *obj)
   {
     if (! obj)
-      throw object_convert_exception ("failed to extract boolean: null object");
+      error_conversion_invalid_python_object ("a boolean value");
 
     if (! PyBool_Check (obj))
-      throw object_convert_exception ("failed to extract boolean: wrong type");
+      error_conversion_mismatch_python_type ("a boolean value", "bool");
 
     return (obj == Py_True);
   }
@@ -77,10 +78,10 @@ namespace pytave
   extract_py_complex (PyObject *obj)
   {
     if (! obj)
-      throw object_convert_exception ("failed to extract complex: null object");
+      error_conversion_invalid_python_object ("a complex value");
 
     if (! PyComplex_Check (obj))
-      throw object_convert_exception ("failed to extract complex: wrong type");
+      error_conversion_mismatch_python_type ("a complex value", "complex");
 
     Py_complex value = PyComplex_AsCComplex (obj);
     return std::complex<double> {value.real, value.imag};
@@ -90,10 +91,10 @@ namespace pytave
   extract_py_float (PyObject *obj)
   {
     if (! obj)
-      throw object_convert_exception ("failed to extract float: null object");
+      error_conversion_invalid_python_object ("a floating point value");
 
     if (! PyFloat_Check (obj))
-      throw object_convert_exception ("failed to extract float: wrong type");
+      error_conversion_mismatch_python_type ("a floating point value", "float");
 
     return PyFloat_AsDouble (obj);
   }
@@ -138,8 +139,7 @@ namespace pytave
   make_py_array (const void *data, size_t len, char typecode)
   {
     if (! typecode)
-      throw object_convert_exception
-        ("unable to create array from Octave data");
+      error ("unable to create array, invalid array type code");
 
     std::string arg { typecode };
     python_object array = py_call_function ("array.array", ovl (arg));
@@ -242,81 +242,88 @@ namespace pytave
   PyObject *
   make_py_numeric_value (const octave_value& value)
   {
-    if (value.is_scalar_type ())
-      {
-        if (value.is_bool_type ())
-          return make_py_bool (value.bool_value ());
+    if (! value.is_scalar_type ())
+      error ("unable to convert non-scalar type \"%s\" to a Python number",
+             value.type_name ().c_str ());
 
-        else if (value.is_int8_type ())
-          return make_py_int (value.int8_scalar_value ().value ());
-        else if (value.is_int16_type ())
-          return make_py_int (value.int16_scalar_value ().value ());
-        else if (value.is_int32_type ())
-          return make_py_int (value.int32_scalar_value ().value ());
-        else if (value.is_int64_type ())
-          return make_py_int (value.int64_scalar_value ().value ());
+    if (value.is_bool_type ())
+      return make_py_bool (value.bool_value ());
 
-        else if (value.is_uint8_type ())
-          return make_py_int (value.uint8_scalar_value ().value ());
-        else if (value.is_uint16_type ())
-          return make_py_int (value.uint16_scalar_value ().value ());
-        else if (value.is_uint32_type ())
-          return make_py_int (value.uint32_scalar_value ().value ());
-        else if (value.is_uint64_type ())
-          return make_py_int (value.uint64_scalar_value ().value ());
+    else if (value.is_int8_type ())
+      return make_py_int (value.int8_scalar_value ().value ());
+    else if (value.is_int16_type ())
+      return make_py_int (value.int16_scalar_value ().value ());
+    else if (value.is_int32_type ())
+      return make_py_int (value.int32_scalar_value ().value ());
+    else if (value.is_int64_type ())
+      return make_py_int (value.int64_scalar_value ().value ());
 
-        else if (value.is_complex_type ())
-          return make_py_complex (value.complex_value ());
-        else if (value.is_float_type ())
-          return make_py_float (value.double_value ());
-      }
+    else if (value.is_uint8_type ())
+      return make_py_int (value.uint8_scalar_value ().value ());
+    else if (value.is_uint16_type ())
+      return make_py_int (value.uint16_scalar_value ().value ());
+    else if (value.is_uint32_type ())
+      return make_py_int (value.uint32_scalar_value ().value ());
+    else if (value.is_uint64_type ())
+      return make_py_int (value.uint64_scalar_value ().value ());
 
-    throw value_convert_exception ("unhandled scalar type");
-    return 0;
+    else if (value.is_complex_type ())
+      return make_py_complex (value.complex_value ());
+    else if (value.is_float_type ())
+      return make_py_float (value.double_value ());
+    else
+      error ("unable to convert unhandled scalar type \"%s\" to a "
+             "Python number", value.type_name ().c_str ());
+
+    return nullptr;
   }
 
   PyObject *
   make_py_array (const octave_value& value)
   {
-    if (value.is_numeric_type () && ! value.is_complex_type ()
-        && value.ndims () == 2 && (value.columns () <= 1 || value.rows () <= 1))
-      {
-        if (value.is_double_type ())
-          return make_py_array (value.array_value ());
-        else if (value.is_single_type ())
-          return make_py_array (value.float_array_value ());
+    if (! (value.is_numeric_type () && ! value.is_complex_type ()
+           && value.ndims () == 2
+           && (value.columns () <= 1 || value.rows () <= 1)))
+      error ("unable to convert non-vector type \"%s\" to a Python array",
+             value.type_name ().c_str ());
 
-        else if (value.is_int8_type ())
-          return make_py_array (value.int8_array_value ());
-        else if (value.is_int16_type ())
-          return make_py_array (value.int16_array_value ());
-        else if (value.is_int32_type ())
-          return make_py_array (value.int32_array_value ());
-        else if (value.is_int64_type ())
-          return make_py_array (value.int64_array_value ());
+    if (value.is_double_type ())
+      return make_py_array (value.array_value ());
+    else if (value.is_single_type ())
+      return make_py_array (value.float_array_value ());
 
-        else if (value.is_uint8_type ())
-          return make_py_array (value.uint8_array_value ());
-        else if (value.is_uint16_type ())
-          return make_py_array (value.uint16_array_value ());
-        else if (value.is_uint32_type ())
-          return make_py_array (value.uint32_array_value ());
-        else if (value.is_uint64_type ())
-          return make_py_array (value.uint64_array_value ());
-      }
+    else if (value.is_int8_type ())
+      return make_py_array (value.int8_array_value ());
+    else if (value.is_int16_type ())
+      return make_py_array (value.int16_array_value ());
+    else if (value.is_int32_type ())
+      return make_py_array (value.int32_array_value ());
+    else if (value.is_int64_type ())
+      return make_py_array (value.int64_array_value ());
 
-    throw value_convert_exception ("unhandled Octave numeric vector type");
-    return 0;
+    else if (value.is_uint8_type ())
+      return make_py_array (value.uint8_array_value ());
+    else if (value.is_uint16_type ())
+      return make_py_array (value.uint16_array_value ());
+    else if (value.is_uint32_type ())
+      return make_py_array (value.uint32_array_value ());
+    else if (value.is_uint64_type ())
+      return make_py_array (value.uint64_array_value ());
+    else
+      error ("unable to convert unhandled vector type \"%s\" to a "
+             "Python array", value.type_name ().c_str ());
+
+    return nullptr;
   }
 
   octave_scalar_map
   extract_py_scalar_map (PyObject *obj)
   {
     if (! obj)
-      error ("unable to convert to an Octave struct, invalid Python object");
+      error_conversion_invalid_python_object ("an Octave struct");
 
     if (! PyDict_Check (obj))
-      error ("unable to convert to an Octave struct, must be a Python dict");
+      error_conversion_mismatch_python_type ("an Octave struct", "dict");
 
     octave_scalar_map map;
 
@@ -364,7 +371,7 @@ namespace pytave
   extract_py_int64 (PyObject *obj)
   {
     if (! obj)
-      throw object_convert_exception ("failed to extract integer: null object");
+      error_conversion_invalid_python_object ("a signed integer value");
 
     if (PyLong_Check (obj))
       {
@@ -388,7 +395,8 @@ namespace pytave
       return PyInt_AsLong (obj);
 #endif
     else
-      throw object_convert_exception ("failed to extract integer: wrong type");
+      error_conversion_mismatch_python_type ("a signed integer value",
+                                             "int or long");
 
     return 0;
   }
@@ -397,7 +405,7 @@ namespace pytave
   extract_py_uint64 (PyObject *obj)
   {
     if (! obj)
-      throw object_convert_exception ("failed to extract integer: null object");
+      error_conversion_invalid_python_object ("an unsigned integer value");
 
     if (PyLong_Check (obj))
       {
@@ -425,7 +433,8 @@ namespace pytave
       return static_cast<uint64_t> (PyInt_AsLong (obj));
 #endif
     else
-      throw object_convert_exception ("failed to extract integer: wrong type");
+      error_conversion_mismatch_python_type ("an unsigned integer value",
+                                             "int or long");
 
     return 0;
   }
@@ -434,8 +443,7 @@ namespace pytave
   make_py_tuple (const Cell& cell)
   {
     if (! (cell.is_empty () || cell.is_vector ()))
-      throw value_convert_exception (
-        "unable to convert multidimensional cell array into Python tuple");
+      error ("unable to convert multidimensional cell array to a Python tuple");
 
     octave_idx_type size = cell.numel ();
     PyObject *tuple = PyTuple_New (size);
@@ -457,7 +465,8 @@ namespace pytave
     std::string retval;
 
     if (! obj)
-      throw object_convert_exception ("failed to extract string: null object");
+      error_conversion_invalid_python_object ("a string value");
+
     if (PyBytes_Check (obj))
       {
         retval.assign (PyBytes_AsString (obj), PyBytes_Size (obj));
@@ -468,11 +477,10 @@ namespace pytave
         if (enc && PyBytes_Check (enc))
           retval.assign (PyBytes_AsString (enc), PyBytes_Size (enc));
         else
-          throw object_convert_exception
-            ("failed to extract string: UTF-8 error");
+          octave_throw_bad_alloc ();
       }
     else
-      throw object_convert_exception ("failed to extract string: wrong type");
+      error_conversion_mismatch_python_type ("a string value", "str");
 
     return retval;
   }

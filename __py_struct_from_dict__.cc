@@ -27,7 +27,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include <Python.h>
 #include <octave/oct.h>
 
-#include "exceptions.h"
 #include "oct-py-init.h"
 #include "oct-py-object.h"
 #include "oct-py-types.h"
@@ -88,24 +87,7 @@ This is a private internal function not intended for direct use.\n\
   pytave::py_init ();
 
   pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
-  if (! obj)
-    error ("pyobject.int64: argument must be a valid Python object");
-
-  octave_int64 retval;
-
-  try
-    {
-      retval = pytave::extract_py_int64 (obj);
-    }
-  catch (pytave::object_convert_exception const &)
-    {
-      error ("pyobject.int64: argument must be a Python int or long object");
-    }
-  catch (pytave::error_already_set const &)
-    {
-      std::string message = pytave::fetch_exception_message ();
-      error ("pyobject.int64: %s", message.c_str ());
-    }
+  octave_int64 retval = pytave::extract_py_int64 (obj);
 
   return ovl (retval);
 }
@@ -140,24 +122,7 @@ This is a private internal function not intended for direct use.\n\
   pytave::py_init ();
 
   pytave::python_object obj = pytave::pyobject_unwrap_object (args(0));
-  if (! obj)
-    error ("pyobject.uint64: argument must be a valid Python object");
-
-  octave_uint64 retval;
-
-  try
-    {
-      retval = pytave::extract_py_uint64 (obj);
-    }
-  catch (pytave::object_convert_exception const &)
-    {
-      error ("pyobject.uint64: argument must be a Python int or long object");
-    }
-  catch (pytave::error_already_set const &)
-    {
-      std::string message = pytave::fetch_exception_message ();
-      error ("pyobject.uint64: %s", message.c_str ());
-    }
+  octave_uint64 retval = pytave::extract_py_uint64 (obj);
 
   return ovl (retval);
 }

@@ -88,10 +88,6 @@ pyeval (\"dict(two=2)\")\n\
       if (nargout > 0 || ! res.is_none ())
         retval(0) = pytave::py_implicitly_convert_return_value (res);
     }
-  catch (pytave::object_convert_exception const &)
-    {
-      error ("pyexec: error in return value type conversion");
-    }
   catch (pytave::error_already_set const &)
     {
       std::string message = pytave::fetch_exception_message ();
