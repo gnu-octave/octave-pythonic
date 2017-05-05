@@ -27,7 +27,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include <Python.h>
 #include <octave/oct.h>
 
-#include "exceptions.h"
 #include "oct-py-eval.h"
 #include "oct-py-init.h"
 #include "oct-py-util.h"
@@ -74,16 +73,9 @@ pyexec (\"print(42)\")\n\
         error ("pyexec: NAMESPACE must be a valid Python reference");
     }
 
-  try
-    {
-      // FIXME: figure out exec return code:
-      pytave::py_exec_string (code, 0, local_namespace);
-    }
-  catch (pytave::error_already_set const &)
-    {
-      std::string message = pytave::fetch_exception_message ();
-      error ("pyexec: %s", message.c_str ());
-    }
+  // FIXME: figure out exec return code:
+  pytave::py_exec_string (code, 0, local_namespace);
+
   return retval;
 }
 

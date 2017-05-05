@@ -27,7 +27,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include <Python.h>
 #include <octave/oct.h>
 
-#include "exceptions.h"
 #include "oct-py-eval.h"
 #include "oct-py-init.h"
 #include "oct-py-object.h"
@@ -81,18 +80,10 @@ pyeval (\"dict(two=2)\")\n\
         error ("pyeval: NAMESPACE must be a valid Python reference");
     }
 
-  try
-    {
-      pytave::python_object res = pytave::py_eval_string (code, 0, local_namespace);
+  pytave::python_object res = pytave::py_eval_string (code, 0, local_namespace);
 
-      if (nargout > 0 || ! res.is_none ())
-        retval(0) = pytave::py_implicitly_convert_return_value (res);
-    }
-  catch (pytave::error_already_set const &)
-    {
-      std::string message = pytave::fetch_exception_message ();
-      error ("pyeval: %s", message.c_str ());
-    }
+  if (nargout > 0 || ! res.is_none ())
+    retval(0) = pytave::py_implicitly_convert_return_value (res);
 
   return retval;
 }

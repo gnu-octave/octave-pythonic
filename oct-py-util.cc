@@ -28,7 +28,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/oct.h>
 #include <octave/parse.h>
 
-#include "exceptions.h"
+#include "oct-py-error.h"
 #include "oct-py-object.h"
 #include "oct-py-types.h"
 #include "oct-py-util.h"
@@ -172,7 +172,7 @@ namespace pytave
           }
 
         if (! dict)
-          throw pytave::error_already_set ();
+          error_python_exception ();
 
         objstore = dict;
       }

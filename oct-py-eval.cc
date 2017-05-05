@@ -29,7 +29,7 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/ov.h>
 #include <octave/ovl.h>
 
-#include "exceptions.h"
+#include "oct-py-error.h"
 #include "oct-py-eval.h"
 #include "oct-py-object.h"
 #include "oct-py-util.h"
@@ -84,7 +84,7 @@ namespace pytave
   {
     python_object retval = PyEval_CallObjectWithKeywords (callable, args, kwargs);
     if (! retval)
-      throw pytave::error_already_set ();
+      error_python_exception ();
 
     return retval.release ();
   }
@@ -119,7 +119,7 @@ namespace pytave
       Py_DECREF (globals);
 
     if (! retval)
-      throw pytave::error_already_set ();
+      error_python_exception ();
 
     return retval.release ();
   }

@@ -31,7 +31,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include <octave/quit.h>
 #include <octave/ov-null-mat.h>
 
-#include "exceptions.h"
 #include "oct-py-error.h"
 #include "oct-py-eval.h"
 #include "oct-py-object.h"
@@ -361,7 +360,7 @@ namespace pytave
         PyObject *item = py_implicitly_convert_argument (map.contents (p));
 
         if (PyDict_SetItem (dict, key, item) < 0)
-          throw pytave::error_already_set ();
+          error_python_exception ();
       }
 
     return dict;

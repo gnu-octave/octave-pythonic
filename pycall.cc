@@ -27,7 +27,6 @@ along with Pytave; see the file COPYING.  If not, see
 #include <Python.h>
 #include <octave/oct.h>
 
-#include "exceptions.h"
 #include "oct-py-eval.h"
 #include "oct-py-init.h"
 #include "oct-py-object.h"
@@ -89,35 +88,27 @@ r = pycall (s.add, 4)\n\
 
   pytave::py_init ();
 
-  try
+  pytave::python_object callable;
+  if (args(0).is_string ())
     {
-      pytave::python_object callable;
-      if (args(0).is_string ())
-        {
-          callable = pytave::py_find_function (args(0).string_value ());
-          if (! callable)
-            error ("pycall: no such Python function or callable: %s",
-                   args(0).string_value ().c_str ());
-        }
-      else
-        {
-          callable = pytave::pyobject_unwrap_object (args(0));
-          if (! callable)
-            error("pycall: FUNC must be a valid Python reference");
-        }
-
-      octave_value_list arglist = args.slice (1, nargin - 1);
-      pytave::python_object res = pytave::py_call_function (callable, arglist);
-
-      // Ensure reasonable "ans" behaviour, consistent with Python's "_".
-      if (nargout > 0 || ! res.is_none ())
-        retval(0) = pytave::py_implicitly_convert_return_value (res);
+      callable = pytave::py_find_function (args(0).string_value ());
+      if (! callable)
+        error ("pycall: no such Python function or callable: %s",
+               args(0).string_value ().c_str ());
     }
-  catch (pytave::error_already_set const &)
+  else
     {
-      std::string message = pytave::fetch_exception_message ();
-      error ("pycall: %s", message.c_str ());
+      callable = pytave::pyobject_unwrap_object (args(0));
+      if (! callable)
+        error("pycall: FUNC must be a valid Python reference");
     }
+
+  octave_value_list arglist = args.slice (1, nargin - 1);
+  pytave::python_object res = pytave::py_call_function (callable, arglist);
+
+  // Ensure reasonable "ans" behaviour, consistent with Python's "_".
+  if (nargout > 0 || ! res.is_none ())
+    retval(0) = pytave::py_implicitly_convert_return_value (res);
 
   return retval;
 }

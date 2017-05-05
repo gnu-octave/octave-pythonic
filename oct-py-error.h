@@ -43,6 +43,10 @@ namespace pytave
                                          const std::string& must)
   PYTAVE_ATTR_NORETURN;
 
+  void
+  error_python_exception ()
+  PYTAVE_ATTR_NORETURN;
+
 }
 
 #undef PYTAVE_ATTR_NORETURN

@@ -29,7 +29,6 @@ INCFLAGS = $(DEFAULT_INCLUDES)
 export INCFLAGS
 
 COMMON_SOURCE_FILES = \
-  exceptions.cc \
   oct-py-error.cc \
   oct-py-eval.cc \
   oct-py-init.cc \
@@ -66,7 +65,6 @@ OCT_SOURCE_FILES = $(patsubst %.oct, %.cc, $(OCT_FILES))
 
 PYTAVE_HEADER_FILES = \
   config.h \
-  exceptions.h \
   oct-py-error.h \
   oct-py-eval.h \
   oct-py-init.h \
