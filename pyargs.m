@@ -30,7 +30,7 @@
 ## @example
 ## @group
 ## py.dict (pyargs ("one", 1, "two", 2))
-##       @result{} [pyobject ...]
+##       @result{} [Python object of type dict]
 ##           @{...@}
 ## sort (cellfun (@@char, cell (py.list (ans.keys ())), "uniformoutput", false))
 ##       @result{}
@@ -48,7 +48,7 @@
 ## x = py.list (num2cell (int32 ([1, 2, 3])));
 ## x.sort (pyargs ("reverse", true));
 ## x
-##       @result{} x = [pyobject ...]
+##       @result{} x = [Python object of type list]
 ##           [3, 2, 1]
 ## @end group
 ## @end example

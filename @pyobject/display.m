@@ -26,7 +26,7 @@
 ## @group
 ## pyexec ("import sys")
 ## sysmodule = pyeval ("sys")
-##   @result{} sysmodule = [pyobject ...]
+##   @result{} sysmodule = [Python object of type module]
 ##
 ##       <module 'sys' (built-in)>
 ##

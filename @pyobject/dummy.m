@@ -34,7 +34,7 @@
 ## @example
 ## @group
 ## g = pyobject (int32 (6))
-##   @result{} g = [pyobject ...]
+##   @result{} g = [Python object of type int]
 ##
 ##       6
 ##
@@ -67,7 +67,7 @@
 ## @group
 ## pyexec ("d = dict(two=2)")
 ## x = pyeval ("d")
-##   @result{} x = [pyobject ...]
+##   @result{} x = [Python object of type dict]
 ##       @{'two': 2@}
 ##
 ## # oops, overwrote d in Python:
@@ -75,7 +75,7 @@
 ##
 ## # but have no fear, we still have a reference to it:
 ## x
-##   @result{} x = [pyobject ...]
+##   @result{} x = [Python object of type dict]
 ##       @{'two': 2@}
 ## @end group
 ## @end example
@@ -91,7 +91,7 @@
 ## @example
 ## @group
 ## x
-##   @result{} x = [pyobject ...]
+##   @result{} x = [Python object of type dict]
 ##       @{@}
 ## @end group
 ## @end example
@@ -103,7 +103,7 @@
 ## @group
 ## pyexec ("import sys")
 ## sysmodule = pyeval ("sys")
-##   @result{} sysmodule = [pyobject ...]
+##   @result{} sysmodule = [Python object of type module]
 ##       <module 'sys' (built-in)>
 ## @end group
 ## @end example
@@ -121,7 +121,7 @@
 ## @example
 ## @group
 ## L = pyeval ("[42.0, 'hello', sys]")
-##   @result{} L = [pyobject ...]
+##   @result{} L = [Python object of type list]
 ##       [42.0, 'hello', <module 'sys' (built-in)>]
 ## @end group
 ## @end example
@@ -136,13 +136,15 @@
 ## or if needed, the list can be converted to a cell array:
 ## @example
 ## @group
+## @c TODO: display of cell array in flux: savannah.gnu.org/bugs/?50756
+## @c doctest: +XFAIL
 ## cell (L)
 ##   @result{} ans =
 ##       @{
 ##         [1,1] =  42
-##               = [pyobject ...]
+##         [1,2] = [Python object of type str]
 ##                 hello
-##               = [pyobject ...]
+##         [1,3] = [Python object of type module]
 ##                 <module 'sys' (built-in)>
 ##       @}
 ## @end group
