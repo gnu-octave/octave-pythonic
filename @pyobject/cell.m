@@ -37,7 +37,7 @@
 ## However, we can convert the list to a cell array:
 ## @example
 ## @group
-## @c TODO: display of cell array in flux: savannah.gnu.org/bugs/?50756
+## @c FIXME: display of cell array in flux: https://savannah.gnu.org/bugs/?50756
 ## @c doctest: +XFAIL
 ## C = cell (L)
 ##   @result{} C =
@@ -54,7 +54,7 @@
 ## The conversion is not recursive, in the following sense:
 ## @example
 ## @group
-## @c TODO: display of cell array in flux: savannah.gnu.org/bugs/?50756
+## @c FIXME: display of cell array in flux: https://savannah.gnu.org/bugs/?50756
 ## @c doctest: +XFAIL
 ## L = pyeval ("[10.0, 20.0, [33.0, 44.0], 50.0]");
 ## C = cell (L)

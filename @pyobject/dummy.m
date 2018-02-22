@@ -136,7 +136,7 @@
 ## or if needed, the list can be converted to a cell array:
 ## @example
 ## @group
-## @c TODO: display of cell array in flux: savannah.gnu.org/bugs/?50756
+## @c FIXME: display of cell array in flux: https://savannah.gnu.org/bugs/?50756
 ## @c doctest: +XFAIL
 ## cell (L)
 ##   @result{} ans =

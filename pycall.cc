@@ -61,7 +61,7 @@ s = pyeval (\"set([1, 2])\");\n\
 pycall (s.add, 3)\n\
 \n\
 r = pycall (s.add, 4)\n\
-  @result{} r = [pyobject ...]\n\
+  @result{} r = [Python object of type NoneType]\n\
 \n\
       None\n\
 \n\

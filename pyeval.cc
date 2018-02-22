@@ -51,7 +51,7 @@ pyexec (\"import sys\")\n\
 pyeval (\"sys.version\")\n\
   @result{} ...\n\
 pyeval (\"dict(two=2)\")\n\
-  @result{} [pyobject ...]\n\
+  @result{} [Python object of type dict]\n\
       @{'two': 2@}\n\
 @end group\n\
 @end example\n\
