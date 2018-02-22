@@ -225,13 +225,6 @@ classdef pyobject < handle
       varargout{nargout-1} = prod (sz(nargout:end));
     endfunction
 
-
-    function n = numel (x)
-      assert (nargin == 1)
-      sz = size (x);
-      n = prod (sz);
-    endfunction
-
     function n = ndims (x)
       assert (nargin == 1)
       n = length (size (x));
@@ -241,7 +234,7 @@ classdef pyobject < handle
       assert (nargin == 3)
       assert (isscalar (index_pos))
       if (num_indices == 1)
-        r = numel (x);
+        r = prod (size (x));
       else
         r = size (x, index_pos);
       endif
@@ -290,7 +283,7 @@ endclassdef
 %! [a b c] = size (L);
 %! assert ([a b c], [1 3 1])
 
-%!assert (numel (pyeval ("[10, 20, 30]")), 3)
+%!assert (numel (pyeval ("[10, 20, 30]")), 1)
 
 %!test
 %! L = pyeval ("[10, 20, 30]");
@@ -321,7 +314,7 @@ endclassdef
 %!test
 %! [n m o p] = size (a);
 %! assert ([n m o p], [3 4 5 1])
-%!assert (numel (a), 60)
+%!assert (numel (a), 1)
 %!assert (ndims (a), 3)
 %!shared
 
