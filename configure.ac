@@ -19,7 +19,7 @@ dnl Copyright (C) 2015-2017 Mike Miller
 ### <http://www.gnu.org/licenses/>.
 
 AC_PREREQ(2.61)
-AC_INIT(pytave, dev, [[https://bitbucket.org/mtmiller/pytave/issues]])
+AC_INIT(octave-pythonic, dev, [[https://gitlab.com/mtmiller/octave-pythonic/issues]])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_FILES([Makefile])

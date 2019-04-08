@@ -53,8 +53,8 @@ What is supported is building and running the project from the build
 directory. Building requires Octave and Python development libraries and
 GNU autotools.
 
-1. `hg clone https://bitbucket.org/mtmiller/pytave`
-2. `cd pytave`
+1. `git clone https://gitlab.com/mtmiller/octave-pythonic.git`
+2. `cd octave-pythonic`
 3. `autoreconf -i`
 4. `./configure`
 5. `make`
