@@ -55,23 +55,21 @@ classdef pyobject < handle
       endif
     endfunction
 
-    function delete (x)
+    function _delete (x)
       # Called on clear of the last reference---for subclasses of
       # handle; not called at all for "value classes".
       #
       # FIXME: #46497 this is never called!
-      # Workaround: call @code{delete(x)} right before @code{clear x}.  But
+      # Workaround: call @code{_delete(x)} right before @code{clear x}.  But
       # be careful, @code{x} needs to be the last reference: don't do this:
       # @example
       # d = pyobject (...);
       # d2 = d;
-      # delete (d)
+      # _delete (d)
       # clear d
       # d2
       #   @print{} ... KeyError ...
       # @end example
-
-      #disp ("delete")
 
       __py_objstore_del__ (x.m_id);
     endfunction
