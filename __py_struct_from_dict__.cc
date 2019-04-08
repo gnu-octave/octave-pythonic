@@ -43,7 +43,7 @@ This is a private internal function not intended for direct use.\n\
   if (args.length () != 1)
     print_usage ();
 
-  if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
+  if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
     error ("__py_class_name__: argument must be a valid Python object");
 
   pytave::py_init ();
@@ -81,7 +81,7 @@ This is a private internal function not intended for direct use.\n\
   if (args.length () != 1)
     print_usage ();
 
-  if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
+  if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
     error ("pyobject.int64: argument must be a Python object");
 
   pytave::py_init ();
@@ -116,7 +116,7 @@ This is a private internal function not intended for direct use.\n\
   if (args.length () != 1)
     print_usage ();
 
-  if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
+  if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
     error ("pyobject.uint64: argument must be a Python object");
 
   pytave::py_init ();
@@ -187,7 +187,7 @@ This is a private internal function not intended for direct use.\n\
       return retval;
     }
 
-  if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
+  if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
     error ("pyobject.isa: OBJ must be a Python object");
 
   if (! args(1).is_string ())
@@ -284,7 +284,7 @@ This is a private internal function not intended for direct use.\n\
   if (args.length () != 1)
     print_usage ();
 
-  if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
+  if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
     error ("pyobject.char: argument must be a valid Python object");
 
   pytave::py_init ();
@@ -327,7 +327,7 @@ This is a private internal function not intended for direct use.\n\
       return retval;
     }
 
-  if (! (args(0).is_object () && args(0).class_name () == "pyobject"))
+  if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
     error ("pyobject.struct: argument must be a Python object");
 
   pytave::py_init ();

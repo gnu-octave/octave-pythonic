@@ -218,16 +218,16 @@ namespace pytave
   pyobject_wrap_object (PyObject *obj)
   {
     uint64_t key = py_objstore_put (obj);
-    octave_value_list out = feval ("pyobject", ovl (0, octave_uint64 (key)), 1);
+    octave_value_list out = octave::feval ("pyobject", ovl (0, octave_uint64 (key)), 1);
     return out(0);
   }
 
   PyObject *
   pyobject_unwrap_object (const octave_value& value)
   {
-    if (value.is_object () && value.class_name () == "pyobject")
+    if (value.isobject () && value.class_name () == "pyobject")
       {
-        octave_value_list out = feval ("id", ovl (value), 1);
+        octave_value_list out = octave::feval ("id", ovl (value), 1);
         uint64_t key = out(0).uint64_scalar_value ();
         return py_objstore_get (key);
       }

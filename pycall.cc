@@ -82,7 +82,7 @@ r = pycall (s.add, 4)\n\
       return retval;
     }
 
-  if (! (args(0).is_string () || (args(0).is_object ()
+  if (! (args(0).is_string () || (args(0).isobject ()
                                   && args(0).class_name () == "pyobject")))
     error ("pycall: FUNC must be a string or a Python reference");
 

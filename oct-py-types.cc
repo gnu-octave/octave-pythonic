@@ -245,7 +245,7 @@ namespace pytave
       error ("unable to convert non-scalar type \"%s\" to a Python number",
              value.type_name ().c_str ());
 
-    if (value.is_bool_type ())
+    if (value.islogical ())
       return make_py_bool (value.bool_value ());
 
     else if (value.is_int8_type ())
@@ -266,9 +266,9 @@ namespace pytave
     else if (value.is_uint64_type ())
       return make_py_int (value.uint64_scalar_value ().value ());
 
-    else if (value.is_complex_type ())
+    else if (value.iscomplex ())
       return make_py_complex (value.complex_value ());
-    else if (value.is_float_type ())
+    else if (value.isfloat ())
       return make_py_float (value.double_value ());
     else
       error ("unable to convert unhandled scalar type \"%s\" to a "
@@ -280,7 +280,7 @@ namespace pytave
   PyObject *
   make_py_array (const octave_value& value)
   {
-    if (! (value.is_numeric_type () && ! value.is_complex_type ()
+    if (! (value.isnumeric () && ! value.iscomplex ()
            && value.ndims () == 2
            && (value.columns () <= 1 || value.rows () <= 1)))
       error ("unable to convert non-vector type \"%s\" to a Python array",
@@ -441,7 +441,7 @@ namespace pytave
   PyObject *
   make_py_tuple (const Cell& cell)
   {
-    if (! (cell.is_empty () || cell.is_vector ()))
+    if (! (cell.isempty () || cell.isvector ()))
       error ("unable to convert multidimensional cell array to a Python tuple");
 
     octave_idx_type size = cell.numel ();
@@ -497,7 +497,7 @@ namespace pytave
   PyObject *
   py_implicitly_convert_argument (const octave_value& value)
   {
-    if (value.is_object () && value.class_name () == "pyobject")
+    if (value.isobject () && value.class_name () == "pyobject")
       return pyobject_unwrap_object (value);
     else if (value.is_string () && value.rows () > 1)
       error ("unable to convert multirow char array to a Python object");
@@ -505,12 +505,12 @@ namespace pytave
       return make_py_str (value.string_value ());
     else if (value.is_scalar_type ())
       return make_py_numeric_value (value);
-    else if (value.is_cell ())
+    else if (value.iscell ())
       return make_py_tuple (value.cell_value ());
-    else if (value.is_numeric_type () && value.ndims () == 2
+    else if (value.isnumeric () && value.ndims () == 2
              && (value.columns () <= 1 || value.rows () <= 1))
       return make_py_array (value);
-    else if (value.is_map () && value.numel () == 1)
+    else if (value.isstruct () && value.numel () == 1)
       return make_py_dict (value.scalar_map_value ());
     else
       error ("unable to convert unhandled Octave type to a Python object");
