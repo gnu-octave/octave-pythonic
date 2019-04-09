@@ -2,7 +2,7 @@ Octave Python Interface
 =======================
 
 This project is for development of a native Python calling interface for
-[GNU Octave](http://www.octave.org).
+[GNU Octave](https://www.octave.org).
 
 Goals
 -----
@@ -80,5 +80,5 @@ Other Resources
 Please discuss or ask questions about this project on the Octave
 [maintainers mailing list](https://lists.gnu.org/mailman/listinfo/octave-maintainers).
 
-The [wiki page](http://wiki.octave.org/Python_interface) contains more
+The [wiki page](https://wiki.octave.org/Python_interface) contains more
 examples and ideas about the project.
