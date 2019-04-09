@@ -57,7 +57,7 @@ AC_OUTPUT
 
 AC_MSG_NOTICE([
 
-Pytave is now configured for the following
+Pythonic is now configured for the following
 
   Octave header files:  $OCTAVE_INCLUDEDIR
   Octave libraries:     $OCTAVE_LIBRARYDIR
