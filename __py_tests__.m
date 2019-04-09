@@ -84,19 +84,19 @@ function retval = __run_py_tests__ (varargin)
         puts ("Items listed as XFAIL above are known bugs.\n");
         puts ("Bug report numbers for them may be found in the log file:\n");
         puts (logfile);
-        puts ("\nPlease help improve Pytave by contributing fixes for them.\n");
+        puts ("\nPlease help improve Pythonic by contributing fixes for them.\n");
       endif
       if (dsk > 0 || drtsk > 0)
         puts ("\n");
         puts ("Tests are most often skipped because the features they require\n");
         puts ("have been disabled.  Features are most often disabled because\n");
         puts ("they require dependencies that were not present when Octave or\n");
-        puts ("Pytave was built.\n");
+        puts ("Pythonic was built.\n");
       endif
 
       report_files_with_no_tests (files_with_tests, files_with_no_tests, ".m");
 
-      puts ("\nPlease help improve Pytave by contributing tests for these files\n");
+      puts ("\nPlease help improve Pythonic by contributing tests for these files\n");
       printf ("(see the list in the file %s).\n\n", logfile);
 
       fprintf (fid, "\nFiles with no tests:\n\n%s",

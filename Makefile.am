@@ -1,4 +1,4 @@
-# Makefile for Pytave
+# Makefile for Octave Pythonic
 #
 # Copyright (C) 2015-2016 Mike Miller
 # Copyright (C) 2008 David Grundberg, Håkan Fors Nilsson
@@ -127,7 +127,7 @@ PKG_DEL: $(OCT_SOURCE_FILES)
 
 all-local: $(OCT_FILES) PKG_ADD PKG_DEL
 	@echo ""
-	@echo "Pytave successfully built.  Now choose from the following:"
+	@echo "Pythonic successfully built.  Now choose from the following:"
 	@echo ""
 	@echo "  * run the test suite"
 	@echo "    make check"
