@@ -44,7 +44,7 @@ side effects of the expression.\n\
 Examples:\n\
 @example\n\
 @group\n\
-@c FIXME: Python stdout not same as Octave's https://bitbucket.org/mtmiller/pytave/issues/58\n\
+@c FIXME: Python stdout not same as Octave's https://gitlab.com/mtmiller/octave-pythonic/issues/7\n\
 @c doctest: +XFAIL\n\
 pyexec (\"print(42)\")\n\
   @print{} 42\n\
