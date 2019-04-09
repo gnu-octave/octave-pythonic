@@ -1,5 +1,6 @@
 ## Copyright (C) 2017-2019 Mike Miller
 ## Copyright (C) 2005-2017 David Bateman
+## SPDX-License-Identifier: GPL-3.0-or-later
 ##
 ## This file is part of Octave Pythonic.
 ##

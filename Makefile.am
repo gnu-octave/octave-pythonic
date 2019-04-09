@@ -1,5 +1,7 @@
 # Makefile for Octave Pythonic
 #
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
 # Copyright (C) 2015-2019 Mike Miller
 # Copyright (C) 2008 David Grundberg, Håkan Fors Nilsson
 # Copyright (C) 2009 Jaroslav Hajek, VZLU Prague

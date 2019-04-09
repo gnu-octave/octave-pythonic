@@ -1,5 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
+dnl SPDX-License-Identifier: GPL-3.0-or-later
+dnl
 dnl Copyright (C) 2015-2019 Mike Miller
 ###
 ### This file is part of Octave Pythonic.

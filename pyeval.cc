@@ -1,5 +1,7 @@
 /*
 
+SPDX-License-Identifier: GPL-3.0-or-later
+
 Copyright (C) 2016 Colin B. Macdonald
 
 This file is part of Octave Pythonic.

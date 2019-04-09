@@ -1,5 +1,6 @@
 ## Copyright (C) 2016 Colin B. Macdonald
 ## Copyright (C) 2017 NVS Abhilash
+## SPDX-License-Identifier: GPL-3.0-or-later
 ##
 ## This file is part of Octave Pythonic.
 ##
