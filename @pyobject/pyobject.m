@@ -1,4 +1,5 @@
 ## Copyright (C) 2016 Colin B. Macdonald
+## Copyright (C) 2016-2019 Mike Miller
 ##
 ## This file is part of Pytave
 ##

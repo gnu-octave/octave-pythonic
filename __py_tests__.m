@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Mike Miller
+## Copyright (C) 2017-2019 Mike Miller
 ## Copyright (C) 2005-2017 David Bateman
 ##
 ## This file is part of Pytave.

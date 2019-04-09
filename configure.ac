@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl Copyright (C) 2015-2017 Mike Miller
+dnl Copyright (C) 2015-2019 Mike Miller
 ###
 ### This file is part of Pytave.
 ###
