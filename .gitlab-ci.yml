@@ -12,6 +12,8 @@ before_script:
 - apt-get update && apt-get install -y python-dev python-pip python3-dev python3-pip
 - pip2 install numpy
 - pip3 install numpy
+- git clone https://github.com/catch22/octave-doctest.git /tmp/doctest
+- (cd /tmp/doctest && git checkout 90af12d737d1880747b6d8f0b04a6136cc208af7) # Version 0.7.0
 
 .test:
   stage: test
@@ -21,6 +23,7 @@ before_script:
   - (cd python${PYTHON_VERSION} && ../configure PYTHON_VERSION=$PYTHON_VERSION)
   - make -C python${PYTHON_VERSION}
   - make -C python${PYTHON_VERSION} check
+  - octave --path ${CI_PROJECT_DIR} --path ${CI_PROJECT_DIR}/python${PYTHON_VERSION} --path /tmp/doctest/inst --eval "exit (! doctest ('.'))"
   artifacts:
     paths:
     - python${PYTHON_VERSION}/*.log
