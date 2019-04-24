@@ -13,7 +13,7 @@ before_script:
 - pip2 install numpy
 - pip3 install numpy
 - git clone https://github.com/catch22/octave-doctest.git /tmp/doctest
-- (cd /tmp/doctest && git checkout 90af12d737d1880747b6d8f0b04a6136cc208af7) # Version 0.7.0
+- (cd /tmp/doctest && git checkout v0.7.0)
 
 .test:
   stage: test
