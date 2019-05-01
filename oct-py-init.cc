@@ -30,7 +30,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 
 #include "oct-py-init.h"
 
-namespace pytave
+namespace pythonic
 {
 
 #if PY_VERSION_HEX >= 0x03000000

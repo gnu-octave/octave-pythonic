@@ -22,8 +22,8 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 
 */
 
-#if ! defined (pytave_oct_py_types_h)
-#define pytave_oct_py_types_h 1
+#if ! defined (pythonic_oct_py_types_h)
+#define pythonic_oct_py_types_h 1
 
 #include <Python.h>
 #include <complex>
@@ -36,7 +36,7 @@ template <typename T> class intNDArray;
 class octave_scalar_map;
 class octave_value;
 
-namespace pytave
+namespace pythonic
 {
 
   //! Extract the integer value of the given Python bool object.

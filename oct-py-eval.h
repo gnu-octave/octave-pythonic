@@ -22,15 +22,15 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 
 */
 
-#if ! defined (pytave_oct_py_eval_h)
-#define pytave_oct_py_eval_h 1
+#if ! defined (pythonic_oct_py_eval_h)
+#define pythonic_oct_py_eval_h 1
 
 #include <Python.h>
 #include <string>
 
 class octave_value_list;
 
-namespace pytave
+namespace pythonic
 {
 
   //! Call a Python function by name with the given argument list.

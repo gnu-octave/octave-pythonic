@@ -22,35 +22,35 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 
 */
 
-#if ! defined (pytave_oct_py_error_h)
-#define pytave_oct_py_error_h 1
+#if ! defined (pythonic_oct_py_error_h)
+#define pythonic_oct_py_error_h 1
 
 #include <string>
 
 #if defined (__GNUC__)
-#  define PYTAVE_ATTR_NORETURN __attribute__((__noreturn__))
+#  define PYTHONIC_ATTR_NORETURN __attribute__((__noreturn__))
 #else
-#  define PYTAVE_ATTR_NORETURN
+#  define PYTHONIC_ATTR_NORETURN
 #endif
 
-namespace pytave
+namespace pythonic
 {
 
   void
   error_conversion_invalid_python_object (const std::string& to)
-  PYTAVE_ATTR_NORETURN;
+  PYTHONIC_ATTR_NORETURN;
 
   void
   error_conversion_mismatch_python_type (const std::string& to,
                                          const std::string& must)
-  PYTAVE_ATTR_NORETURN;
+  PYTHONIC_ATTR_NORETURN;
 
   void
   error_python_exception ()
-  PYTAVE_ATTR_NORETURN;
+  PYTHONIC_ATTR_NORETURN;
 
 }
 
-#undef PYTAVE_ATTR_NORETURN
+#undef PYTHONIC_ATTR_NORETURN
 
 #endif
