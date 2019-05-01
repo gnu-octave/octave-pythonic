@@ -23,7 +23,7 @@ before_script:
   - (cd python${PYTHON_VERSION} && ../configure PYTHON_VERSION=$PYTHON_VERSION)
   - make -C python${PYTHON_VERSION}
   - make -C python${PYTHON_VERSION} check
-  - octave --path ${CI_PROJECT_DIR} --path ${CI_PROJECT_DIR}/python${PYTHON_VERSION} --path /tmp/doctest/inst --eval "exit (! doctest ('.'))"
+  - octave --path ${CI_PROJECT_DIR}/inst --path ${CI_PROJECT_DIR}/python${PYTHON_VERSION}/src --path /tmp/doctest/inst --eval "exit (! doctest ('.'))"
   artifacts:
     paths:
     - python${PYTHON_VERSION}/*.log
