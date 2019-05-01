@@ -31,58 +31,58 @@ INCFLAGS = $(DEFAULT_INCLUDES)
 export INCFLAGS
 
 COMMON_SOURCE_FILES = \
-  oct-py-error.cc \
-  oct-py-eval.cc \
-  oct-py-init.cc \
-  oct-py-types.cc \
-  oct-py-util.cc
+  src/oct-py-error.cc \
+  src/oct-py-eval.cc \
+  src/oct-py-init.cc \
+  src/oct-py-types.cc \
+  src/oct-py-util.cc
 
 DOC_FILES = \
   CONTRIBUTORS.md \
   README.md
 
 M_FILES = \
-  @py/py.m \
-  @py/subsref.m \
-  @pyobject/cell.m \
-  @pyobject/char.m \
-  @pyobject/display.m \
-  @pyobject/dummy.m \
-  @pyobject/fieldnames.m \
-  @pyobject/methods.m \
-  @pyobject/pyobject.m \
-  @pyobject/subsasgn.m \
-  @pyobject/subsref.m \
-  __py_tests__.m \
-  pyargs.m \
-  pyversion.m
+  inst/@py/py.m \
+  inst/@py/subsref.m \
+  inst/@pyobject/cell.m \
+  inst/@pyobject/char.m \
+  inst/@pyobject/display.m \
+  inst/@pyobject/dummy.m \
+  inst/@pyobject/fieldnames.m \
+  inst/@pyobject/methods.m \
+  inst/@pyobject/pyobject.m \
+  inst/@pyobject/subsasgn.m \
+  inst/@pyobject/subsref.m \
+  inst/pyargs.m \
+  inst/pyversion.m \
+  tests/__py_tests__.m
 
 OCT_FILES = \
-  __py_struct_from_dict__.oct \
-  pycall.oct \
-  pyeval.oct \
-  pyexec.oct
+  src/__py_struct_from_dict__.oct \
+  src/pycall.oct \
+  src/pyeval.oct \
+  src/pyexec.oct
 
 OCT_SOURCE_FILES = $(patsubst %.oct, %.cc, $(OCT_FILES))
 
 COMMON_HEADER_FILES = \
   config.h \
-  oct-py-error.h \
-  oct-py-eval.h \
-  oct-py-init.h \
-  oct-py-object.h \
-  oct-py-types.h \
-  oct-py-util.h
+  src/oct-py-error.h \
+  src/oct-py-eval.h \
+  src/oct-py-init.h \
+  src/oct-py-object.h \
+  src/oct-py-types.h \
+  src/oct-py-util.h
 
 TST_FILES = $(addsuffix -tst,$(OCT_SOURCE_FILES))
 
 EXTRA_DIST = $(DOC_FILES) $(M_FILES) $(OCT_SOURCE_FILES)
 
-noinst_LTLIBRARIES = liboctpython.la
-liboctpython_la_CPPFLAGS = $(AM_CPPFLAGS)
-liboctpython_la_SOURCES = $(COMMON_SOURCE_FILES) $(COMMON_HEADER_FILES)
+noinst_LTLIBRARIES = src/liboctpython.la
+src_liboctpython_la_CPPFLAGS = $(AM_CPPFLAGS)
+src_liboctpython_la_SOURCES = $(COMMON_SOURCE_FILES) $(COMMON_HEADER_FILES)
 
-CLEANFILES = *.oct *-tst PKG_ADD PKG_DEL fntests.log
+CLEANFILES = src/*.oct src/*-tst src/PKG_ADD src/PKG_DEL fntests.log
 SUFFIXES = .oct
 
 AM_V_MKOCTFILE = $(am__v_MKOCTFILE_$(V))
@@ -90,12 +90,12 @@ am__v_MKOCTFILE_ = $(am__v_MKOCTFILE_$(AM_DEFAULT_VERBOSITY))
 am__v_MKOCTFILE_0 = @echo "  MKOCTFIL" $@;
 am__v_MKOCTFILE_1 =
 
-OCT_LIBS = liboctpython.la $(PYTHON_LIBS)
+OCT_LIBS = src/liboctpython.la $(PYTHON_LIBS)
 OCT_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
   --mode=link $(MKOCTFILE) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
   $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
 
-%.oct: %.cc liboctpython.la $(COMMON_HEADER_FILES)
+%.oct: %.cc src/liboctpython.la $(COMMON_HEADER_FILES)
 	$(AM_V_MKOCTFILE)$(OCT_LINK) $< $(OCT_LIBS)
 
 %.cc-tst: %.cc
@@ -105,9 +105,9 @@ OCT_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	) > $@-t && \
 	mv $@-t $@
 
-PKG_ADD: $(OCT_SOURCE_FILES)
+src/PKG_ADD: $(OCT_SOURCE_FILES)
 	$(AM_V_GEN)for f in $(OCT_SOURCE_FILES); do \
-	  b=$${f%.cc}; \
+	  b=$${f%.cc}; b=$${b##*/}; \
 	  if test -f $$f; then d=.; else d=$(srcdir); fi; \
 	  funcs=`$(SED) -n 's/^DEFUN.*(\(\w\+\),.*/\1/p' $$d/$$f | grep -v $$b`; \
 	  if test -n "$$funcs"; then \
@@ -116,9 +116,9 @@ PKG_ADD: $(OCT_SOURCE_FILES)
 	  fi; \
 	done
 
-PKG_DEL: $(OCT_SOURCE_FILES)
+src/PKG_DEL: $(OCT_SOURCE_FILES)
 	$(AM_V_GEN)for f in $(OCT_SOURCE_FILES); do \
-	  b=$${f%.cc}; \
+	  b=$${f%.cc}; b=$${b##*/}; \
 	  if test -f $$f; then d=.; else d=$(srcdir); fi; \
 	  funcs=`$(SED) -n 's/^DEFUN.*(\(\w\+\),.*/\1/p' $$d/$$f | grep -v $$b`; \
 	  if test -n "$$funcs"; then \
@@ -127,7 +127,7 @@ PKG_DEL: $(OCT_SOURCE_FILES)
 	  fi; \
 	done
 
-all-local: $(OCT_FILES) PKG_ADD PKG_DEL
+all-local: $(OCT_FILES) src/PKG_ADD src/PKG_DEL
 	@echo ""
 	@echo "Pythonic successfully built.  Now choose from the following:"
 	@echo ""
@@ -140,5 +140,5 @@ all-local: $(OCT_FILES) PKG_ADD PKG_DEL
 
 check-local: $(M_FILES) $(TST_FILES)
 	$(OCTAVE) --no-gui-libs --no-history --no-window-system --norc \
-		  --path="$(abs_builddir)" --path="$(abs_srcdir)" \
-		  $(srcdir)/__py_tests__.m $(M_FILES) $(TST_FILES)
+		  --path="$(abs_builddir)/src" --path="$(abs_srcdir)" --path="$(abs_srcdir)/inst" --path="$(abs_srcdir)/tests" \
+		  $(srcdir)/tests/__py_tests__.m $(M_FILES) $(TST_FILES)

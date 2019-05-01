@@ -27,9 +27,9 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([oct-py-eval.cc])
+AC_CONFIG_SRCDIR([src/oct-py-eval.cc])
 
-AM_INIT_AUTOMAKE([foreign -Wno-portability])
+AM_INIT_AUTOMAKE([foreign subdir-objects -Wno-portability])
 
 AC_USE_SYSTEM_EXTENSIONS
 
