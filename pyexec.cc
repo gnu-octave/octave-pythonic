@@ -68,18 +68,18 @@ pyexec (\"print(42)\")\n\
 
   std::string code = args(0).string_value ();
 
-  pytave::py_init ();
+  pythonic::py_init ();
 
   PyObject *local_namespace = nullptr;
   if (nargin > 1)
     {
-      local_namespace = pytave::pyobject_unwrap_object (args(1));
+      local_namespace = pythonic::pyobject_unwrap_object (args(1));
       if (! local_namespace)
         error ("pyexec: NAMESPACE must be a valid Python reference");
     }
 
   // FIXME: figure out exec return code:
-  pytave::py_exec_string (code, 0, local_namespace);
+  pythonic::py_exec_string (code, 0, local_namespace);
 
   return retval;
 }

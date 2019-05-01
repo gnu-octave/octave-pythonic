@@ -34,7 +34,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #include "oct-py-object.h"
 #include "oct-py-types.h"
 
-namespace pytave
+namespace pythonic
 {
 
   void

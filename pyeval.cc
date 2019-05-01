@@ -72,20 +72,20 @@ pyeval (\"dict(two=2)\")\n\
 
   std::string code = args(0).string_value ();
 
-  pytave::py_init ();
+  pythonic::py_init ();
 
   PyObject *local_namespace = nullptr;
   if (nargin > 1)
     {
-      local_namespace = pytave::pyobject_unwrap_object (args(1));
+      local_namespace = pythonic::pyobject_unwrap_object (args(1));
       if (! local_namespace)
         error ("pyeval: NAMESPACE must be a valid Python reference");
     }
 
-  pytave::python_object res = pytave::py_eval_string (code, 0, local_namespace);
+  pythonic::python_object res = pythonic::py_eval_string (code, 0, local_namespace);
 
   if (nargout > 0 || ! res.is_none ())
-    retval(0) = pytave::py_implicitly_convert_return_value (res);
+    retval(0) = pythonic::py_implicitly_convert_return_value (res);
 
   return retval;
 }

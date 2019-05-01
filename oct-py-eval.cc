@@ -37,7 +37,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #include "oct-py-util.h"
 #include "oct-py-types.h"
 
-namespace pytave
+namespace pythonic
 {
 
   PyObject *
@@ -68,8 +68,8 @@ namespace pytave
       {
         python_object obj = py_implicitly_convert_argument (args(i));
 
-        if (pytave::is_py_kwargs_argument (obj))
-          kwargs = pytave::update_py_dict (kwargs, obj);
+        if (pythonic::is_py_kwargs_argument (obj))
+          kwargs = pythonic::update_py_dict (kwargs, obj);
         else
           PyList_Append (args_list, obj.release ());
       }

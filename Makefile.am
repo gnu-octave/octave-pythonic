@@ -65,7 +65,7 @@ OCT_FILES = \
 
 OCT_SOURCE_FILES = $(patsubst %.oct, %.cc, $(OCT_FILES))
 
-PYTAVE_HEADER_FILES = \
+COMMON_HEADER_FILES = \
   config.h \
   oct-py-error.h \
   oct-py-eval.h \
@@ -80,7 +80,7 @@ EXTRA_DIST = $(DOC_FILES) $(M_FILES) $(OCT_SOURCE_FILES)
 
 noinst_LTLIBRARIES = liboctpython.la
 liboctpython_la_CPPFLAGS = $(AM_CPPFLAGS)
-liboctpython_la_SOURCES = $(COMMON_SOURCE_FILES) $(PYTAVE_HEADER_FILES)
+liboctpython_la_SOURCES = $(COMMON_SOURCE_FILES) $(COMMON_HEADER_FILES)
 
 CLEANFILES = *.oct *-tst PKG_ADD PKG_DEL fntests.log
 SUFFIXES = .oct
@@ -95,7 +95,7 @@ OCT_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
   --mode=link $(MKOCTFILE) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
   $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
 
-%.oct: %.cc liboctpython.la $(PYTAVE_HEADER_FILES)
+%.oct: %.cc liboctpython.la $(COMMON_HEADER_FILES)
 	$(AM_V_MKOCTFILE)$(OCT_LINK) $< $(OCT_LIBS)
 
 %.cc-tst: %.cc

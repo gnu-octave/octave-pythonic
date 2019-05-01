@@ -88,29 +88,29 @@ r = pycall (s.add, 4)\n\
                                   && args(0).class_name () == "pyobject")))
     error ("pycall: FUNC must be a string or a Python reference");
 
-  pytave::py_init ();
+  pythonic::py_init ();
 
-  pytave::python_object callable;
+  pythonic::python_object callable;
   if (args(0).is_string ())
     {
-      callable = pytave::py_find_function (args(0).string_value ());
+      callable = pythonic::py_find_function (args(0).string_value ());
       if (! callable)
         error ("pycall: no such Python function or callable: %s",
                args(0).string_value ().c_str ());
     }
   else
     {
-      callable = pytave::pyobject_unwrap_object (args(0));
+      callable = pythonic::pyobject_unwrap_object (args(0));
       if (! callable)
         error("pycall: FUNC must be a valid Python reference");
     }
 
   octave_value_list arglist = args.slice (1, nargin - 1);
-  pytave::python_object res = pytave::py_call_function (callable, arglist);
+  pythonic::python_object res = pythonic::py_call_function (callable, arglist);
 
   // Ensure reasonable "ans" behaviour, consistent with Python's "_".
   if (nargout > 0 || ! res.is_none ())
-    retval(0) = pytave::py_implicitly_convert_return_value (res);
+    retval(0) = pythonic::py_implicitly_convert_return_value (res);
 
   return retval;
 }
