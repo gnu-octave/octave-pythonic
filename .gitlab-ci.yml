@@ -27,6 +27,15 @@ before_script:
     - python${PYTHON_VERSION}/*.log
     expire_in: 4 weeks
 
+.pkg:
+  stage: test
+  script:
+  - apt-get update && apt-get install -y git
+  - git archive --format=tgz --prefix=pythonic/ HEAD > pythonic.tgz
+  - octave --eval "pkg install -verbose pythonic.tgz"
+  - octave --eval "d = pkg ('describe', 'pythonic'); assert (d{:}.name, 'pythonic')"
+  - octave --eval "pkg load pythonic; v = pyversion (); assert (v(1), '${PYTHON_VERSION}')"
+
 test python2:
   variables:
     PYTHON_VERSION: 2
@@ -36,3 +45,13 @@ test python3:
   variables:
     PYTHON_VERSION: 3
   extends: .test
+
+test pkg with python2:
+  variables:
+    PYTHON_VERSION: 2
+  extends: .pkg
+
+test pkg with python3:
+  variables:
+    PYTHON_VERSION: 3
+  extends: .pkg
