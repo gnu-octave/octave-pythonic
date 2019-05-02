@@ -1,30 +1,8 @@
-# These directories and files are created by GNU autotools
-/Makefile.in
-/aclocal.m4
-/autom4te.cache/
-/build-aux/
-/config.h.in
-/configure
-
-# These files are copied into the m4 directory by GNU libtool
-/m4/libtool.m4
-/m4/lt*.m4
-
-# These files are created by running configure
-Makefile
-config.h
-config.log
-config.status
-libtool
-stamp-h1
-
 # These files are normal build system artifacts
+*.[ao]
 *.cc-tst
-*.l[ao]
 *.oct
 *.tar.gz
-.deps/
-.libs/
 PKG_ADD
 PKG_DEL
 fntests.log
