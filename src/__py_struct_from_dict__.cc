@@ -34,6 +34,8 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #include "oct-py-types.h"
 #include "oct-py-util.h"
 
+// PKG_ADD: autoload ("__py_class_name__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_class_name__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_class_name__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_class_name__ (@var{obj})\n\
@@ -72,6 +74,8 @@ This is a private internal function not intended for direct use.\n\
 %!error __py_class_name__ (1, 2)
 */
 
+// PKG_ADD: autoload ("__py_int64_scalar_value__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_int64_scalar_value__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_int64_scalar_value__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_int64_scalar_value__ (@var{x})\n\
@@ -107,6 +111,8 @@ This is a private internal function not intended for direct use.\n\
 %!error __py_int64_scalar_value__ (1, 2)
 */
 
+// PKG_ADD: autoload ("__py_uint64_scalar_value__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_uint64_scalar_value__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_uint64_scalar_value__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_uint64_scalar_value__ (@var{x})\n\
@@ -141,6 +147,8 @@ This is a private internal function not intended for direct use.\n\
 %!error __py_uint64_scalar_value__ (1, 2)
 */
 
+// PKG_ADD: autoload ("__py_is_none__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_is_none__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_is_none__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_is_none__ (@var{x})\n\
@@ -171,6 +179,8 @@ This is a private internal function not intended for direct use.\n\
 %!error __py_is_none__ (1, 2)
 */
 
+// PKG_ADD: autoload ("__py_isinstance__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_isinstance__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_isinstance__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_isinstance__ (@var{x})\n\
@@ -209,6 +219,8 @@ This is a private internal function not intended for direct use.\n\
   return retval;
 }
 
+// PKG_ADD: autoload ("__py_objstore_del__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_del__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_objstore_del__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_objstore_del__ (@var{key})\n\
@@ -228,6 +240,8 @@ This is a private internal function not intended for direct use.\n\
   return ovl ();
 }
 
+// PKG_ADD: autoload ("__py_objstore_get__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_get__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_objstore_get__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_objstore_get__ (@var{key})\n\
@@ -252,6 +266,8 @@ This is a private internal function not intended for direct use.\n\
   return ovl (retval);
 }
 
+// PKG_ADD: autoload ("__py_objstore_put__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_put__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_objstore_put__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_objstore_put__ (@var{value})\n\
@@ -275,6 +291,8 @@ This is a private internal function not intended for direct use.\n\
   return ovl (octave_uint64 (key));
 }
 
+// PKG_ADD: autoload ("__py_string_value__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_string_value__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_string_value__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_string_value__ (@var{obj})\n\

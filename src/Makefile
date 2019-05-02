@@ -138,7 +138,7 @@ PKG_DEL: $(OCT_SOURCES)
 	  if test -f $$f; then d=.; else d=$(srcdir); fi; \
 	  funcs=`$(SED) -n 's/^DEFUN.*(\(\w\+\),.*/\1/p' $$d/$$f | $(GREP) -v $$b`; \
 	  if test -n "$$funcs"; then \
-	    echo "$$funcs" | $(SED) "s/.*/autoload (\"&\", which (\"&\"), \"remove\");/" > $@-t && \
+	    echo "$$funcs" | $(SED) "s/.*/autoload (\"&\", which (\"$$b.oct\"), \"remove\");/" > $@-t && \
 	    mv $@-t $@ || exit $?; \
 	  fi; \
 	done
