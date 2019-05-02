@@ -19,10 +19,9 @@ before_script:
   stage: test
   script:
   - mkdir -p python${PYTHON_VERSION}
-  - make V=1 all
-  - make V=1 check
-  - mv *.log python${PYTHON_VERSION}
-  - octave --path ${CI_PROJECT_DIR}/inst --path ${CI_PROJECT_DIR}/src --path /tmp/doctest/inst --eval "exit (! doctest ('.'))"
+  - make O=python${PYTHON_VERSION} V=1 all
+  - make O=python${PYTHON_VERSION} V=1 check
+  - octave --path ${CI_PROJECT_DIR}/inst --path ${CI_PROJECT_DIR}/python${PYTHON_VERSION} --path /tmp/doctest/inst --eval "exit (! doctest ('.'))"
   artifacts:
     paths:
     - python${PYTHON_VERSION}/*.log

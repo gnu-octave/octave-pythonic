@@ -22,19 +22,37 @@
 
 OCTAVE ?= octave
 
-all:
-	$(MAKE) -C src $@
+# Support out-of-tree builds with 'make O=objdir' and read-only source tree
+ifdef O
+OBJDIR = $(realpath $(O))
+SRCDIR = $(realpath $(CURDIR)/src)
+LOGDIR = $(OBJDIR)
+MAKE_RECURSIVE = $(MAKE) -C $(OBJDIR) -f $(SRCDIR)/Makefile srcdir=$(SRCDIR) VPATH=$(SRCDIR)
+OCTAVE_PATHS = --path='$(CURDIR)/inst' --path='$(OBJDIR)' --path='$(CURDIR)/tests'
+OCTAVE_TEST_SCRIPT = $(CURDIR)/tests/__py_tests__.m
+else
+OBJDIR = src
+SRCDIR = $(OBJDIR)
+LOGDIR = $(OBJDIR)
+MAKE_RECURSIVE = $(MAKE) -C $(OBJDIR)
+OCTAVE_PATHS = --path='$(CURDIR)/inst' --path='$(CURDIR)/src' --path='$(CURDIR)/tests'
+OCTAVE_TEST_SCRIPT = ../tests/__py_tests__.m
+endif
+
+all clean maintainer-clean mostlyclean:
+	+$(MAKE_RECURSIVE) $@
+
+distclean:
+	+$(MAKE_RECURSIVE) $@
+	-rm -f $(LOGDIR)/fntests.log
 
 check: all
-	$(OCTAVE) --no-history --no-window-system --norc --silent \
-	  --path="$(CURDIR)/inst" --path="$(CURDIR)/src" --path="$(CURDIR)/tests" \
-	  tests/__py_tests__.m \
+	cd $(LOGDIR) \
+	  && $(OCTAVE) --no-history --no-window-system --norc --silent \
+	  $(OCTAVE_PATHS) $(OCTAVE_TEST_SCRIPT) \
 	  $(shell cd inst && LC_ALL=C.UTF-8 ls *.m @*/*.m) \
 	  $(shell cd tests && LC_ALL=C.UTF-8 ls *.m) \
-	  $(shell cd src && LC_ALL=C.UTF-8 ls *-tst)
-
-clean distclean maintainer-clean mostlyclean:
-	$(MAKE) -C src $@
+	  $(shell cd $(OBJDIR) && LC_ALL=C.UTF-8 ls *-tst)
 
 test: check
 
