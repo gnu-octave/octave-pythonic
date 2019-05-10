@@ -18,16 +18,23 @@ before_script:
 .test:
   stage: test
   script:
-  - autoreconf -i
   - mkdir -p python${PYTHON_VERSION}
-  - (cd python${PYTHON_VERSION} && ../configure PYTHON_VERSION=$PYTHON_VERSION)
-  - make -C python${PYTHON_VERSION}
-  - make -C python${PYTHON_VERSION} check
-  - octave --path ${CI_PROJECT_DIR} --path ${CI_PROJECT_DIR}/python${PYTHON_VERSION} --path /tmp/doctest/inst --eval "exit (! doctest ('.'))"
+  - make O=python${PYTHON_VERSION} V=1 all
+  - make O=python${PYTHON_VERSION} V=1 check
+  - octave --path ${CI_PROJECT_DIR}/inst --path ${CI_PROJECT_DIR}/python${PYTHON_VERSION} --path /tmp/doctest/inst --eval "exit (! doctest ('.'))"
   artifacts:
     paths:
     - python${PYTHON_VERSION}/*.log
     expire_in: 4 weeks
+
+.pkg:
+  stage: test
+  script:
+  - apt-get update && apt-get install -y git
+  - git archive --format=tgz --prefix=pythonic/ HEAD > pythonic.tgz
+  - octave --eval "pkg install -verbose pythonic.tgz"
+  - octave --eval "d = pkg ('describe', 'pythonic'); assert (d{:}.name, 'pythonic')"
+  - octave --eval "pkg load pythonic; v = pyversion (); assert (v(1), '${PYTHON_VERSION}')"
 
 test python2:
   variables:
@@ -38,3 +45,13 @@ test python3:
   variables:
     PYTHON_VERSION: 3
   extends: .test
+
+test pkg with python2:
+  variables:
+    PYTHON_VERSION: 2
+  extends: .pkg
+
+test pkg with python3:
+  variables:
+    PYTHON_VERSION: 3
+  extends: .pkg

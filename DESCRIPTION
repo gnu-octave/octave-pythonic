@@ -1,0 +1,9 @@
+Name: pythonic
+Version: 0.0.0+
+Date: 2019-05-02
+Author: Mike Miller <mtmiller@octave.org>
+Maintainer: Mike Miller <mtmiller@octave.org>
+Title: Octave Pythonic
+Description: Python native calling interface for GNU Octave
+Depends: octave (>= 4.4)
+License: GPLv3+
