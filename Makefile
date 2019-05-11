@@ -22,8 +22,9 @@
 
 OCTAVE ?= octave
 
-PACKAGE := octave-$(shell sed -n 's/^Name: \([-+.~0-9A-Za-z]\+\)/\1/p' DESCRIPTION)
+PACKAGE := $(shell sed -n 's/^Name: \([-+.~0-9A-Za-z]\+\)/\1/p' DESCRIPTION)
 VERSION := $(shell sed -n 's/^Version: \([-+.~0-9A-Za-z]\+\)/\1/p' DESCRIPTION)
+TARNAME = octave-$(PACKAGE)-$(VERSION)
 
 # Support out-of-tree builds with 'make O=objdir' and read-only source tree
 ifdef O
@@ -64,9 +65,9 @@ test: check
 dist: dist-gzip
 
 dist-gzip:
-	git archive --prefix=$(PACKAGE)-$(VERSION)/ --output=$(TARDIR)/$(PACKAGE)-$(VERSION).tar.gz HEAD
+	git archive --prefix=$(TARNAME)/ --output=$(TARDIR)/$(TARNAME).tar.gz HEAD
 
 dist-zip:
-	git archive --prefix=$(PACKAGE)-$(VERSION)/ --output=$(TARDIR)/$(PACKAGE)-$(VERSION).zip HEAD
+	git archive --prefix=$(TARNAME)/ --output=$(TARDIR)/$(TARNAME).zip HEAD
 
 .PHONY: all check clean dist dist-gzip dist-zip distclean maintainer-clean mostlyclean test
