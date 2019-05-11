@@ -101,3 +101,13 @@ This Octave package is maintained at
 
 If you want to contribute in any way and help make this package better, please
 read the [contribution guidelines](CONTRIBUTING.md).
+
+## License
+
+This package is free software: you can redistribute it and/or modify it under
+the terms of the [GNU General Public License][gpl] as published by the
+[Free Software Foundation][fsf], either version 3 of the License, or (at your
+option) any later version. See [COPYING](COPYING) for the full license text.
+
+[fsf]: https://www.fsf.org/
+[gpl]: https://www.gnu.org/licenses/gpl-3.0.html
