@@ -1,8 +1,8 @@
 Octave Pythonic Package
 =======================
 
-Pythonic is a package that provides a [Python](https://www.python.org/) native
-calling interface for [GNU Octave](https://www.octave.org).
+Pythonic is a package that provides a [Python][python] native calling
+interface for [GNU Octave][octave].
 
 ## Usage
 
@@ -97,7 +97,7 @@ example to build with two different versions of Python
 ## Get Involved
 
 This Octave package is maintained at
-[mtmiller/octave-pythonic on GitLab](https://gitlab.com/mtmiller/octave-pythonic).
+[mtmiller/octave-pythonic on GitLab][pythonic].
 
 If you want to contribute in any way and help make this package better, please
 read the [contribution guidelines](CONTRIBUTING.md).
@@ -111,3 +111,6 @@ option) any later version. See [COPYING](COPYING) for the full license text.
 
 [fsf]: https://www.fsf.org/
 [gpl]: https://www.gnu.org/licenses/gpl-3.0.html
+[octave]: https://www.octave.org/
+[python]: https://www.python.org/
+[pythonic]: https://gitlab.com/mtmiller/octave-pythonic
