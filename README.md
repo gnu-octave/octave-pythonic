@@ -96,21 +96,8 @@ example to build with two different versions of Python
 
 ## Get Involved
 
-We welcome all contributors, bug reports, test results, and ideas for
-improvement. Contributions in any of the following forms, in no
-particular order, are needed and appreciated.
+This Octave package is maintained at
+[mtmiller/octave-pythonic on GitLab](https://gitlab.com/mtmiller/octave-pythonic).
 
-- Testing on different operating systems and in different environments
-- Testing for full functionality with a variety of Python libraries
-- Bug reports detailing problems encountered or unexpected behavior
-- Code contributions
-- Documentation in the form of examples, improvements to help texts, or some
-  sort of user manual
-
-## Other Resources
-
-Please discuss or ask questions about this package on the
-[Octave maintainers mailing list](https://lists.gnu.org/mailman/listinfo/octave-maintainers).
-
-The [wiki page](https://wiki.octave.org/Python_interface) contains more
-examples and ideas about this package.
+If you want to contribute in any way and help make this package better, please
+read the [contribution guidelines](CONTRIBUTING.md).
