@@ -45,6 +45,12 @@ OCTAVE_TEST_SCRIPT = ../tests/__py_tests__.m
 TARDIR = .
 endif
 
+all:              ## build this project (default target)
+clean:            ## clean all compiled object files
+mostlyclean:      ## clean all intermediate object files
+distclean:        ## clean all built and generated files not distributed
+maintainer-clean: ## clean all built and generated files not maintained
+
 all clean maintainer-clean mostlyclean:
 	+$(MAKE_RECURSIVE) $@
 
@@ -52,7 +58,7 @@ distclean:
 	+$(MAKE_RECURSIVE) $@
 	-rm -f $(LOGDIR)/fntests.log
 
-check: all
+check: all ## run the test suite
 	cd $(LOGDIR) \
 	  && $(OCTAVE) --no-history --no-window-system --norc --silent \
 	  $(OCTAVE_PATHS) $(OCTAVE_TEST_SCRIPT) \
@@ -60,9 +66,9 @@ check: all
 	  $(shell cd tests && LC_ALL=C.UTF-8 ls *.m) \
 	  $(shell cd $(OBJDIR) && LC_ALL=C.UTF-8 ls *-tst)
 
-test: check
+test: check ## synonym for check
 
-dist: dist-gzip
+dist: dist-gzip ## build the source distribution
 
 dist-gzip:
 	git archive --prefix=$(TARNAME)/ --output=$(TARDIR)/$(TARNAME).tar.gz HEAD
@@ -70,4 +76,17 @@ dist-gzip:
 dist-zip:
 	git archive --prefix=$(TARNAME)/ --output=$(TARDIR)/$(TARNAME).zip HEAD
 
-.PHONY: all check clean dist dist-gzip dist-zip distclean maintainer-clean mostlyclean test
+help: ## print this make target summary
+	@echo Available targets:
+	@eval "$$(sed -n 's/^\([-A-Za-z]\+\):.* \+## \+\(.*\)/printf "  %-21s %s\\\\n" "\1" "\2"/p' $(MAKEFILE_LIST))"
+	@echo
+	@echo Optional arguments:
+	@echo "  MKOCTFILE=<mkoctfile> build and link with <mkoctfile>"
+	@echo "  O=<dir>               build object files in <dir>"
+	@echo "  OCTAVE=<octave>       run the test suite with <octave>"
+	@echo "  PYTHON=<python>       build and link with <python>"
+	@echo "  PYTHON_VERSION=<n>    build and link with Python version <n>"
+	@echo "  V=1                   build verbosely"
+	@echo
+
+.PHONY: all check clean dist dist-gzip dist-zip distclean help maintainer-clean mostlyclean test
