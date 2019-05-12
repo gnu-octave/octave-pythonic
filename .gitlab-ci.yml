@@ -6,14 +6,25 @@
 image: mtmiller/octave
 
 stages:
+- build
 - test
 
 before_script:
-- apt-get update && apt-get install -y python-dev python-pip python3-dev python3-pip
+- apt-get update && apt-get install -y git python-dev python-pip python3-dev python3-pip
 - pip2 install numpy
 - pip3 install numpy
 - git clone https://github.com/catch22/octave-doctest.git /tmp/doctest
 - (cd /tmp/doctest && git checkout v0.7.0)
+
+build:
+  stage: build
+  script:
+  - mkdir -p pkg
+  - make O=pkg dist dist-zip
+  artifacts:
+    paths:
+    - pkg/*.tar.gz
+    - pkg/*.zip
 
 .test:
   stage: test
@@ -30,9 +41,7 @@ before_script:
 .pkg:
   stage: test
   script:
-  - apt-get update && apt-get install -y git
-  - git archive --format=tgz --prefix=pythonic/ HEAD > pythonic.tgz
-  - octave --eval "pkg install -verbose pythonic.tgz"
+  - octave --eval "pkg install -verbose pkg/octave-pythonic-*.tar.gz"
   - octave --eval "d = pkg ('describe', 'pythonic'); assert (d{:}.name, 'pythonic')"
   - octave --eval "pkg load pythonic; v = pyversion (); assert (v(1), '${PYTHON_VERSION}')"
 

@@ -22,6 +22,10 @@
 
 OCTAVE ?= octave
 
+PACKAGE := $(shell sed -n 's/^Name: \([-+.~0-9A-Za-z]\+\)/\1/p' DESCRIPTION)
+VERSION := $(shell sed -n 's/^Version: \([-+.~0-9A-Za-z]\+\)/\1/p' DESCRIPTION)
+TARNAME = octave-$(PACKAGE)-$(VERSION)
+
 # Support out-of-tree builds with 'make O=objdir' and read-only source tree
 ifdef O
 OBJDIR = $(realpath $(O))
@@ -30,6 +34,7 @@ LOGDIR = $(OBJDIR)
 MAKE_RECURSIVE = $(MAKE) -C $(OBJDIR) -f $(SRCDIR)/Makefile srcdir=$(SRCDIR) VPATH=$(SRCDIR)
 OCTAVE_PATHS = --path='$(CURDIR)/inst' --path='$(OBJDIR)' --path='$(CURDIR)/tests'
 OCTAVE_TEST_SCRIPT = $(CURDIR)/tests/__py_tests__.m
+TARDIR = $(O)
 else
 OBJDIR = src
 SRCDIR = $(OBJDIR)
@@ -37,6 +42,7 @@ LOGDIR = $(OBJDIR)
 MAKE_RECURSIVE = $(MAKE) -C $(OBJDIR)
 OCTAVE_PATHS = --path='$(CURDIR)/inst' --path='$(CURDIR)/src' --path='$(CURDIR)/tests'
 OCTAVE_TEST_SCRIPT = ../tests/__py_tests__.m
+TARDIR = .
 endif
 
 all clean maintainer-clean mostlyclean:
@@ -56,4 +62,12 @@ check: all
 
 test: check
 
-.PHONY: all check clean distclean maintainer-clean mostlyclean test
+dist: dist-gzip
+
+dist-gzip:
+	git archive --prefix=$(TARNAME)/ --output=$(TARDIR)/$(TARNAME).tar.gz HEAD
+
+dist-zip:
+	git archive --prefix=$(TARNAME)/ --output=$(TARDIR)/$(TARNAME).zip HEAD
+
+.PHONY: all check clean dist dist-gzip dist-zip distclean maintainer-clean mostlyclean test

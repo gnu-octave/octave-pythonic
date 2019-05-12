@@ -3,6 +3,7 @@
 *.cc-tst
 *.oct
 *.tar.gz
+*.zip
 PKG_ADD
 PKG_DEL
 fntests.log
