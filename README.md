@@ -1,84 +1,116 @@
-Octave Python Interface
+Octave Pythonic Package
 =======================
 
-This project is for development of a native Python calling interface for
-[GNU Octave](https://www.octave.org).
+Pythonic is a package that provides a [Python][python] native calling
+interface for [GNU Octave][octave].
 
-Goals
------
+## Usage
 
-The goals of this extension include
+Install this package in Octave using the `pkg` command
 
-* call any loadable Python modules, classes, and functions
-* automatic translation of certain Octave data types into Python
-  arguments
-* hold reference to and performing operations on any Python data type as
-  Octave variables
-* automatic translation of certain Python data types into Octave return
-  values
-* be as compatible as possible with Matlab's own Python calling
-  interface
+    pkg install https://gitlab.com/mtmiller/octave-pythonic/-/archive/master/octave-pythonic-master.tar.gz
 
-Examples
---------
+or download and install in the command shell
 
-A few examples are listed here to give a brief introduction to how the
-Python runtime is translated to Octave.
+    curl -O https://gitlab.com/mtmiller/octave-pythonic/-/archive/master/octave-pythonic-master.tar.gz
+    octave --eval "pkg install octave-pythonic-master.tar.gz"
 
-Add a directory to the Python module search path
+Load the package before using it
 
-    py.sys.path.insert (int32 (0), "/path/to/module");
+    pkg load pythonic
 
-Use a vectorized NumPy function
+Once the package is loaded, any available Python class or function can be
+invoked with the `py` package prefix. A few very basic examples to get started
+are listed here.
 
-    x = py.numpy.sqrt (1:10);
+- Add a directory to the Python module search path
 
-Call a function with keyword arguments
+      py.sys.path.insert (int32 (0), "/path/to/module");
 
-    a = py.int ("5ba0", pyargs ("base", int32 (16)));
+- Use a vectorized NumPy function
 
-Read an entire text file into a string
+      x = py.numpy.sqrt (1:10);
 
-    s = py.str ().join (py.open ("/etc/passwd").readlines ());
+- Call a function with keyword arguments
 
-Installation
-------------
+      a = py.int ("5ba0", pyargs ("base", int32 (16)));
 
-There is currently no support for installing this project as an Octave
-package or in a system or user directory for regular use. This is
-intentional, since the project is still being developed and is not
-stable enough for actual use yet.
+- Read an entire text file into a string
 
-What is supported is building and running the project from the build
-directory. Building requires Octave and Python development libraries and
-GNU autotools.
+      s = py.str ().join (py.open ("/etc/motd").readlines ());
 
-1. `git clone https://gitlab.com/mtmiller/octave-pythonic.git`
-2. `cd octave-pythonic`
-3. `autoreconf -i`
-4. `./configure`
-5. `make`
-6. Run Octave with the build directory added to the load path
+## Python Selection
 
-Development
------------
+The specific Python used by the package is selected when the package is
+installed. It is compiled in to the installed package and cannot currently be
+changed dynamically. To check which Python is used, use the `pyversion`
+command
 
-We welcome all contributors, bug reports, test results, and ideas for
-improvement. Contributions in any of the following forms, in no
-particular order, are needed and appreciated.
+    >> pkg load pythonic
+    >> pyversion
+           version: "3.7"
+        executable: "/usr/bin/python3"
+           library: "/usr/lib/x86_64-linux-gnu/libpython3.7m.so"
+            prefix: "/usr"
+            loaded: 1
 
-* Testing on different operating systems and in different environments
-* Testing for full functionality with a variety of Python libraries
-* Bug reports detailing problems encountered or unexpected behavior
-* Code contributions
-* Documentation in the form of examples, improvements to help texts, or
-  some sort of user manual
+The default is to use the `python` program found by a standard path search.
+Use the `PYTHON` or `PYTHON_VERSION` environment variables to override the
+default. For example
 
-Other Resources
----------------
+    >> setenv PYTHON_VERSION 3
+    >> pkg install …
 
-Please discuss or ask questions about this project on the Octave
-[maintainers mailing list](https://lists.gnu.org/mailman/listinfo/octave-maintainers).
+or
 
-The [wiki page](https://wiki.octave.org/Python_interface) contains more
-examples and ideas about the project.
+    >> setenv PYTHON /home/user/anaconda3/bin/python
+    >> pkg install …
+
+## Goals
+
+The goals of this package include
+
+- call any loadable Python modules, classes, and functions
+- hold reference to and operate on any Python data type as Octave variables
+- translate certain Octave data types into Python arguments automatically
+- translate certain Python data types into Octave return values automatically
+- be as compatible as possible with Matlab's Python calling interface
+
+## Development
+
+This package also supports building, using, and testing directly from the code
+repository.
+
+    git clone https://gitlab.com/mtmiller/octave-pythonic.git
+    cd octave-pythonic
+    make
+    make check
+    octave --path $PWD/inst --path $PWD/src
+
+The build system can be configured to use a separate object directory, for
+example to build with two different versions of Python
+
+    mkdir py2 py3
+    make O=py2 PYTHON_VERSION=2
+    make O=py3 PYTHON_VERSION=3
+
+## Get Involved
+
+This Octave package is maintained at
+[mtmiller/octave-pythonic on GitLab][pythonic].
+
+If you want to contribute in any way and help make this package better, please
+read the [contribution guidelines](CONTRIBUTING.md).
+
+## License
+
+This package is free software: you can redistribute it and/or modify it under
+the terms of the [GNU General Public License][gpl] as published by the
+[Free Software Foundation][fsf], either version 3 of the License, or (at your
+option) any later version. See [COPYING](COPYING) for the full license text.
+
+[fsf]: https://www.fsf.org/
+[gpl]: https://www.gnu.org/licenses/gpl-3.0.html
+[octave]: https://www.octave.org/
+[python]: https://www.python.org/
+[pythonic]: https://gitlab.com/mtmiller/octave-pythonic
