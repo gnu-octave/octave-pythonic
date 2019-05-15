@@ -32,7 +32,7 @@ build:
   - mkdir -p python${PYTHON_VERSION}
   - make O=python${PYTHON_VERSION} V=1 all
   - make O=python${PYTHON_VERSION} V=1 check
-  - octave --path ${CI_PROJECT_DIR}/inst --path ${CI_PROJECT_DIR}/python${PYTHON_VERSION} --path /tmp/doctest/inst --eval "exit (! doctest ('.'))"
+  - make O=python${PYTHON_VERSION} V=1 doctest OCTAVE_PATH=/tmp/doctest/inst
   artifacts:
     paths:
     - python${PYTHON_VERSION}/*.log
