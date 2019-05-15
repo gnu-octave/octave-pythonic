@@ -63,7 +63,7 @@ check: all ## run the test suite
 	  && $(OCTAVE) --no-history --no-window-system --norc --silent \
 	  $(OCTAVE_PATHS) $(OCTAVE_TEST_SCRIPT) \
 	  $(shell cd inst && LC_ALL=C.UTF-8 ls *.m @*/*.m) \
-	  $(shell cd tests && LC_ALL=C.UTF-8 ls *.m) \
+	  $(shell cd tests && LC_ALL=C.UTF-8 ls *.m *.tst) \
 	  $(shell cd $(OBJDIR) && LC_ALL=C.UTF-8 ls *-tst)
 
 test: check ## synonym for check
