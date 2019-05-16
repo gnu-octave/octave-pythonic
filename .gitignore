@@ -1,6 +1,8 @@
 # These files are normal build system artifacts
 *.[ao]
 *.cc-tst
+*.gcda
+*.gcno
 *.oct
 *.tar.gz
 *.zip
