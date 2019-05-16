@@ -9,5 +9,9 @@ PKG_DEL
 fntests.log
 octave-workspace
 
+# Local configuration files to influence Octave and pyenv
+.octaverc
+.python-version
+
 # This directory contains Doxygen generated documentation
 /doc/
