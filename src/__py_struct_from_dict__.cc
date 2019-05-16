@@ -183,9 +183,22 @@ This is a private internal function not intended for direct use.\n\
 // PKG_DEL: autoload ("__py_isinstance__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_isinstance__, args, ,
            "-*- texinfo -*-\n\
-@deftypefn  {} {} __py_isinstance__ (@var{x})\n\
-Check whether the Python object @var{obj} is an instance of a Python type\n\
-specified by the string @var{type}.\n\
+@deftypefn  {} {} __py_isinstance__ (@var{x}, @var{type})\n\
+Check whether @var{x} is an instance of a Python type named by the string\n\
+@var{type}.\n\
+\n\
+For example\n\
+\n\
+@example\n\
+@group\n\
+__py_isinstance__ (py.list, \"py.list\")\n\
+@result{} 1\n\
+__py_isinstance__ (py.sys.version, \"py.str\")\n\
+@result{} 1\n\
+__py_isinstance__ (py.list, \"py.no.such.object\")\n\
+@result{} 0\n\
+@end group\n\
+@end example\n\
 \n\
 This is a private internal function not intended for direct use.\n\
 @end deftypefn")
@@ -200,7 +213,7 @@ This is a private internal function not intended for direct use.\n\
     }
 
   if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
-    error ("pyobject.isa: OBJ must be a Python object");
+    error ("pyobject.isa: X must be a Python object");
 
   if (! args(1).is_string ())
     error ("pyobject.isa: TYPE must be a string naming a Python type (py.*)");
@@ -218,6 +231,27 @@ This is a private internal function not intended for direct use.\n\
 
   return retval;
 }
+
+/*
+%!assert (__py_isinstance__ (py.dict (), "py.dict"))
+%!assert (__py_isinstance__ (py.list (), "py.list"))
+%!assert (__py_isinstance__ (py.set (), "py.set"))
+%!assert (__py_isinstance__ (py.str (), "py.str"))
+%!assert (__py_isinstance__ (py.sys.version, "py.str"))
+%!assert (__py_isinstance__ (py.sys.version, "py.object"))
+%!assert (__py_isinstance__ (py.type (2), "py.type"))
+%!assert (! __py_isinstance__ (py.dict (), "py.str"))
+%!assert (! __py_isinstance__ (py.dict (), "py.list"))
+%!assert (! __py_isinstance__ (py.dict (), "py.no.such.object"))
+%!assert (! __py_isinstance__ (py.list (), "py.dict"))
+%!assert (! __py_isinstance__ (py.list (), "py.no.such.object"))
+
+%!error __py_isinstance__ ()
+%!error __py_isinstance__ (pyeval ("None"))
+%!error <must be a Python object> __py_isinstance__ (1, "py.float")
+%!error <must be a string> __py_isinstance__ (pyeval ("None"), 2)
+%!error <must be a string> __py_isinstance__ (pyeval ("None"), "object")
+*/
 
 // PKG_ADD: autoload ("__py_objstore_del__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_objstore_del__", which ("__py_struct_from_dict__.oct"), "remove");

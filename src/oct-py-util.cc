@@ -111,7 +111,10 @@ namespace pythonic
   PyObject *
   py_import_module (const std::string& name)
   {
-    return PyImport_ImportModule (name.c_str ());
+    PyObject *module = PyImport_ImportModule (name.c_str ());
+    if (! module)
+      PyErr_Clear ();
+    return module;
   }
 
   bool
