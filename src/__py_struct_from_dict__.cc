@@ -207,10 +207,7 @@ This is a private internal function not intended for direct use.\n\
 
   int nargin = args.length ();
   if (nargin != 2)
-    {
-      print_usage ();
-      return retval;
-    }
+    print_usage ();
 
   if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
     error ("pyobject.isa: X must be a Python object");
@@ -376,10 +373,7 @@ This is a private internal function not intended for direct use.\n\
   int nargin = args.length ();
 
   if (nargin != 1)
-    {
-      print_usage ();
-      return retval;
-    }
+    print_usage ();
 
   if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
     error ("pyobject.struct: argument must be a Python object");
