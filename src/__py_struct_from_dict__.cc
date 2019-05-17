@@ -207,10 +207,7 @@ This is a private internal function not intended for direct use.\n\
 
   int nargin = args.length ();
   if (nargin != 2)
-    {
-      print_usage ();
-      return retval;
-    }
+    print_usage ();
 
   if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
     error ("pyobject.isa: X must be a Python object");
@@ -362,6 +359,25 @@ This is a private internal function not intended for direct use.\n\
   return ovl (str);
 }
 
+/*
+%!assert (__py_string_value__ (pyeval ("bytes()")), "")
+%!assert (__py_string_value__ (pyeval ("str()")), "")
+%!assert (__py_string_value__ (pyeval ("''")), "")
+%!assert (__py_string_value__ (pyeval ("'Octave'")), "Octave")
+%!assert (__py_string_value__ (pyeval ("b'Octave'")), "Octave")
+%!assert (__py_string_value__ (pyeval ("r'Octave'")), "Octave")
+%!assert (__py_string_value__ (pyeval ("u'Octave'")), "Octave")
+%!assert (__py_string_value__ (pyeval ("[]")), "[]")
+%!assert (__py_string_value__ (pyeval ("{}")), "{}")
+%!assert (__py_string_value__ (pyeval ("dict()")), "{}")
+%!assert (__py_string_value__ (pyeval ("list()")), "[]")
+%!assert (__py_string_value__ (pyeval ("dir")), "<built-in function dir>")
+
+%!error __py_string_value__ ()
+%!error __py_string_value__ (pyeval ("''"), 2)
+%!error <must be a valid Python object> __py_string_value__ ("Octave")
+*/
+
 DEFUN_DLD (__py_struct_from_dict__, args, ,
            "-*- texinfo -*-\n\
 @deftypefn  {} {} __py_struct_from_dict__ (@var{dict})\n\
@@ -376,10 +392,7 @@ This is a private internal function not intended for direct use.\n\
   int nargin = args.length ();
 
   if (nargin != 1)
-    {
-      print_usage ();
-      return retval;
-    }
+    print_usage ();
 
   if (! (args(0).isobject () && args(0).class_name () == "pyobject"))
     error ("pyobject.struct: argument must be a Python object");
@@ -393,6 +406,11 @@ This is a private internal function not intended for direct use.\n\
 }
 
 /*
-## No test needed for internal helper function.
-%!assert (1)
+%!assert (__py_struct_from_dict__ (pyeval ("{}")), struct ())
+%!assert (__py_struct_from_dict__ (pyeval ("{'a': 1.0}")), struct ("a", 1))
+
+%!error __py_struct_from_dict__ ()
+%!error __py_struct_from_dict__ (pyeval ("{}"), 2)
+%!error <must be a Python object> __py_struct_from_dict__ ("Octave")
+%!error <unable to convert to an Octave struct> __py_struct_from_dict__ (pyeval ("[]"))
 */
