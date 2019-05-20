@@ -6,6 +6,7 @@
 *.oct
 *.tar.gz
 *.zip
+NEWS
 PKG_ADD
 PKG_DEL
 fntests.log
