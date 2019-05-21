@@ -69,11 +69,13 @@ OCT_FILES = \
 
 PKG_FILES = PKG_ADD PKG_DEL
 
+NEWS_FILE = $(srcdir)/../NEWS
+
 COMMON_OBJECTS = $(patsubst %.cc, %.o, $(COMMON_SOURCES))
 OCT_SOURCES = $(patsubst %.oct, %.cc, $(OCT_FILES))
 TST_FILES = $(addsuffix -tst,$(OCT_SOURCES))
 
-CLEANFILES = *.a *.oct *-tst $(PKG_FILES)
+CLEANFILES = *.a *.oct *-tst $(PKG_FILES) $(NEWS_FILE)
 MOSTLYCLEANFILES = *.o
 
 OCT_COMPILE = $(MKOCTFILE) $(P_V_MKOCTFILE_FLAGS) $(P_CPPFLAGS) $(CPPFLAGS) \
@@ -103,7 +105,7 @@ P_V_MKOCTFILE_FLAGS_  = $(P_V_MKOCTFILE_FLAGS_0)
 P_V_MKOCTFILE_FLAGS_0 =
 P_V_MKOCTFILE_FLAGS_1 = --verbose
 
-all: $(OCT_FILES) $(PKG_FILES) $(TST_FILES)
+all: $(OCT_FILES) $(PKG_FILES) $(TST_FILES) $(NEWS_FILE)
 
 %.o: %.cc $(COMMON_HEADERS)
 	$(P_V_CXX)$(OCT_COMPILE) $<
@@ -142,6 +144,10 @@ PKG_DEL: $(OCT_SOURCES)
 	    mv $@-t $@ || exit $?; \
 	  fi; \
 	done
+
+$(NEWS_FILE): $(NEWS_FILE).md
+	$(P_V_GEN)cp $< $@
+
 clean: mostlyclean
 	-rm -f $(CLEANFILES)
 
