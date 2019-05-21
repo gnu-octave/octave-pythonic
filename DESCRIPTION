@@ -6,4 +6,5 @@ Maintainer: Mike Miller <mtmiller@octave.org>
 Title: Octave Pythonic
 Description: Python native calling interface for GNU Octave
 Depends: octave (>= 4.4)
+Build-Depends: python-dev
 License: GPL-3.0-or-later
