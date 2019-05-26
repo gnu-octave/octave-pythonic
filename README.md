@@ -6,6 +6,10 @@ interface for [GNU Octave][octave].
 
 ## Usage
 
+Ensure that your system has properly installed [Python][python]. Some Linux
+distributions additionally require the installation of the Python development
+libraries (e.g. [python-dev][] for Debian).
+
 Install this package in Octave using the `pkg` command
 
     pkg install https://gitlab.com/mtmiller/octave-pythonic/-/archive/master/octave-pythonic-master.tar.gz
@@ -114,3 +118,4 @@ option) any later version. See [COPYING](COPYING) for the full license text.
 [octave]: https://www.octave.org/
 [python]: https://www.python.org/
 [pythonic]: https://gitlab.com/mtmiller/octave-pythonic
+[python-dev]: https://packages.debian.org/search?keywords=python-dev
