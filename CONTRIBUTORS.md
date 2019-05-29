@@ -5,6 +5,7 @@
 - Vijay Krishnavanshi
 - Colin Macdonald
 - Mike Miller
+- Kai Torben Ohlhus
 - Abhinav Tripathi
 
 ---

@@ -1,14 +1,10 @@
 Octave Pythonic Package
 =======================
 
-Pythonic is a package that provides a [Python][python] native calling
-interface for [GNU Octave][octave].
+Pythonic is a package that provides a [Python][] native calling interface for
+[GNU Octave][].
 
 ## Usage
-
-Ensure that your system has properly installed [Python][python]. Some Linux
-distributions additionally require the installation of the Python development
-libraries (e.g. [python-dev][] for Debian).
 
 Install this package in Octave using the `pkg` command
 
@@ -70,6 +66,10 @@ or
     >> setenv PYTHON /home/user/anaconda3/bin/python
     >> pkg install …
 
+You may have to ensure that your system has [Python][] installed properly.
+Some GNU/Linux distributions may require separate installation of the Python
+header files and development libraries (e.g. [python-dev][] for Debian).
+
 ## Goals
 
 The goals of this package include
@@ -113,9 +113,9 @@ the terms of the [GNU General Public License][gpl] as published by the
 [Free Software Foundation][fsf], either version 3 of the License, or (at your
 option) any later version. See [COPYING](COPYING) for the full license text.
 
+[GNU Octave]: https://www.octave.org/
+[Python]: https://www.python.org/
 [fsf]: https://www.fsf.org/
 [gpl]: https://www.gnu.org/licenses/gpl-3.0.html
-[octave]: https://www.octave.org/
-[python]: https://www.python.org/
-[pythonic]: https://gitlab.com/mtmiller/octave-pythonic
 [python-dev]: https://packages.debian.org/search?keywords=python-dev
+[pythonic]: https://gitlab.com/mtmiller/octave-pythonic
