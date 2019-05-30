@@ -8,12 +8,12 @@ Pythonic is a package that provides a [Python][] native calling interface for
 
 Install this package in Octave using the `pkg` command
 
-    pkg install https://gitlab.com/mtmiller/octave-pythonic/-/archive/master/octave-pythonic-master.tar.gz
+    pkg install https://gitlab.com/mtmiller/octave-pythonic/-/archive/v0.0.1/octave-pythonic-v0.0.1.tar.gz
 
 or download and install in the command shell
 
-    curl -O https://gitlab.com/mtmiller/octave-pythonic/-/archive/master/octave-pythonic-master.tar.gz
-    octave --eval "pkg install octave-pythonic-master.tar.gz"
+    curl -O https://gitlab.com/mtmiller/octave-pythonic/-/archive/v0.0.1/octave-pythonic-v0.0.1.tar.gz
+    octave --eval "pkg install octave-pythonic-v0.0.1.tar.gz"
 
 Load the package before using it
 
