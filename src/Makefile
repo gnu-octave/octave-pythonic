@@ -33,14 +33,9 @@ CXXFLAGS = -g -O2
 
 srcdir = .
 
-PYTHON_CONFIG_ABIFLAGS := $(shell $(PYTHON) -c "import distutils.sysconfig; print(distutils.sysconfig.get_config_var('ABIFLAGS') or '')")
-PYTHON_CONFIG_INCDIR   := $(shell $(PYTHON) -c "import distutils.sysconfig; print(distutils.sysconfig.get_python_inc())")
-PYTHON_CONFIG_LIBDIR   := $(shell $(PYTHON) -c "import distutils.sysconfig; print(distutils.sysconfig.get_config_var('LIBDIR'))")
-PYTHON_CONFIG_VERSION  := $(shell $(PYTHON) -c "import distutils.sysconfig; print(distutils.sysconfig.get_config_var('VERSION'))")
-
-PYTHON_CPPFLAGS = -I$(PYTHON_CONFIG_INCDIR)
-PYTHON_LDFLAGS  = -L$(PYTHON_CONFIG_LIBDIR) -Wl,-rpath=$(PYTHON_CONFIG_LIBDIR)
-PYTHON_LIBS     = -lpython$(PYTHON_CONFIG_VERSION)$(PYTHON_CONFIG_ABIFLAGS)
+PYTHON_CPPFLAGS := $(shell $(PYTHON) $(srcdir)/../build-aux/python-build-flags.py --get CPPFLAGS)
+PYTHON_LDFLAGS  := $(shell $(PYTHON) $(srcdir)/../build-aux/python-build-flags.py --get LDFLAGS)
+PYTHON_LIBS     := $(shell $(PYTHON) $(srcdir)/../build-aux/python-build-flags.py --get LIBS)
 
 P_CPPFLAGS = -I. -I$(srcdir) $(PYTHON_CPPFLAGS)
 P_CXXFLAGS = -Wall -Wextra
