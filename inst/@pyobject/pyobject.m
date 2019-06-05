@@ -37,12 +37,13 @@ classdef pyobject < handle
 
   methods
     function obj = pyobject (x, id)
+      ## Note: be careful to modify `obj` not overwrite it.
       if (nargin == 0)
-        obj = pyeval ("None");
+        obj.m_id = pyeval ("None").m_id;
       elseif (nargin == 1)
         ## Convert the input to a pyobject
         if (isa (x, "pyobject"))
-          obj = x;
+          obj.m_id = x.m_id;
         else
           obj.m_id = __py_objstore_put__ (x);
         endif
