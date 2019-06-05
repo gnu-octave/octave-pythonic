@@ -1,4 +1,5 @@
-## Copyright (C) 2016 Colin B. Macdonald
+## Copyright (C) 2016, 2019 Colin B. Macdonald
+## Copyright (C) 2016 Abhinav Tripathi
 ## Copyright (C) 2016-2019 Mike Miller
 ## SPDX-License-Identifier: GPL-3.0-or-later
 ##
