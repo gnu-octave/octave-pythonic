@@ -322,6 +322,25 @@ This is a private internal function not intended for direct use.\n\
   return ovl (octave_uint64 (key));
 }
 
+// PKG_ADD: autoload ("__py_objstore_put_none__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_put_none__", which ("__py_struct_from_dict__.oct"), "remove");
+DEFUN_DLD (__py_objstore_put_none__, , ,
+           "-*- texinfo -*-\n\
+@deftypefn {} {} __py_objstore_put_none__ ()\n\
+Store None in the object store and return its index.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  pythonic::py_init ();
+
+  pythonic::python_object obj = Py_None;
+
+  uint64_t key = pythonic::py_objstore_put (obj.release ());
+
+  return ovl (octave_uint64 (key));
+}
+
 // PKG_ADD: autoload ("__py_string_value__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_string_value__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_string_value__, args, ,

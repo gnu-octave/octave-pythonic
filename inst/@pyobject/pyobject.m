@@ -39,7 +39,7 @@ classdef pyobject < handle
   methods
     function obj = pyobject (x, id)
       if (nargin == 0)
-        id = pyeval ("None").m_id;  # TODO: do without making extra pyobj
+        id = __py_objstore_put_none__ ();
       elseif (nargin == 1)
         ## Convert the input to a pyobject
         if (isa (x, "pyobject"))
