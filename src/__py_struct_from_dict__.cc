@@ -334,9 +334,7 @@ This is a private internal function not intended for direct use.\n\
 {
   pythonic::py_init ();
 
-  pythonic::python_object obj = Py_None;
-
-  uint64_t key = pythonic::py_objstore_put (obj.release ());
+  uint64_t key = pythonic::py_objstore_put (Py_None);
 
   return ovl (octave_uint64 (key));
 }
