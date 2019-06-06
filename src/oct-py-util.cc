@@ -223,7 +223,7 @@ namespace pythonic
   pyobject_wrap_object (PyObject *obj)
   {
     uint64_t key = py_objstore_put (obj);
-    octave_value_list out = octave::feval ("pyobject", ovl (0, octave_uint64 (key)), 1);
+    octave_value_list out = octave::feval ("pyobject", ovl (33554431.0, octave_uint64 (key)), 1);
     return out(0);
   }
 

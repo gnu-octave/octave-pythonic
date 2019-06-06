@@ -50,6 +50,7 @@ classdef pyobject < handle
       elseif (nargin == 2)
         ## Warning: not intended for casual use: you must also insert the
         ## object into the Python object store with key `id`.
+        assert (x == 33554431, "pyobject should not be called with two inputs")
       else
         error ("pyobject: unexpected input to the constructor")
       endif
@@ -418,6 +419,8 @@ endclassdef
 %!assert (isequal (pyeval ("None"), pyeval ("None")))
 %!assert (! isequal (pyeval ("None"), pyeval ("None"), pyobject (10)))
 %!assert (isequal (pyobject (10), pyobject (10.0), pyobject (int8 (10))))
+
+%!error (isequal (pyobject (1, 2)))
 
 %!test
 %! A = pyeval ("[1, 2, 3]");
