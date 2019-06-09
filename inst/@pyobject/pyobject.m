@@ -416,16 +416,18 @@ endclassdef
 %! x = pyobject (int64 (42));
 %! assert (fn (x), double (x))
 
-%!error (isequal (pyobject ()))
 %!assert (! isequal (pyobject (1.2), 1.2))
 %!assert (isequal (pyobject ("a string"), pyobject ("a string")))
+%!assert (isequal (pyobject (), pyeval ("None")))
 %!assert (isequal (pyeval ("None"), pyeval ("None")))
 %!assert (! isequal (pyeval ("None"), pyeval ("None"), pyobject (10)))
 %!assert (isequal (pyobject (10), pyobject (10.0), pyobject (int8 (10))))
-
-%!error (isequal (pyobject (1, 2)))
 
 %!test
 %! A = pyeval ("[1, 2, 3]");
 %! B = pycall ("list", {1, 2, 3});
 %! assert (isequal (A, B))
+
+## Test input validation
+%!error pyobject (1, 2)
+%!error pyobject (1, 2, 3)
