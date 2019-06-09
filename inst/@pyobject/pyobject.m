@@ -1,4 +1,5 @@
-## Copyright (C) 2016 Colin B. Macdonald
+## Copyright (C) 2016, 2019 Colin B. Macdonald
+## Copyright (C) 2016 Abhinav Tripathi
 ## Copyright (C) 2016-2019 Mike Miller
 ## SPDX-License-Identifier: GPL-3.0-or-later
 ##
@@ -38,23 +39,21 @@ classdef pyobject < handle
   methods
     function obj = pyobject (x, id)
       if (nargin == 0)
-        obj = pyeval ("None");
+        id = __py_objstore_put_none__ ();
       elseif (nargin == 1)
         ## Convert the input to a pyobject
         if (isa (x, "pyobject"))
-          obj = x;
+          id = x.m_id;
         else
-          obj.m_id = __py_objstore_put__ (x);
+          id = __py_objstore_put__ (x);
         endif
       elseif (nargin == 2)
-        ## The actual constructor.  Nicer to split this off to static method
-        ## like `pyobject.new` but I don't know how to call from pycall.cc.
         ## Warning: not intended for casual use: you must also insert the
         ## object into the Python object store with key `id`.
-        obj.m_id = id;
       else
         error ("pyobject: unexpected input to the constructor")
       endif
+      obj.m_id = id;
     endfunction
 
     function _delete (x)

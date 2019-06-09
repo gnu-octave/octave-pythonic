@@ -3,6 +3,7 @@
 SPDX-License-Identifier: GPL-3.0-or-later
 
 Copyright (C) 2016-2019 Mike Miller
+Copyright (C) 2019 Colin B. Macdonald
 
 This file is part of Octave Pythonic.
 
@@ -318,6 +319,23 @@ This is a private internal function not intended for direct use.\n\
     error ("__py_objstore_put__: VALUE must be convertible to a Python value");
 
   uint64_t key = pythonic::py_objstore_put (obj.release ());
+
+  return ovl (octave_uint64 (key));
+}
+
+// PKG_ADD: autoload ("__py_objstore_put_none__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_put_none__", which ("__py_struct_from_dict__.oct"), "remove");
+DEFUN_DLD (__py_objstore_put_none__, , ,
+           "-*- texinfo -*-\n\
+@deftypefn {} {} __py_objstore_put_none__ ()\n\
+Store None in the object store and return its index.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  pythonic::py_init ();
+
+  uint64_t key = pythonic::py_objstore_put (Py_None);
 
   return ovl (octave_uint64 (key));
 }
