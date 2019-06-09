@@ -93,7 +93,7 @@ def get_linker_opts():
 
 def quotify(s):
     """Return the argument in quotes if necessary."""
-    if ' ' in s:
+    if True in [ch in s for ch in r'\ ']:
         return '"' + s + '"'
     else:
         return s
