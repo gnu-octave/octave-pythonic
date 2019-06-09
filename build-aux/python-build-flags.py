@@ -62,7 +62,10 @@ def get_inc_dirs():
     if sys.exec_prefix != sys.prefix:
         basedirs.append(sys.exec_prefix)
     for pfx in basedirs:
-        d = os.path.join(pfx, 'include', get_python_version_abi())
+        if os.name == 'nt':
+            d = os.path.join(pfx, 'include')
+        else:
+            d = os.path.join(pfx, 'include', get_python_version_abi())
         dirs.append(os.path.normpath(d))
     return dirs
 
@@ -72,7 +75,9 @@ def get_preproc_opts():
 
 
 def get_lib_dir():
-    if sys.exec_prefix != DEFAULT_PREFIX:
+    if os.name == 'nt':
+        return os.path.join(os.path.normpath(sys.exec_prefix), 'libs')
+    elif sys.exec_prefix != DEFAULT_PREFIX:
         return sysconfig.get_config_var('LIBDIR')
     else:
         return ''
