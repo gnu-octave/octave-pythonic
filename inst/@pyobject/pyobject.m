@@ -39,22 +39,25 @@ classdef pyobject < handle
   methods
     function obj = pyobject (x, id)
       if (nargin == 0)
-        id = __py_objstore_put_none__ ();
+        __id = __py_objstore_put_none__ ();
       elseif (nargin == 1)
         ## Convert the input to a pyobject
         if (isa (x, "pyobject"))
-          id = x.m_id;
+          __id = x.m_id;
         else
-          id = __py_objstore_put__ (x);
+          __id = __py_objstore_put__ (x);
         endif
       elseif (nargin == 2)
         ## Warning: not intended for casual use: you must also insert the
         ## object into the Python object store with key `id`.
         assert (x == 33554431, "pyobject should not be called with two inputs")
+        __id = id;
       else
         error ("pyobject: unexpected input to the constructor")
       endif
-      obj.m_id = id;
+
+      obj.m_id = __id;
+
     endfunction
 
     function _delete (x)
