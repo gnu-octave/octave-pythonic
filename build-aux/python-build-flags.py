@@ -43,7 +43,10 @@ DEFAULT_PREFIX = '/usr'
 
 
 def get_version():
-    return '%d.%d' % sys.version_info[:2]
+    if os.name == 'nt':
+        return '%d%d' % sys.version_info[:2]
+    else:
+        return '%d.%d' % sys.version_info[:2]
 
 
 def get_python_version_abi():
