@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- New command `pythonic` to get information about the package.
+
 ## 0.0.1 - 2019-05-22
 
 This is the first release of the Octave Pythonic package.
