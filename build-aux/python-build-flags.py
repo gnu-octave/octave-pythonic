@@ -31,6 +31,7 @@ Usage:
 import os
 import sys
 import sysconfig
+
 try:
     import argparse
 except ImportError:
@@ -39,24 +40,24 @@ except ImportError:
 
 # The default OS installation prefix. If Python is installed under this prefix,
 # it can be assumed that no linker flags are needed.
-DEFAULT_PREFIX = '/usr'
+DEFAULT_PREFIX = "/usr"
 
 
 def get_version():
-    if os.name == 'nt':
-        return '%d%d' % sys.version_info[:2]
+    if os.name == "nt":
+        return "%d%d" % sys.version_info[:2]
     else:
-        return '%d.%d' % sys.version_info[:2]
+        return "%d.%d" % sys.version_info[:2]
 
 
 def get_python_version_abi():
     """Return the string representing the version of Python and ABI options."""
-    suffix = ''
+    suffix = ""
     try:
         suffix = sys.abiflags
     except AttributeError:
         pass
-    return 'python' + get_version() + suffix
+    return "python" + get_version() + suffix
 
 
 def get_inc_dirs():
@@ -65,46 +66,46 @@ def get_inc_dirs():
     if sys.exec_prefix != sys.prefix:
         basedirs.append(sys.exec_prefix)
     for pfx in basedirs:
-        if os.name == 'nt':
-            d = os.path.join(pfx, 'include')
+        if os.name == "nt":
+            d = os.path.join(pfx, "include")
         else:
-            d = os.path.join(pfx, 'include', get_python_version_abi())
+            d = os.path.join(pfx, "include", get_python_version_abi())
         dirs.append(os.path.normpath(d))
     return dirs
 
 
 def check_python_header_file():
     for d in get_inc_dirs():
-        h = os.path.join(d, 'Python.h')
+        h = os.path.join(d, "Python.h")
         if os.path.isfile(h):
             return True
     return False
 
 
 def get_preproc_opts():
-    return ['-I' + d for d in get_inc_dirs()]
+    return ["-I" + d for d in get_inc_dirs()]
 
 
 def get_lib_dir():
-    if os.name == 'nt':
-        return os.path.join(os.path.normpath(sys.exec_prefix), 'libs')
+    if os.name == "nt":
+        return os.path.join(os.path.normpath(sys.exec_prefix), "libs")
     elif sys.exec_prefix != DEFAULT_PREFIX:
-        return sysconfig.get_config_var('LIBDIR')
+        return sysconfig.get_config_var("LIBDIR")
     else:
-        return ''
+        return ""
 
 
 def get_linker_opts():
     d = get_lib_dir()
     if d:
-        return ['-L' + d, '-Wl,-rpath=' + d]
+        return ["-L" + d, "-Wl,-rpath=" + d]
     else:
         return []
 
 
 def quotify(s):
     """Return the argument in quotes if necessary."""
-    if True in [ch in s for ch in r'\ ']:
+    if True in [ch in s for ch in r"\ "]:
         return '"' + s + '"'
     else:
         return s
@@ -112,29 +113,33 @@ def quotify(s):
 
 def get_build_flags():
     flags = {}
-    flags['CPPFLAGS'] = ' '.join([quotify(opt) for opt in get_preproc_opts()])
-    flags['LDFLAGS'] = ' '.join([quotify(opt) for opt in get_linker_opts()])
-    flags['LIBS'] = quotify('-l' + get_python_version_abi())
+    flags["CPPFLAGS"] = " ".join([quotify(opt) for opt in get_preproc_opts()])
+    flags["LDFLAGS"] = " ".join([quotify(opt) for opt in get_linker_opts()])
+    flags["LIBS"] = quotify("-l" + get_python_version_abi())
     return flags
 
 
 def parse_args():
     try:
         parser = argparse.ArgumentParser()
-        parser.add_argument('--check-header', action='store_true',
-                            help='check whether the Python.h header file exists')
-        parser.add_argument('--get', metavar='FLAG',
-                            help='get a particular build flag')
+        parser.add_argument(
+            "--check-header",
+            action="store_true",
+            help="check whether the Python.h header file exists",
+        )
+        parser.add_argument("--get", metavar="FLAG", help="get a particular build flag")
         args = parser.parse_args()
     except NameError:
         parser = optparse.OptionParser()
-        parser.add_option('--check-header', action='store_true',
-                            help='check whether the Python.h header file exists')
-        parser.add_option('--get', metavar='FLAG',
-                          help='get a particular build flag')
+        parser.add_option(
+            "--check-header",
+            action="store_true",
+            help="check whether the Python.h header file exists",
+        )
+        parser.add_option("--get", metavar="FLAG", help="get a particular build flag")
         options, args = parser.parse_args()
         if args:
-            parser.error('unrecognized arguments: {}'.format(' '.join(args)))
+            parser.error("unrecognized arguments: {}".format(" ".join(args)))
         args = options
     return args
 
@@ -152,8 +157,8 @@ def main():
             sys.exit(1)
     else:
         for k in sorted(flags.keys()):
-            print('{}={}'.format(k, flags[k]))
+            print("{}={}".format(k, flags[k]))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
