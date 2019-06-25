@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Ensure that `pyobject` constructor does not recurse or overwrite itself.
+- Build with the right compiler and linker options on Windows.
+- More helpful error messages when Python header files are not installed.
 
 ## 0.0.1 - 2019-05-22
 
