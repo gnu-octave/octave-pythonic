@@ -73,6 +73,14 @@ def get_inc_dirs():
     return dirs
 
 
+def check_python_header_file():
+    for d in get_inc_dirs():
+        h = os.path.join(d, 'Python.h')
+        if os.path.isfile(h):
+            return True
+    return False
+
+
 def get_preproc_opts():
     return ['-I' + d for d in get_inc_dirs()]
 
@@ -113,11 +121,15 @@ def get_build_flags():
 def parse_args():
     try:
         parser = argparse.ArgumentParser()
+        parser.add_argument('--check-header', action='store_true',
+                            help='check whether the Python.h header file exists')
         parser.add_argument('--get', metavar='FLAG',
                             help='get a particular build flag')
         args = parser.parse_args()
     except NameError:
         parser = optparse.OptionParser()
+        parser.add_option('--check-header', action='store_true',
+                            help='check whether the Python.h header file exists')
         parser.add_option('--get', metavar='FLAG',
                           help='get a particular build flag')
         options, args = parser.parse_args()
@@ -131,7 +143,9 @@ def main():
     """Run the python-build-flags script."""
     flags = get_build_flags()
     args = parse_args()
-    if args.get:
+    if args.check_header:
+        print(check_python_header_file())
+    elif args.get:
         if args.get in flags:
             print(flags[args.get])
         else:

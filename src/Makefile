@@ -33,9 +33,20 @@ CXXFLAGS = -g -O2
 
 srcdir = .
 
+PYTHON_COMMAND_EXISTS := $(shell $(PYTHON) -c "print(True)")
+PYTHON_HEADER_EXISTS  := $(shell $(PYTHON) $(srcdir)/../build-aux/python-build-flags.py --check-header)
+
+ifeq ($(PYTHON_COMMAND_EXISTS),True)
+ifeq ($(PYTHON_HEADER_EXISTS),True)
 PYTHON_CPPFLAGS := $(shell $(PYTHON) $(srcdir)/../build-aux/python-build-flags.py --get CPPFLAGS)
 PYTHON_LDFLAGS  := $(shell $(PYTHON) $(srcdir)/../build-aux/python-build-flags.py --get LDFLAGS)
 PYTHON_LIBS     := $(shell $(PYTHON) $(srcdir)/../build-aux/python-build-flags.py --get LIBS)
+else
+PYTHON_CPPFLAGS = $(error The header file <Python.h> is not found, you may need to install Python header files and development libraries)
+endif
+else
+PYTHON_CPPFLAGS = $(error The Python interpreter "$(PYTHON)" is not found or not functional, you may need to set PATH or PYTHON_VERSION)
+endif
 
 P_CPPFLAGS = -I. -I$(srcdir) $(PYTHON_CPPFLAGS)
 P_CXXFLAGS = -Wall -Wextra
