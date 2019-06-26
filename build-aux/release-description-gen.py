@@ -34,9 +34,9 @@ import sys
 def extract_release_description(file, version):
     """Return the release description for version from file."""
     desc = []
-    heading_match = '^## \\[?{0}\\]?( |$)'.format(re.escape(version))
+    heading_match = "^## \\[?{0}\\]?( |$)".format(re.escape(version))
     heading_match = re.compile(heading_match)
-    heading_no_match = re.compile('^(## |\\[)')
+    heading_no_match = re.compile("^(## |\\[)")
     seen_match = False
     for line in file:
         if re.match(heading_match, line):
@@ -52,7 +52,7 @@ def extract_release_description(file, version):
     while desc and not desc[-1]:
         del desc[-1]
 
-    return '\n'.join(desc)
+    return "\n".join(desc)
 
 
 def main():
@@ -62,5 +62,5 @@ def main():
         sys.stdout.write(extract_release_description(sys.stdin, version))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
