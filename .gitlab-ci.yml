@@ -10,6 +10,17 @@ stages:
 - test
 - release
 
+variables: &variables
+  DEBIAN_FRONTEND: "noninteractive"
+  DOCTEST_GIT_REPOSITORY: "https://github.com/catch22/octave-doctest.git"
+  DOCTEST_GIT_TAG: "v0.7.0"
+  DOCTEST_ROOT: "/tmp/doctest"
+  LIBSSL_DEV: "libssl-dev"
+  PYENV_GIT_REPOSITORY: "https://github.com/pyenv/pyenv.git"
+  PYENV_GIT_TAG: "v1.2.13"
+  PYENV_ROOT: "/tmp/pyenv"
+  PYTHON_CONFIGURE_OPTS: "--enable-shared"
+
 build:
   stage: build
   script:
@@ -21,12 +32,20 @@ build:
     - pkg/*.tar.gz
     - pkg/*.zip
 
-.test:
+.test with pyenv:
   stage: test
   script:
-  - apt-get update && apt-get install -y git python-dev python3-dev
-  - git clone https://github.com/catch22/octave-doctest.git /tmp/doctest
-  - (cd /tmp/doctest && git checkout v0.7.0)
+  - apt-get update && apt-get install -y blt-dev git libbz2-dev libdb-dev libffi-dev
+    libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev $LIBSSL_DEV
+    tk-dev uuid-dev zlib1g-dev
+  - git clone $DOCTEST_GIT_REPOSITORY $DOCTEST_ROOT
+  - git -C $DOCTEST_ROOT checkout $DOCTEST_GIT_TAG
+  - git clone $PYENV_GIT_REPOSITORY $PYENV_ROOT
+  - git -C $PYENV_ROOT checkout $PYENV_GIT_TAG
+  - export PATH=$PYENV_ROOT/bin:$PATH
+  - eval "$(pyenv init -)"
+  - pyenv install $PYTHON_VERSION_FULL
+  - pyenv global $PYTHON_VERSION_FULL
   - mkdir -p python${PYTHON_VERSION}
   - make O=python${PYTHON_VERSION} V=1 all
   - make O=python${PYTHON_VERSION} V=1 check
@@ -56,23 +75,51 @@ coverage:
   - gcovr --print-summary coverage
   coverage: '/^lines: \d+\.\d+/'
 
-test python2:
+test with python2.7:
   variables:
-    PYTHON_VERSION: 2
-  extends: .test
+    <<: *variables
+    PYTHON_VERSION: "2.7"
+    PYTHON_VERSION_FULL: "2.7.16"
+  extends: .test with pyenv
 
-test python3:
+test with python3.4:
   variables:
-    PYTHON_VERSION: 3
-  extends: .test
+    <<: *variables
+    LIBSSL_DEV: "libssl1.0-dev"
+    PYTHON_VERSION: "3.4"
+    PYTHON_VERSION_FULL: "3.4.10"
+  extends: .test with pyenv
+
+test with python3.5:
+  variables:
+    <<: *variables
+    PYTHON_VERSION: "3.5"
+    PYTHON_VERSION_FULL: "3.5.7"
+  extends: .test with pyenv
+
+test with python3.6:
+  variables:
+    <<: *variables
+    PYTHON_VERSION: "3.6"
+    PYTHON_VERSION_FULL: "3.6.9"
+  extends: .test with pyenv
+
+test with python3.7:
+  variables:
+    <<: *variables
+    PYTHON_VERSION: "3.7"
+    PYTHON_VERSION_FULL: "3.7.4"
+  extends: .test with pyenv
 
 test pkg with python2:
   variables:
+    <<: *variables
     PYTHON_VERSION: 2
   extends: .pkg
 
 test pkg with python3:
   variables:
+    <<: *variables
     PYTHON_VERSION: 3
   extends: .pkg
 
