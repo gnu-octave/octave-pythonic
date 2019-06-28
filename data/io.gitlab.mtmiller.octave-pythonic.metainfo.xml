@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: FSFAP -->
+<!-- Copyright (C) 2019 Mike Miller -->
+<!--
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.
+-->
+<component type="addon">
+  <id>io.gitlab.mtmiller.octave-pythonic</id>
+  <extends>org.octave.Octave</extends>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Octave Pythonic</name>
+  <summary>Python foreign function interface for GNU Octave</summary>
+
+  <keywords>
+    <keyword>Octave</keyword>
+    <keyword>Python</keyword>
+    <keyword>Pythonic</keyword>
+    <keyword>foreign function interface</keyword>
+    <keyword>language binding</keyword>
+  </keywords>
+
+  <description>
+    <p>
+      Pythonic is a package for GNU Octave that provides a Python foreign
+      function interface.
+    </p>
+  </description>
+
+  <url type="bugtracker">https://gitlab.com/mtmiller/octave-pythonic/issues</url>
+  <url type="homepage">https://gitlab.com/mtmiller/octave-pythonic</url>
+  <update_contact>mtmiller@octave.org</update_contact>
+</component>
