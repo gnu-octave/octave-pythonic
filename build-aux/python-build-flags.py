@@ -35,7 +35,7 @@ import sysconfig
 try:
     import argparse
 except ImportError:
-    import optparse
+    import optparse  # pylint: disable=W0402
 
 
 # The default OS installation prefix. If Python is installed under this prefix,
@@ -44,10 +44,9 @@ DEFAULT_PREFIX = "/usr"
 
 
 def get_version():
-    if os.name == "nt":
-        return "%d%d" % sys.version_info[:2]
-    else:
-        return "%d.%d" % sys.version_info[:2]
+    """Return the string representing the version of Python in file names."""
+    pattern = "%d%d" if os.name == "nt" else "%d.%d"
+    return pattern % sys.version_info[:2]
 
 
 def get_python_version_abi():
@@ -61,57 +60,57 @@ def get_python_version_abi():
 
 
 def get_inc_dirs():
-    dirs = []
+    """Return a list of directories that contain the Python header files."""
+    inc_dirs = []
     basedirs = [sys.prefix]
     if sys.exec_prefix != sys.prefix:
         basedirs.append(sys.exec_prefix)
     for pfx in basedirs:
         if os.name == "nt":
-            d = os.path.join(pfx, "include")
+            inc_dir = os.path.join(pfx, "include")
         else:
-            d = os.path.join(pfx, "include", get_python_version_abi())
-        dirs.append(os.path.normpath(d))
-    return dirs
+            inc_dir = os.path.join(pfx, "include", get_python_version_abi())
+        inc_dirs.append(os.path.normpath(inc_dir))
+    return inc_dirs
 
 
 def check_python_header_file():
-    for d in get_inc_dirs():
-        h = os.path.join(d, "Python.h")
-        if os.path.isfile(h):
+    """Test for the presence of required Python header files."""
+    for inc_dir in get_inc_dirs():
+        h_file = os.path.join(inc_dir, "Python.h")
+        if os.path.isfile(h_file):
             return True
     return False
 
 
 def get_preproc_opts():
-    return ["-I" + d for d in get_inc_dirs()]
+    """Return a list of compiler options needed for using the Python headers."""
+    return ["-I" + inc_dir for inc_dir in get_inc_dirs()]
 
 
 def get_lib_dir():
+    """Return the directory that contains the Python shared library."""
     if os.name == "nt":
         return os.path.join(os.path.normpath(sys.exec_prefix), "libs")
-    elif sys.exec_prefix != DEFAULT_PREFIX:
+    if sys.exec_prefix != DEFAULT_PREFIX:
         return sysconfig.get_config_var("LIBDIR")
-    else:
-        return ""
+    return ""
 
 
 def get_linker_opts():
-    d = get_lib_dir()
-    if d:
-        return ["-L" + d, "-Wl,-rpath=" + d]
-    else:
-        return []
+    """Return a list of linker options needed for using the Python library."""
+    lib_dir = get_lib_dir()
+    return ["-L" + lib_dir, "-Wl,-rpath=" + lib_dir] if lib_dir else []
 
 
-def quotify(s):
-    """Return the argument in quotes if necessary."""
-    if True in [ch in s for ch in r"\ "]:
-        return '"' + s + '"'
-    else:
-        return s
+def quotify(word):
+    """Return the argument word in double quotes if necessary."""
+    needs_quote = True in [ch in word for ch in r"\ "]
+    return '"' + word + '"' if needs_quote else word
 
 
 def get_build_flags():
+    """Return a dictionary of compiler and linker options for building with Python."""
     flags = {}
     flags["CPPFLAGS"] = " ".join([quotify(opt) for opt in get_preproc_opts()])
     flags["LDFLAGS"] = " ".join([quotify(opt) for opt in get_linker_opts()])
@@ -120,6 +119,7 @@ def get_build_flags():
 
 
 def parse_args():
+    """Parse the command line and return the resulting option values."""
     try:
         parser = argparse.ArgumentParser()
         parser.add_argument(
@@ -156,8 +156,8 @@ def main():
         else:
             sys.exit(1)
     else:
-        for k in sorted(flags.keys()):
-            print("{}={}".format(k, flags[k]))
+        for opt in sorted(flags.keys()):
+            print("{}={}".format(opt, flags[opt]))
 
 
 if __name__ == "__main__":
