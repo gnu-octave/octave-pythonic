@@ -51,6 +51,7 @@ coverage:
   - mkdir -p coverage
   - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" all
   - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" check
+  - bash <(curl -S -s https://codecov.io/bash) -s coverage -a "-s $PWD/src -r"
   - gcovr --print-summary coverage
   coverage: '/^lines: \d+\.\d+/'
 
