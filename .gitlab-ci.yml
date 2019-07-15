@@ -10,14 +10,10 @@ stages:
 - test
 - release
 
-before_script:
-- apt-get update && apt-get install -y git python-dev python3-dev
-- git clone https://github.com/catch22/octave-doctest.git /tmp/doctest
-- (cd /tmp/doctest && git checkout v0.7.0)
-
 build:
   stage: build
   script:
+  - apt-get update && apt-get install -y git
   - mkdir -p pkg
   - make O=pkg dist dist-zip
   artifacts:
@@ -28,6 +24,9 @@ build:
 .test:
   stage: test
   script:
+  - apt-get update && apt-get install -y git python-dev python3-dev
+  - git clone https://github.com/catch22/octave-doctest.git /tmp/doctest
+  - (cd /tmp/doctest && git checkout v0.7.0)
   - mkdir -p python${PYTHON_VERSION}
   - make O=python${PYTHON_VERSION} V=1 all
   - make O=python${PYTHON_VERSION} V=1 check
@@ -40,6 +39,7 @@ build:
 .pkg:
   stage: test
   script:
+  - apt-get update && apt-get install -y python-dev python3-dev
   - octave --eval "pkg install -verbose pkg/octave-pythonic-*.tar.gz"
   - octave --eval "d = pkg ('describe', 'pythonic'); assert (d{:}.name, 'pythonic')"
   - octave --eval "pkg load pythonic; v = pyversion (); assert (v(1), '${PYTHON_VERSION}')"
@@ -47,6 +47,7 @@ build:
 coverage:
   stage: test
   script:
+  - apt-get update && apt-get install -y python-dev python3-dev
   - pip3 install -U gcovr
   - mkdir -p coverage
   - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" all
@@ -77,9 +78,13 @@ test pkg with python3:
 release:
   stage: release
   script:
+  - apt-get update && apt-get install -y curl python-minimal
   - sh build-aux/release-create.sh
   only:
     refs:
     - tags
     variables:
     - $CI_COMMIT_TAG =~ /^v[0-9]+(\.[0-9]+)*/
+
+include:
+  - template: Code-Quality.gitlab-ci.yml
