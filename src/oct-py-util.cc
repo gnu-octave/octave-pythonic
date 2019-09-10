@@ -212,7 +212,11 @@ namespace pythonic
       std::cout << "\tcount: " << counti;
       std::cout << "\tclass: " << valtypestr;
       std::cout << "\tstr: " << s << std::endl;
-      // TODO: do I need to release each key/value?  What about all my temp vars?
+      Py_DECREF (valtype);
+      Py_DECREF (valtypename);
+      Py_DECREF (valuestr);
+      Py_DECREF (key);
+      Py_DECREF (value);
     }
     if (pos < 1)
       std::cout << "  Object Store is empty" << std::endl;
