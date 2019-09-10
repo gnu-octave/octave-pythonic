@@ -31,6 +31,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #include <Python.h>
 #include <octave/oct.h>
 #include <octave/parse.h>
+#include <octave/Cell.h>
 
 #include "oct-py-error.h"
 #include "oct-py-object.h"
@@ -214,13 +215,23 @@ namespace pythonic
     return objcount;
   }
 
-  void
+  octave_value_list
   py_objstore_list ()
   {
     PyObject *key, *value;
     Py_ssize_t pos = 0;
     python_object store = py_objstore ();
     python_object count = py_objcount ();
+
+    int sz = PyDict_Size (store);
+
+    octave_value_list tmp = ovl();
+    tmp.resize (sz);
+    for (octave_idx_type i = 0; i < sz; i++) {
+      tmp(i) = octave_value (0);
+    }
+    Cell c = tmp;
+    octave_value_list retval;
 
     octave_stdout << "Python objects in the Object Store:\n" << std::endl;
     while (PyDict_Next (store, &pos, &key, &value)) {
@@ -243,6 +254,12 @@ namespace pythonic
       octave_stdout << "\tcount: " << counti;
       octave_stdout << "\tclass: " << valtypestr;
       octave_stdout << "\tstr: " << s << std::endl;
+      // TODO: do we need to force a copy of the strings??
+      Cell c2 = ovl (octave_uint64 (keyi),   \
+                     octave_uint64 (counti), \
+                     octave_value (valtypestr), \
+                     octave_value (s));
+      c.elem(pos-1) = c2;
       Py_DECREF (valtype);
       Py_DECREF (valtypename);
       Py_DECREF (valuestr);
@@ -254,6 +271,8 @@ namespace pythonic
     octave_stdout << std::endl;
     store.release ();
     count.release ();
+    retval(0) = c;
+    return retval;
   }
 
   void

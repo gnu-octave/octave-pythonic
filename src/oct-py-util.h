@@ -100,7 +100,7 @@ namespace pythonic
   std::string
   py_object_class_name (PyObject *obj);
 
-  void
+  octave_value_list
   py_objstore_list ();
 
   void

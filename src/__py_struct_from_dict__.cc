@@ -342,20 +342,24 @@ This is a private internal function not intended for direct use.\n\
 
 // PKG_ADD: autoload ("__py_objstore_list__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_objstore_list__", which ("__py_struct_from_dict__.oct"), "remove");
-DEFUN_DLD (__py_objstore_list__, , ,
+DEFUN_DLD (__py_objstore_list__, , nargout,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_objstore_list__ ()\n\
-Show all objects and their ref counts in the object store.\n\
+Print or return all objects and their ref counts in the object store.\n\
 \n\
 This is a private internal function not intended for direct use.\n\
-\n\
-TODO: Return a cell-array.  Do printing here\n\
 @end deftypefn")
 {
+  octave_value_list res;
+
   pythonic::py_init ();
 
-  pythonic::py_objstore_list ();
+  res = pythonic::py_objstore_list ();
 
+  if (nargout != 0)
+    return res(0);
+
+  // TODO: Do printing here when no output
   return ovl ();
 }
 
