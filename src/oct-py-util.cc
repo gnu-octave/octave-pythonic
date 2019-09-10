@@ -253,6 +253,7 @@ namespace pythonic
       std::cout << "  Object Store is empty" << std::endl;
     std::cout << std::endl;
     store.release ();
+    count.release ();
   }
 
   void
