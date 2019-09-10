@@ -27,7 +27,6 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
-#include <iostream>
 #include <Python.h>
 #include <octave/oct.h>
 #include <octave/parse.h>
