@@ -3,6 +3,7 @@
 SPDX-License-Identifier: GPL-3.0-or-later
 
 Copyright (C) 2016-2019 Mike Miller
+Copyright (C) 2019 Colin B. Macdonald
 
 This file is part of Octave Pythonic.
 
@@ -26,6 +27,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
+#include <iostream>
 #include <Python.h>
 #include <octave/oct.h>
 #include <octave/parse.h>
@@ -182,6 +184,40 @@ namespace pythonic
         objstore = dict;
       }
     return objstore;
+  }
+
+  void
+  py_objstore_list ()
+  {
+    PyObject *key, *value;
+    Py_ssize_t pos = 0;
+    python_object store = py_objstore ();
+
+    std::cout << "Python objects in the Object Store:\n" << std::endl;
+    while (PyDict_Next (store, &pos, &key, &value)) {
+      uint64_t keyi = reinterpret_cast<uint64_t> (key);
+      uint64_t counti = 0;  // future placeholder
+
+      PyObject *valtype = PyObject_Type (value);
+      PyObject *valtypename = PyObject_Str (PyObject_GetAttrString (valtype, "__name__"));
+      std::string valtypestr = PyUnicode_AsUTF8 (valtypename);
+
+      // TODO: should handle some errors here?
+      PyObject *valuestr = PyObject_Str (value);
+      std::string s = PyUnicode_AsUTF8 (valuestr);
+
+      if (s.length() > 20)
+        s = s.substr (0, 17) + "...";  // TODO: 19 and u8"…"?
+      std::cout << "  key: " << keyi;
+      std::cout << "\tcount: " << counti;
+      std::cout << "\tclass: " << valtypestr;
+      std::cout << "\tstr: " << s << std::endl;
+      // TODO: do I need to release each key/value?  What about all my temp vars?
+    }
+    if (pos < 1)
+      std::cout << "  Object Store is empty" << std::endl;
+    std::cout << std::endl;
+    store.release ();
   }
 
   void

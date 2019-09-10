@@ -340,6 +340,25 @@ This is a private internal function not intended for direct use.\n\
   return ovl (octave_uint64 (key));
 }
 
+// PKG_ADD: autoload ("__py_objstore_list__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_list__", which ("__py_struct_from_dict__.oct"), "remove");
+DEFUN_DLD (__py_objstore_list__, , ,
+           "-*- texinfo -*-\n\
+@deftypefn {} {} __py_objstore_list__ ()\n\
+Show all objects and their ref counts in the object store.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+\n\
+TODO: Return a cell-array.  Do printing here\n\
+@end deftypefn")
+{
+  pythonic::py_init ();
+
+  pythonic::py_objstore_list ();
+
+  return ovl ();
+}
+
 // PKG_ADD: autoload ("__py_string_value__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_string_value__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_string_value__, args, ,

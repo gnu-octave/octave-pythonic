@@ -101,6 +101,9 @@ namespace pythonic
   py_object_class_name (PyObject *obj);
 
   void
+  py_objstore_list ();
+
+  void
   py_objstore_del (uint64_t key);
 
   PyObject *
