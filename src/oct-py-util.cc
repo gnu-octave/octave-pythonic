@@ -222,7 +222,7 @@ namespace pythonic
     python_object store = py_objstore ();
     python_object count = py_objcount ();
 
-    std::cout << "Python objects in the Object Store:\n" << std::endl;
+    octave_stdout << "Python objects in the Object Store:\n" << std::endl;
     while (PyDict_Next (store, &pos, &key, &value)) {
       uint64_t keyi = reinterpret_cast<uint64_t> (key);
       PyObject *countobj = PyDict_GetItem (count, key);
@@ -239,10 +239,10 @@ namespace pythonic
 
       if (s.length() > 20)
         s = s.substr (0, 17) + "...";  // TODO: 19 and u8"…"?
-      std::cout << "  key: " << keyi;
-      std::cout << "\tcount: " << counti;
-      std::cout << "\tclass: " << valtypestr;
-      std::cout << "\tstr: " << s << std::endl;
+      octave_stdout << "  key: " << keyi;
+      octave_stdout << "\tcount: " << counti;
+      octave_stdout << "\tclass: " << valtypestr;
+      octave_stdout << "\tstr: " << s << std::endl;
       Py_DECREF (valtype);
       Py_DECREF (valtypename);
       Py_DECREF (valuestr);
@@ -250,8 +250,8 @@ namespace pythonic
       Py_DECREF (value);
     }
     if (pos < 1)
-      std::cout << "  Object Store is empty" << std::endl;
-    std::cout << std::endl;
+      octave_stdout << "  Object Store is empty" << std::endl;
+    octave_stdout << std::endl;
     store.release ();
     count.release ();
   }
@@ -267,11 +267,11 @@ namespace pythonic
       PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
       uint64_t counti = PyLong_AsLong (tmpcountobj);
       Py_DECREF (tmpcountobj);
-      std::cout << "objstore debug: deleting key " << key << " w/ count " << counti << " and erasing refcount" << std::endl;
+      octave_stdout << "objstore debug: deleting key " << key << " w/ count " << counti << " and erasing refcount" << std::endl;
       PyDict_DelItem (store, key_fmt);
       PyDict_DelItem (count, key_fmt);
     } else {
-      std::cout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
+      octave_stdout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
       // TODO: is this an error?
     }
     store.release ();
@@ -289,7 +289,7 @@ namespace pythonic
     PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
     uint64_t counti = PyLong_AsLong (tmpcountobj);
     Py_DECREF (tmpcountobj);
-    std::cout << "objstore debug: getting key " << key << ", incrementing count to " << counti + 1 << std::endl;
+    octave_stdout << "objstore debug: getting key " << key << ", incrementing count to " << counti + 1 << std::endl;
     PyDict_SetItem (count, key_fmt, make_py_int (counti+1));
     store.release ();
     count.release ();
@@ -311,10 +311,10 @@ namespace pythonic
       PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
       uint64_t counti = PyLong_AsLong (tmpcountobj);
       Py_DECREF (tmpcountobj);
-      std::cout << "objstore debug: key " << key << " already present with count " << counti << ", incrementing count to " << counti + 1 << std::endl;
+      octave_stdout << "objstore debug: key " << key << " already present with count " << counti << ", incrementing count to " << counti + 1 << std::endl;
       PyDict_SetItem (count, key_fmt, make_py_int (counti+1));
     } else {
-      std::cout << "objstore debug: adding new object with key " << key << std::endl;
+      octave_stdout << "objstore debug: adding new object with key " << key << std::endl;
       PyDict_SetItem (store, key_fmt, obj);
       PyDict_SetItem (count, key_fmt, make_py_int (0));
     }
