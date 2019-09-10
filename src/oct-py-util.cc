@@ -279,11 +279,11 @@ namespace pythonic
       PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
       uint64_t counti = PyLong_AsLong (tmpcountobj);
       Py_DECREF (tmpcountobj);
-      octave_stdout << "objstore debug: deleting key " << key << " w/ count " << counti << " and erasing refcount" << std::endl;
+      //octave_stdout << "objstore debug: deleting key " << key << " w/ count " << counti << " and erasing refcount" << std::endl;
       PyDict_DelItem (store, key_fmt);
       PyDict_DelItem (count, key_fmt);
     } else {
-      octave_stdout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
+      //octave_stdout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
       // TODO: is this an error?
     }
     store.release ();
@@ -301,7 +301,7 @@ namespace pythonic
     PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
     uint64_t counti = PyLong_AsLong (tmpcountobj);
     Py_DECREF (tmpcountobj);
-    octave_stdout << "objstore debug: getting key " << key << ", incrementing count to " << counti + 1 << std::endl;
+    //octave_stdout << "objstore debug: getting key " << key << ", incrementing count to " << counti + 1 << std::endl;
     PyDict_SetItem (count, key_fmt, make_py_int (counti+1));
     store.release ();
     count.release ();
@@ -323,10 +323,10 @@ namespace pythonic
       PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
       uint64_t counti = PyLong_AsLong (tmpcountobj);
       Py_DECREF (tmpcountobj);
-      octave_stdout << "objstore debug: key " << key << " already present with count " << counti << ", incrementing count to " << counti + 1 << std::endl;
+      //octave_stdout << "objstore debug: key " << key << " already present with count " << counti << ", incrementing count to " << counti + 1 << std::endl;
       PyDict_SetItem (count, key_fmt, make_py_int (counti+1));
     } else {
-      octave_stdout << "objstore debug: adding new object with key " << key << std::endl;
+      //octave_stdout << "objstore debug: adding new object with key " << key << std::endl;
       PyDict_SetItem (store, key_fmt, obj);
       PyDict_SetItem (count, key_fmt, make_py_int (0));
     }
