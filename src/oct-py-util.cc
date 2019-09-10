@@ -258,8 +258,6 @@ namespace pythonic
       Py_DECREF (valtype);
       Py_DECREF (valtypename);
       Py_DECREF (valuestr);
-      Py_DECREF (key);
-      Py_DECREF (value);
     }
     store.release ();
     count.release ();
