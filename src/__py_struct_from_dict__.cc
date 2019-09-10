@@ -340,11 +340,11 @@ This is a private internal function not intended for direct use.\n\
   return ovl (octave_uint64 (key));
 }
 
-// PKG_ADD: autoload ("__py_objstore_list__", "__py_struct_from_dict__.oct");
-// PKG_DEL: autoload ("__py_objstore_list__", which ("__py_struct_from_dict__.oct"), "remove");
-DEFUN_DLD (__py_objstore_list__, , nargout,
+// PKG_ADD: autoload ("__py_objstore_list_backend__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_list_backend__", which ("__py_struct_from_dict__.oct"), "remove");
+DEFUN_DLD (__py_objstore_list_backend__, , nargout,
            "-*- texinfo -*-\n\
-@deftypefn {} {} __py_objstore_list__ ()\n\
+@deftypefn {} {} __py_objstore_list_backend__ ()\n\
 Print or return all objects and their ref counts in the object store.\n\
 \n\
 This is a private internal function not intended for direct use.\n\
@@ -356,11 +356,7 @@ This is a private internal function not intended for direct use.\n\
 
   res = pythonic::py_objstore_list ();
 
-  if (nargout != 0)
-    return res(0);
-
-  // TODO: Do printing here when no output
-  return ovl ();
+  return res(0);
 }
 
 // PKG_ADD: autoload ("__py_string_value__", "__py_struct_from_dict__.oct");

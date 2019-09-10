@@ -233,7 +233,6 @@ namespace pythonic
     Cell c = tmp;
     octave_value_list retval;
 
-    octave_stdout << "Python objects in the Object Store:\n" << std::endl;
     while (PyDict_Next (store, &pos, &key, &value)) {
       uint64_t keyi = reinterpret_cast<uint64_t> (key);
       PyObject *countobj = PyDict_GetItem (count, key);
@@ -250,10 +249,6 @@ namespace pythonic
 
       if (s.length() > 20)
         s = s.substr (0, 17) + "...";  // TODO: 19 and u8"…"?
-      octave_stdout << "  key: " << keyi;
-      octave_stdout << "\tcount: " << counti;
-      octave_stdout << "\tclass: " << valtypestr;
-      octave_stdout << "\tstr: " << s << std::endl;
       // TODO: do we need to force a copy of the strings??
       Cell c2 = ovl (octave_uint64 (keyi),   \
                      octave_uint64 (counti), \
@@ -266,9 +261,6 @@ namespace pythonic
       Py_DECREF (key);
       Py_DECREF (value);
     }
-    if (pos < 1)
-      octave_stdout << "  Object Store is empty" << std::endl;
-    octave_stdout << std::endl;
     store.release ();
     count.release ();
     retval(0) = c;
