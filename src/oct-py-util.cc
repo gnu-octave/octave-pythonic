@@ -158,6 +158,7 @@ namespace pythonic
 
   // FIXME: could make this into a class/singleton wrapper a la Octave core
   PyObject *objstore = nullptr;
+  PyObject *objcount = nullptr;
 
   inline PyObject *
   py_objstore ()
@@ -186,17 +187,47 @@ namespace pythonic
     return objstore;
   }
 
+  inline PyObject *
+  py_objcount ()
+  {
+    if (! objcount)
+      {
+        python_object main = py_import_module ("__main__");
+        python_object ns = main ? PyObject_GetAttrString (main, "__dict__") : 0;
+        PyObject *dict = ns ? PyDict_GetItemString (ns, "_in_octave_count") : 0;
+
+        if (dict)
+          Py_INCREF (dict);
+
+        if (! dict)
+          {
+            dict = PyDict_New ();
+            if (dict && ns)
+              PyDict_SetItemString (ns, "_in_octave_count", dict);
+          }
+
+        if (! dict)
+          error_python_exception ();
+
+        objcount = dict;
+      }
+    return objcount;
+  }
+
   void
   py_objstore_list ()
   {
     PyObject *key, *value;
     Py_ssize_t pos = 0;
     python_object store = py_objstore ();
+    python_object count = py_objcount ();
 
     std::cout << "Python objects in the Object Store:\n" << std::endl;
     while (PyDict_Next (store, &pos, &key, &value)) {
       uint64_t keyi = reinterpret_cast<uint64_t> (key);
-      uint64_t counti = 0;  // future placeholder
+      PyObject *countobj = PyDict_GetItem (count, key);
+      uint64_t counti = PyLong_AsLong (countobj);
+      Py_DECREF (countobj);
 
       PyObject *valtype = PyObject_Type (value);
       PyObject *valtypename = PyObject_Str (PyObject_GetAttrString (valtype, "__name__"));
@@ -228,20 +259,39 @@ namespace pythonic
   py_objstore_del (uint64_t key)
   {
     python_object store = py_objstore ();
+    python_object count = py_objcount ();
     python_object key_obj = make_py_int (key);
     python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    PyDict_DelItem (store, key_fmt);
+    if (PyDict_Contains (store, key_fmt)) {
+      PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
+      uint64_t counti = PyLong_AsLong (tmpcountobj);
+      Py_DECREF (tmpcountobj);
+      std::cout << "objstore debug: deleting key " << key << " w/ count " << counti << " and erasing refcount" << std::endl;
+      PyDict_DelItem (store, key_fmt);
+      PyDict_DelItem (count, key_fmt);
+    } else {
+      std::cout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
+      // TODO: is this an error?
+    }
     store.release ();
+    count.release ();
   }
 
   PyObject *
   py_objstore_get (uint64_t key)
   {
     python_object store = py_objstore ();
+    python_object count = py_objcount ();
     python_object key_obj = make_py_int (key);
     python_object key_fmt = PyNumber_ToBase (key_obj, 16);
     PyObject *obj = PyDict_GetItem (store, key_fmt);
+    PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
+    uint64_t counti = PyLong_AsLong (tmpcountobj);
+    Py_DECREF (tmpcountobj);
+    std::cout << "objstore debug: getting key " << key << ", incrementing count to " << counti + 1 << std::endl;
+    PyDict_SetItem (count, key_fmt, make_py_int (counti+1));
     store.release ();
+    count.release ();
     if (obj)
       Py_INCREF (obj);
     return obj;
@@ -251,11 +301,24 @@ namespace pythonic
   py_objstore_put (PyObject *obj)
   {
     python_object store = py_objstore ();
+    python_object count = py_objcount ();
     uint64_t key = reinterpret_cast<uint64_t> (obj);
     python_object key_obj = make_py_int (key);
     python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    PyDict_SetItem (store, key_fmt, obj);
+    if (PyDict_Contains (store, key_fmt)) {
+      // TODO: we assume count and store never out of sync...
+      PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
+      uint64_t counti = PyLong_AsLong (tmpcountobj);
+      Py_DECREF (tmpcountobj);
+      std::cout << "objstore debug: key " << key << " already present with count " << counti << ", incrementing count to " << counti + 1 << std::endl;
+      PyDict_SetItem (count, key_fmt, make_py_int (counti+1));
+    } else {
+      std::cout << "objstore debug: adding new object with key " << key << std::endl;
+      PyDict_SetItem (store, key_fmt, obj);
+      PyDict_SetItem (count, key_fmt, make_py_int (0));
+    }
     store.release ();
+    count.release ();
     return key;
   }
 
