@@ -234,7 +234,12 @@ namespace pythonic
     octave_value_list retval;
 
     while (PyDict_Next (store, &pos, &key, &value)) {
-      uint64_t keyi = reinterpret_cast<uint64_t> (key);
+      PyObject *keystrpy = PyObject_Str (key);
+      PyObject *keylongpy = PyLong_FromUnicodeObject (keystrpy, 16);
+      uint64_t keyi = PyLong_AsLong (keylongpy);
+      Py_DECREF (keystrpy);
+      Py_DECREF (keylongpy);
+
       PyObject *countobj = PyDict_GetItem (count, key);
       uint64_t counti = PyLong_AsLong (countobj);
       Py_DECREF (countobj);
