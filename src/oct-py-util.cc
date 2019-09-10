@@ -249,9 +249,8 @@ namespace pythonic
 
       if (s.length() > 20)
         s = s.substr (0, 17) + "...";  // TODO: 19 and u8"…"?
-      // TODO: do we need to force a copy of the strings??
-      Cell c2 = ovl (octave_uint64 (keyi),   \
-                     octave_uint64 (counti), \
+      Cell c2 = ovl (octave_uint64 (keyi),      \
+                     octave_uint64 (counti),    \
                      octave_value (valtypestr), \
                      octave_value (s));
       c.elem(pos-1) = c2;
