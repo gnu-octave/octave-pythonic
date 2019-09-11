@@ -66,13 +66,16 @@ build:
 coverage:
   stage: test
   script:
-  - apt-get update && apt-get install -y python-dev python3-dev
+  - apt-get update && apt-get install -y python3-dev
   - pip3 install -U gcovr
   - mkdir -p coverage
   - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" all
   - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" check
   - bash <(curl -S -s https://codecov.io/bash) -s coverage -a "-s $PWD/src -r"
   - gcovr --print-summary coverage
+  variables:
+    <<: *variables
+    PYTHON_VERSION: "3"
   coverage: '/^lines: \d+\.\d+/'
 
 test with python2.7:
