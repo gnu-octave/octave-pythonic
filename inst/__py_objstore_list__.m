@@ -35,16 +35,15 @@ function retval = __py_objstore_list__ ()
 
   sz = numel (x);
   if (sz < 1)
-    disp ("Python Object Store is empty")
+    disp ("Python object store is empty")
   else
-    ## TODO: is there a nicer/more reliable way to format columns?
-    disp ("Contents of the Python Object Store:\n")
-    disp ("  key           \tcount  \ttype      \tstring snippet")
-    disp ("  ===           \t=====  \t====      \t==============")
+    disp ("Contents of the Python object store:\n")
+    disp ("  key             count  type         string snippet")
+    disp ("  ---             -----  ----         --------------")
   endif
   for i=1:sz
     row = x{i};
-    disp(["  " num2str(row{1}) "\t" num2str(row{2}) "\t" row{3} "\t" row{4}])
+    printf ("  %#14x  %5d  %-10s   %s\n", row{1}, row{2}, row{3}, row{4})
   endfor
   if (sz >= 1)
     disp ("")
