@@ -48,5 +48,5 @@ function retval = __py_objstore_list__ ()
   if (sz >= 1)
     disp ("")
   endif
-  return
+
 endfunction

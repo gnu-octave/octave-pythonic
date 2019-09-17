@@ -246,10 +246,13 @@ namespace pythonic
       PyObject *valtype = PyObject_Type (value);
       PyObject *valtypename = PyObject_Str (PyObject_GetAttrString (valtype, "__name__"));
       std::string valtypestr = PyUnicode_AsUTF8 (valtypename);
+      Py_DECREF (valtype);
+      Py_DECREF (valtypename);
 
       // TODO: should handle some errors here?
       PyObject *valuestr = PyObject_Str (value);
       std::string s = PyUnicode_AsUTF8 (valuestr);
+      Py_DECREF (valuestr);
 
       if (s.length() > 20)
         s = s.substr (0, 17) + "...";  // TODO: 19 and u8"…"?
@@ -258,9 +261,6 @@ namespace pythonic
                      octave_value (valtypestr), \
                      octave_value (s));
       c.elem(pos-1) = c2;
-      Py_DECREF (valtype);
-      Py_DECREF (valtypename);
-      Py_DECREF (valuestr);
     }
     store.release ();
     count.release ();
@@ -302,7 +302,7 @@ namespace pythonic
     uint64_t counti = PyLong_AsLong (tmpcountobj);
     Py_DECREF (tmpcountobj);
     //octave_stdout << "objstore debug: getting key " << key << ", incrementing count to " << counti + 1 << std::endl;
-    PyDict_SetItem (count, key_fmt, make_py_int (counti+1));
+    PyDict_SetItem (count, key_fmt, make_py_int (counti + 1));
     store.release ();
     count.release ();
     if (obj)
@@ -324,7 +324,7 @@ namespace pythonic
       uint64_t counti = PyLong_AsLong (tmpcountobj);
       Py_DECREF (tmpcountobj);
       //octave_stdout << "objstore debug: key " << key << " already present with count " << counti << ", incrementing count to " << counti + 1 << std::endl;
-      PyDict_SetItem (count, key_fmt, make_py_int (counti+1));
+      PyDict_SetItem (count, key_fmt, make_py_int (counti + 1));
     } else {
       //octave_stdout << "objstore debug: adding new object with key " << key << std::endl;
       PyDict_SetItem (store, key_fmt, obj);
