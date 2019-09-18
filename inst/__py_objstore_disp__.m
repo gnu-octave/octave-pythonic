@@ -18,15 +18,15 @@
 ## <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} __py_objstore_list__ ()
+## @deftypefn {} {} __py_objstore_disp__ ()
 ## Print or return all objects and their ref counts in the object store.
 ##
 ## This is a private internal function not intended for direct use.\n\
 ## @end deftypefn
 
-function retval = __py_objstore_list__ ()
+function retval = __py_objstore_disp__ ()
 
-  x = __py_objstore_list_backend__ ();
+  x = __py_objstore_list__ ();
 
   if (nargout != 0)
     retval = x;
