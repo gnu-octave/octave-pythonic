@@ -34,16 +34,42 @@ function retval = __py_objstore_list__ ()
   endif
 
   sz = numel (x);
+  use_unicode = ! (ispc () && (! isunix ()));
+  cols = terminal_size ()(2);
   if (sz < 1)
     disp ("Python object store is empty")
   else
     disp ("Contents of the Python object store:\n")
-    disp ("  key             count  type         string snippet")
-    disp ("  ---             -----  ----         --------------")
+    disp ("  key            count  type          string snippet")
+    if (use_unicode)
+      disp ("  ───            ─────  ────          ──────────────")
+    else
+      disp ("  ---            -----  ----          --------------")
+    endif
   endif
+
+  TypeLen = 12;
+  SnipLen = max (42, cols - (80 - 42)) - 2;
+
   for i=1:sz
     row = x{i};
-    printf ("  %#14x  %5d  %-10s   %s\n", row{1}, row{2}, row{3}, row{4})
+    snip = undo_string_escapes (row{4});
+    if (length (snip) > SnipLen)
+      if (use_unicode)
+        snip = [strtrunc(snip, SnipLen - 1) "…"];
+      else
+        snip = [strtrunc(snip, SnipLen - 3) "..."];
+      endif
+    endif
+    type = row{3};
+    if (length (type) > TypeLen)
+      if (use_unicode)
+        type = [strtrunc(type, TypeLen - 1) "…"];
+      else
+        type = [strtrunc(type, TypeLen - 3) "..."];
+      endif
+    endif
+    printf ("  %#.12x %5d  %-12s  %s\n", row{1}, row{2}, type, snip)
   endfor
   if (sz >= 1)
     disp ("")

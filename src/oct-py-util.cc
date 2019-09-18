@@ -249,13 +249,17 @@ namespace pythonic
       Py_DECREF (valtype);
       Py_DECREF (valtypename);
 
-      // TODO: should handle some errors here?
-      PyObject *valuestr = PyObject_Str (value);
-      std::string s = PyUnicode_AsUTF8 (valuestr);
-      Py_DECREF (valuestr);
-
-      if (s.length() > 20)
-        s = s.substr (0, 17) + "...";  // TODO: 19 and u8"…"?
+      std::string s;
+      if (false) { // TODO: check if its very big...?
+        s = "<large object>";
+      } else {
+        // TODO: should handle some errors here?
+        PyObject *valuestr = PyObject_Str (value);
+        s = PyUnicode_AsUTF8 (valuestr);
+        Py_DECREF (valuestr);
+        if (s.length() > 1000)
+          s = s.substr (0, 1000-3) + "...";
+      }
       Cell c2 = ovl (octave_uint64 (keyi),      \
                      octave_uint64 (counti),    \
                      octave_value (valtypestr), \
