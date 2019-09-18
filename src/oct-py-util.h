@@ -104,7 +104,7 @@ namespace pythonic
   py_objstore_list ();
 
   void
-  py_objstore_del (uint64_t key);
+  py_objstore_drop (uint64_t key);
 
   PyObject *
   py_objstore_get (uint64_t key);

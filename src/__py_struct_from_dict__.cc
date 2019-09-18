@@ -251,12 +251,14 @@ This is a private internal function not intended for direct use.\n\
 %!error <must be a string> __py_isinstance__ (pyeval ("None"), "object")
 */
 
-// PKG_ADD: autoload ("__py_objstore_del__", "__py_struct_from_dict__.oct");
-// PKG_DEL: autoload ("__py_objstore_del__", which ("__py_struct_from_dict__.oct"), "remove");
-DEFUN_DLD (__py_objstore_del__, args, ,
+// PKG_ADD: autoload ("__py_objstore_drop__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_drop__", which ("__py_struct_from_dict__.oct"), "remove");
+DEFUN_DLD (__py_objstore_drop__, args, ,
            "-*- texinfo -*-\n\
-@deftypefn {} {} __py_objstore_del__ (@var{key})\n\
-Delete the Python object stored under @var{key} from the object store.\n\
+@deftypefn {} {} __py_objstore_drop__ (@var{key})\n\
+Drop one reference from the Python object stored under @var{key}.\n\
+\n\
+If there are no more references, this will delete the object.\n\
 \n\
 This is a private internal function not intended for direct use.\n\
 @end deftypefn")
@@ -266,8 +268,8 @@ This is a private internal function not intended for direct use.\n\
 
   pythonic::py_init ();
 
-  uint64_t key = args(0).xuint64_scalar_value ("__py_objstore_del__: KEY must be an integer");
-  pythonic::py_objstore_del (key);
+  uint64_t key = args(0).xuint64_scalar_value ("__py_objstore_drop__: KEY must be an integer");
+  pythonic::py_objstore_drop (key);
 
   return ovl ();
 }

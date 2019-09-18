@@ -273,7 +273,7 @@ namespace pythonic
   }
 
   void
-  py_objstore_del (uint64_t key)
+  py_objstore_drop (uint64_t key)
   {
     python_object store = py_objstore ();
     python_object count = py_objcount ();
@@ -284,11 +284,15 @@ namespace pythonic
       uint64_t counti = PyLong_AsLong (tmpcountobj);
       Py_DECREF (tmpcountobj);
       //octave_stdout << "objstore debug: deleting key " << key << " w/ count " << counti << " and erasing refcount" << std::endl;
-      PyDict_DelItem (store, key_fmt);
-      PyDict_DelItem (count, key_fmt);
+      if (counti > 1) {
+        PyDict_SetItem (count, key_fmt, make_py_int (counti - 1));
+      } else {
+        PyDict_DelItem (store, key_fmt);
+        PyDict_DelItem (count, key_fmt);
+      }
     } else {
       //octave_stdout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
-      // TODO: is this an error?
+      // TODO: surely this is an error?
     }
     store.release ();
     count.release ();
