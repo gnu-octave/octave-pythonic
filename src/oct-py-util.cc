@@ -207,7 +207,12 @@ namespace pythonic
           continue;
 
         PyObject *keystrpy = PyObject_Str (key);
+#if PY_VERSION_HEX >= 0x03000000
         PyObject *keylongpy = PyLong_FromUnicodeObject (keystrpy, 16);
+#else
+        char *keystr = PyString_AsString (keystrpy);
+        PyObject *keylongpy = PyLong_FromString (keystr, nullptr, 16);
+#endif
         uint64_t keyi = PyLong_AsLong (keylongpy);
         Py_DECREF (keystrpy);
         Py_DECREF (keylongpy);
@@ -217,7 +222,11 @@ namespace pythonic
 
         PyObject *valtype = PyObject_Type (value);
         PyObject *valtypename = PyObject_Str (PyObject_GetAttrString (valtype, "__name__"));
+#if PY_VERSION_HEX >= 0x03000000
         std::string valtypestr = PyUnicode_AsUTF8 (valtypename);
+#else
+        std::string valtypestr = PyString_AsString (valtypename);
+#endif
         Py_DECREF (valtype);
         Py_DECREF (valtypename);
 
@@ -228,7 +237,11 @@ namespace pythonic
           {
             // TODO: should handle some errors here?
             PyObject *valuestr = PyObject_Str (value);
+#if PY_VERSION_HEX >= 0x03000000
             s = PyUnicode_AsUTF8 (valuestr);
+#else
+            s = PyString_AsString (valuestr);
+#endif
             Py_DECREF (valuestr);
             if (s.length() > 1000)
               s = s.substr (0, 1000-3) + "...";
