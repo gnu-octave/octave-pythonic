@@ -29,6 +29,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #include <stdint.h>
 #include <string>
 
+class octave_map;
 class octave_value;
 
 namespace pythonic
@@ -100,7 +101,7 @@ namespace pythonic
   std::string
   py_object_class_name (PyObject *obj);
 
-  octave_value_list
+  octave_map
   py_objstore_list ();
 
   void

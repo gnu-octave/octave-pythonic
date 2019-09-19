@@ -1,4 +1,5 @@
 ## Copyright (C) 2019 Colin B. Macdonald
+## Copyright (C) 2019 Mike Miller
 ## SPDX-License-Identifier: GPL-3.0-or-later
 ##
 ## This file is part of Octave Pythonic.
@@ -51,9 +52,8 @@ function retval = __py_objstore_disp__ ()
   TypeLen = 12;
   SnipLen = max (42, cols - (80 - 42)) - 2;
 
-  for i=1:sz
-    row = x{i};
-    snip = undo_string_escapes (row{4});
+  for i = 1:sz
+    snip = undo_string_escapes (x(i).value);
     if (length (snip) > SnipLen)
       if (use_unicode)
         snip = [strtrunc(snip, SnipLen - 1) "…"];
@@ -61,7 +61,7 @@ function retval = __py_objstore_disp__ ()
         snip = [strtrunc(snip, SnipLen - 3) "..."];
       endif
     endif
-    type = row{3};
+    type = x(i).type;
     if (length (type) > TypeLen)
       if (use_unicode)
         type = [strtrunc(type, TypeLen - 1) "…"];
@@ -69,7 +69,7 @@ function retval = __py_objstore_disp__ ()
         type = [strtrunc(type, TypeLen - 3) "..."];
       endif
     endif
-    printf ("  %#.12x %5d  %-12s  %s\n", row{1}, row{2}, type, snip)
+    printf ("  %#.12x %5d  %-12s  %s\n", x(i).key, x(i).count, type, snip)
   endfor
   if (sz >= 1)
     disp ("")

@@ -28,9 +28,9 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #endif
 
 #include <Python.h>
+#include <octave/oct-map.h>
 #include <octave/oct.h>
 #include <octave/parse.h>
-#include <octave/Cell.h>
 
 #include "oct-py-error.h"
 #include "oct-py-object.h"
@@ -214,62 +214,65 @@ namespace pythonic
     return objcount;
   }
 
-  octave_value_list
+  octave_map
   py_objstore_list ()
   {
-    PyObject *key, *value;
-    Py_ssize_t pos = 0;
     python_object store = py_objstore ();
     python_object count = py_objcount ();
 
-    int sz = PyDict_Size (store);
+    std::vector<std::string> fields { "key", "count", "type", "value" };
 
-    octave_value_list tmp = ovl();
-    tmp.resize (sz);
-    for (octave_idx_type i = 0; i < sz; i++) {
-      tmp(i) = octave_value (0);
-    }
-    Cell c = tmp;
-    octave_value_list retval;
+    Py_ssize_t sz = PyDict_Size (store);
 
-    while (PyDict_Next (store, &pos, &key, &value)) {
-      PyObject *keystrpy = PyObject_Str (key);
-      PyObject *keylongpy = PyLong_FromUnicodeObject (keystrpy, 16);
-      uint64_t keyi = PyLong_AsLong (keylongpy);
-      Py_DECREF (keystrpy);
-      Py_DECREF (keylongpy);
+    octave_map map { dim_vector (sz, 1), string_vector (fields) };
 
-      PyObject *countobj = PyDict_GetItem (count, key);
-      uint64_t counti = PyLong_AsLong (countobj);
-      Py_DECREF (countobj);
+    octave_idx_type idx = 0;
+    Py_ssize_t pos = 0;
+    PyObject *key, *value;
 
-      PyObject *valtype = PyObject_Type (value);
-      PyObject *valtypename = PyObject_Str (PyObject_GetAttrString (valtype, "__name__"));
-      std::string valtypestr = PyUnicode_AsUTF8 (valtypename);
-      Py_DECREF (valtype);
-      Py_DECREF (valtypename);
+    while (PyDict_Next (store, &pos, &key, &value))
+      {
+        PyObject *keystrpy = PyObject_Str (key);
+        PyObject *keylongpy = PyLong_FromUnicodeObject (keystrpy, 16);
+        uint64_t keyi = PyLong_AsLong (keylongpy);
+        Py_DECREF (keystrpy);
+        Py_DECREF (keylongpy);
 
-      std::string s;
-      if (false) { // TODO: check if its very big...?
-        s = "<large object>";
-      } else {
-        // TODO: should handle some errors here?
-        PyObject *valuestr = PyObject_Str (value);
-        s = PyUnicode_AsUTF8 (valuestr);
-        Py_DECREF (valuestr);
-        if (s.length() > 1000)
-          s = s.substr (0, 1000-3) + "...";
+        PyObject *countobj = PyDict_GetItem (count, key);
+        uint64_t counti = PyLong_AsLong (countobj);
+        Py_DECREF (countobj);
+
+        PyObject *valtype = PyObject_Type (value);
+        PyObject *valtypename = PyObject_Str (PyObject_GetAttrString (valtype, "__name__"));
+        std::string valtypestr = PyUnicode_AsUTF8 (valtypename);
+        Py_DECREF (valtype);
+        Py_DECREF (valtypename);
+
+        std::string s;
+        if (false) // TODO: check if its very big...?
+          s = "<large object>";
+        else
+          {
+            // TODO: should handle some errors here?
+            PyObject *valuestr = PyObject_Str (value);
+            s = PyUnicode_AsUTF8 (valuestr);
+            Py_DECREF (valuestr);
+            if (s.length() > 1000)
+              s = s.substr (0, 1000-3) + "...";
+          }
+
+        octave_scalar_map entry { string_vector (fields) };
+        entry.setfield ("key", octave_uint64 (keyi));
+        entry.setfield ("count", octave_uint64 (counti));
+        entry.setfield ("type", valtypestr);
+        entry.setfield ("value", s);
+        map.fast_elem_insert (idx++, entry);
       }
-      Cell c2 = ovl (octave_uint64 (keyi),      \
-                     octave_uint64 (counti),    \
-                     octave_value (valtypestr), \
-                     octave_value (s));
-      c.elem(pos-1) = c2;
-    }
+
     store.release ();
     count.release ();
-    retval(0) = c;
-    return retval;
+
+    return map;
   }
 
   void

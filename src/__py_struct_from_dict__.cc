@@ -352,13 +352,11 @@ Return all objects and their ref counts in the object store.\n\
 This is a private internal function not intended for direct use.\n\
 @end deftypefn")
 {
-  octave_value_list res;
-
   pythonic::py_init ();
 
-  res = pythonic::py_objstore_list ();
+  octave_map map = pythonic::py_objstore_list ();
 
-  return res(0);
+  return ovl (map);
 }
 
 // PKG_ADD: autoload ("__py_string_value__", "__py_struct_from_dict__.oct");
