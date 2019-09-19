@@ -235,16 +235,23 @@ namespace pythonic
           s = "<large object>";
         else
           {
-            // TODO: should handle some errors here?
             PyObject *valuestr = PyObject_Str (value);
+            if (! valuestr)
+              s = "<failed to extract string>";
+            else
+              {
 #if PY_VERSION_HEX >= 0x03000000
-            s = PyUnicode_AsUTF8 (valuestr);
+                s = PyUnicode_AsUTF8 (valuestr);
 #else
-            s = PyString_AsString (valuestr);
+                s = PyString_AsString (valuestr);
 #endif
-            Py_DECREF (valuestr);
-            if (s.length() > 1000)
-              s = s.substr (0, 1000-3) + "...";
+                Py_DECREF (valuestr);
+                // TODO: why not?!
+                //if (! s)
+                //  s = "<failed to extract string>";
+                if (s.length() > 1000)
+                  s = s.substr (0, 1000-3) + "...";
+              }
           }
 
         octave_scalar_map entry { string_vector (fields) };
