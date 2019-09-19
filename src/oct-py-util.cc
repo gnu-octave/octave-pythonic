@@ -199,25 +199,15 @@ namespace pythonic
 
     octave_idx_type idx = 0;
     Py_ssize_t pos = 0;
-    PyObject *key, *tuple;
+    PyObject *key_obj, *tuple;
 
-    while (PyDict_Next (store, &pos, &key, &tuple))
+    while (PyDict_Next (store, &pos, &key_obj, &tuple))
       {
         if (! tuple || ! PyTuple_Check (tuple))
           continue;
 
-        PyObject *keystrpy = PyObject_Str (key);
-#if PY_VERSION_HEX >= 0x03000000
-        PyObject *keylongpy = PyLong_FromUnicodeObject (keystrpy, 16);
-#else
-        char *keystr = PyString_AsString (keystrpy);
-        PyObject *keylongpy = PyLong_FromString (keystr, nullptr, 16);
-#endif
-        uint64_t keyi = PyLong_AsLong (keylongpy);
-        Py_DECREF (keystrpy);
-        Py_DECREF (keylongpy);
-
-        uint64_t count = PyLong_AsLong (PyTuple_GetItem (tuple, 0));
+        uint64_t key = PyLong_AsUnsignedLong (key_obj);
+        uint64_t count = PyLong_AsUnsignedLong (PyTuple_GetItem (tuple, 0));
         PyObject *value = PyTuple_GetItem (tuple, 1);
 
         PyObject *valtype = PyObject_Type (value);
@@ -254,7 +244,7 @@ namespace pythonic
           }
 
         octave_scalar_map entry { string_vector (fields) };
-        entry.setfield ("key", octave_uint64 (keyi));
+        entry.setfield ("key", octave_uint64 (key));
         entry.setfield ("count", octave_uint64 (count));
         entry.setfield ("type", valtypestr);
         entry.setfield ("value", s);
@@ -271,10 +261,9 @@ namespace pythonic
   {
     python_object store = py_objstore ();
     python_object key_obj = make_py_int (key);
-    python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    if (PyDict_Contains (store, key_fmt))
+    if (PyDict_Contains (store, key_obj))
       {
-        PyObject *tuple = PyDict_GetItem (store, key_fmt);
+        PyObject *tuple = PyDict_GetItem (store, key_obj);
         if (tuple && PyTuple_Check (tuple))
           {
             uint64_t count = PyLong_AsLong (PyTuple_GetItem (tuple, 0));
@@ -283,11 +272,11 @@ namespace pythonic
               {
                 PyObject *obj = PyTuple_GetItem (tuple, 1);
                 tuple = PyTuple_Pack (2, make_py_int (count - 1), obj);
-                PyDict_SetItem (store, key_fmt, tuple);
+                PyDict_SetItem (store, key_obj, tuple);
                 Py_DECREF (tuple);
               }
             else
-              PyDict_DelItem (store, key_fmt);
+              PyDict_DelItem (store, key_obj);
           }
       }
     else
@@ -303,8 +292,7 @@ namespace pythonic
   {
     python_object store = py_objstore ();
     python_object key_obj = make_py_int (key);
-    python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    PyObject *tuple = PyDict_GetItem (store, key_fmt);
+    PyObject *tuple = PyDict_GetItem (store, key_obj);
     PyObject *obj = nullptr;
     if (tuple && PyTuple_Check (tuple))
       obj = PyTuple_GetItem (tuple, 1);
@@ -320,22 +308,21 @@ namespace pythonic
     python_object store = py_objstore ();
     uint64_t key = reinterpret_cast<uint64_t> (obj);
     python_object key_obj = make_py_int (key);
-    python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    if (PyDict_Contains (store, key_fmt))
+    if (PyDict_Contains (store, key_obj))
       {
-        PyObject *tuple = PyDict_GetItem (store, key_fmt);
+        PyObject *tuple = PyDict_GetItem (store, key_obj);
         if (tuple && PyTuple_Check (tuple))
           {
             uint64_t count = PyLong_AsLong (PyTuple_GetItem (tuple, 0));
             tuple = PyTuple_Pack (2, make_py_int (count + 1), obj);
-            PyDict_SetItem (store, key_fmt, tuple);
+            PyDict_SetItem (store, key_obj, tuple);
             Py_DECREF (tuple);
           }
       }
     else
       {
         PyObject *tuple = PyTuple_Pack (2, make_py_int (1), obj);
-        PyDict_SetItem (store, key_fmt, tuple);
+        PyDict_SetItem (store, key_obj, tuple);
         Py_DECREF (tuple);
       }
     store.release ();
