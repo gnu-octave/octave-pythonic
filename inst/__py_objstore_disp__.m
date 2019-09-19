@@ -19,10 +19,11 @@
 ## <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} __py_objstore_disp__ ()
-## Print or return all objects and their ref counts in the object store.
+## @deftypefn  {} {} __py_objstore_disp__ ()
+## @deftypefnx {} {@var{list} =} __py_objstore_disp__ ()
+## Print or return all Python objects and their ref counts in the object store.
 ##
-## This is a private internal function not intended for direct use.\n\
+## This is a private internal function not intended for direct use.
 ## @end deftypefn
 
 function retval = __py_objstore_disp__ ()

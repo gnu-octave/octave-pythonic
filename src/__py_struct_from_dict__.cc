@@ -347,7 +347,7 @@ This is a private internal function not intended for direct use.\n\
 DEFUN_DLD (__py_objstore_list__, , ,
            "-*- texinfo -*-\n\
 @deftypefn {} {} __py_objstore_list__ ()\n\
-Return all objects and their ref counts in the object store.\n\
+Return all Python objects and their ref counts in the object store.\n\
 \n\
 This is a private internal function not intended for direct use.\n\
 @end deftypefn")
