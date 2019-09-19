@@ -158,7 +158,6 @@ namespace pythonic
 
   // FIXME: could make this into a class/singleton wrapper a la Octave core
   PyObject *objstore = nullptr;
-  PyObject *objcount = nullptr;
 
   inline PyObject *
   py_objstore ()
@@ -187,38 +186,10 @@ namespace pythonic
     return objstore;
   }
 
-  inline PyObject *
-  py_objcount ()
-  {
-    if (! objcount)
-      {
-        python_object main = py_import_module ("__main__");
-        python_object ns = main ? PyObject_GetAttrString (main, "__dict__") : 0;
-        PyObject *dict = ns ? PyDict_GetItemString (ns, "_in_octave_count") : 0;
-
-        if (dict)
-          Py_INCREF (dict);
-
-        if (! dict)
-          {
-            dict = PyDict_New ();
-            if (dict && ns)
-              PyDict_SetItemString (ns, "_in_octave_count", dict);
-          }
-
-        if (! dict)
-          error_python_exception ();
-
-        objcount = dict;
-      }
-    return objcount;
-  }
-
   octave_map
   py_objstore_list ()
   {
     python_object store = py_objstore ();
-    python_object count = py_objcount ();
 
     std::vector<std::string> fields { "key", "count", "type", "value" };
 
@@ -228,19 +199,21 @@ namespace pythonic
 
     octave_idx_type idx = 0;
     Py_ssize_t pos = 0;
-    PyObject *key, *value;
+    PyObject *key, *tuple;
 
-    while (PyDict_Next (store, &pos, &key, &value))
+    while (PyDict_Next (store, &pos, &key, &tuple))
       {
+        if (! tuple || ! PyTuple_Check (tuple))
+          continue;
+
         PyObject *keystrpy = PyObject_Str (key);
         PyObject *keylongpy = PyLong_FromUnicodeObject (keystrpy, 16);
         uint64_t keyi = PyLong_AsLong (keylongpy);
         Py_DECREF (keystrpy);
         Py_DECREF (keylongpy);
 
-        PyObject *countobj = PyDict_GetItem (count, key);
-        uint64_t counti = PyLong_AsLong (countobj);
-        Py_DECREF (countobj);
+        uint64_t count = PyLong_AsLong (PyTuple_GetItem (tuple, 0));
+        PyObject *value = PyTuple_GetItem (tuple, 1);
 
         PyObject *valtype = PyObject_Type (value);
         PyObject *valtypename = PyObject_Str (PyObject_GetAttrString (valtype, "__name__"));
@@ -263,14 +236,13 @@ namespace pythonic
 
         octave_scalar_map entry { string_vector (fields) };
         entry.setfield ("key", octave_uint64 (keyi));
-        entry.setfield ("count", octave_uint64 (counti));
+        entry.setfield ("count", octave_uint64 (count));
         entry.setfield ("type", valtypestr);
         entry.setfield ("value", s);
         map.fast_elem_insert (idx++, entry);
       }
 
     store.release ();
-    count.release ();
 
     return map;
   }
@@ -279,43 +251,45 @@ namespace pythonic
   py_objstore_drop (uint64_t key)
   {
     python_object store = py_objstore ();
-    python_object count = py_objcount ();
     python_object key_obj = make_py_int (key);
     python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    if (PyDict_Contains (store, key_fmt)) {
-      PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
-      uint64_t counti = PyLong_AsLong (tmpcountobj);
-      Py_DECREF (tmpcountobj);
-      //octave_stdout << "objstore debug: deleting key " << key << " w/ count " << counti << " and erasing refcount" << std::endl;
-      if (counti > 1) {
-        PyDict_SetItem (count, key_fmt, make_py_int (counti - 1));
-      } else {
-        PyDict_DelItem (store, key_fmt);
-        PyDict_DelItem (count, key_fmt);
+    if (PyDict_Contains (store, key_fmt))
+      {
+        PyObject *tuple = PyDict_GetItem (store, key_fmt);
+        if (tuple && PyTuple_Check (tuple))
+          {
+            uint64_t count = PyLong_AsLong (PyTuple_GetItem (tuple, 0));
+            //octave_stdout << "objstore debug: deleting key " << key << " w/ count " << count << " and erasing refcount" << std::endl;
+            if (count > 1)
+              {
+                PyObject *obj = PyTuple_GetItem (tuple, 1);
+                tuple = PyTuple_Pack (2, make_py_int (count - 1), obj);
+                PyDict_SetItem (store, key_fmt, tuple);
+                Py_DECREF (tuple);
+              }
+            else
+              PyDict_DelItem (store, key_fmt);
+          }
       }
-    } else {
-      //octave_stdout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
-      // TODO: surely this is an error?
-    }
+    else
+      {
+        //octave_stdout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
+        // FIXME: surely this is an error?
+      }
     store.release ();
-    count.release ();
   }
 
   PyObject *
   py_objstore_get (uint64_t key)
   {
     python_object store = py_objstore ();
-    python_object count = py_objcount ();
     python_object key_obj = make_py_int (key);
     python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    PyObject *obj = PyDict_GetItem (store, key_fmt);
-    PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
-    uint64_t counti = PyLong_AsLong (tmpcountobj);
-    Py_DECREF (tmpcountobj);
-    //octave_stdout << "objstore debug: getting key " << key << ", incrementing count to " << counti + 1 << std::endl;
-    PyDict_SetItem (count, key_fmt, make_py_int (counti + 1));
+    PyObject *tuple = PyDict_GetItem (store, key_fmt);
+    PyObject *obj = nullptr;
+    if (tuple && PyTuple_Check (tuple))
+      obj = PyTuple_GetItem (tuple, 1);
     store.release ();
-    count.release ();
     if (obj)
       Py_INCREF (obj);
     return obj;
@@ -325,24 +299,27 @@ namespace pythonic
   py_objstore_put (PyObject *obj)
   {
     python_object store = py_objstore ();
-    python_object count = py_objcount ();
     uint64_t key = reinterpret_cast<uint64_t> (obj);
     python_object key_obj = make_py_int (key);
     python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    if (PyDict_Contains (store, key_fmt)) {
-      // TODO: we assume count and store never out of sync...
-      PyObject *tmpcountobj = PyDict_GetItem (count, key_fmt);
-      uint64_t counti = PyLong_AsLong (tmpcountobj);
-      Py_DECREF (tmpcountobj);
-      //octave_stdout << "objstore debug: key " << key << " already present with count " << counti << ", incrementing count to " << counti + 1 << std::endl;
-      PyDict_SetItem (count, key_fmt, make_py_int (counti + 1));
-    } else {
-      //octave_stdout << "objstore debug: adding new object with key " << key << std::endl;
-      PyDict_SetItem (store, key_fmt, obj);
-      PyDict_SetItem (count, key_fmt, make_py_int (0));
-    }
+    if (PyDict_Contains (store, key_fmt))
+      {
+        PyObject *tuple = PyDict_GetItem (store, key_fmt);
+        if (tuple && PyTuple_Check (tuple))
+          {
+            uint64_t count = PyLong_AsLong (PyTuple_GetItem (tuple, 0));
+            tuple = PyTuple_Pack (2, make_py_int (count + 1), obj);
+            PyDict_SetItem (store, key_fmt, tuple);
+            Py_DECREF (tuple);
+          }
+      }
+    else
+      {
+        PyObject *tuple = PyTuple_Pack (2, make_py_int (1), obj);
+        PyDict_SetItem (store, key_fmt, tuple);
+        Py_DECREF (tuple);
+      }
     store.release ();
-    count.release ();
     return key;
   }
 
