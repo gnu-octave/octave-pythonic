@@ -77,3 +77,6 @@ function retval = __py_objstore_disp__ ()
   endif
 
 endfunction
+
+## Mark this file as fully tested.
+%!assert (1)
