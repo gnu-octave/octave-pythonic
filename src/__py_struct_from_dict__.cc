@@ -251,6 +251,26 @@ This is a private internal function not intended for direct use.\n\
 %!error <must be a string> __py_isinstance__ (pyeval ("None"), "object")
 */
 
+// PKG_ADD: autoload ("__py_objstore_clear__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_clear__", which ("__py_struct_from_dict__.oct"), "remove");
+DEFUN_DLD (__py_objstore_clear__, , ,
+           "-*- texinfo -*-\n\
+@deftypefn {} {} __py_objstore_clear__ ()\n\
+Clear the contents of the Python object store.\n\
+\n\
+If any existing variables refer to Python values, they will no longer be\n\
+valid.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  pythonic::py_init ();
+
+  pythonic::py_objstore_clear ();
+
+  return ovl ();
+}
+
 // PKG_ADD: autoload ("__py_objstore_drop__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_objstore_drop__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_objstore_drop__, args, ,

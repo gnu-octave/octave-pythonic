@@ -186,6 +186,14 @@ namespace pythonic
     return objstore;
   }
 
+  void
+  py_objstore_clear ()
+  {
+    python_object store = py_objstore ();
+    PyDict_Clear (store);
+    store.release ();
+  }
+
   octave_map
   py_objstore_list ()
   {

@@ -101,6 +101,9 @@ namespace pythonic
   std::string
   py_object_class_name (PyObject *obj);
 
+  void
+  py_objstore_clear ();
+
   octave_map
   py_objstore_list ();
 
