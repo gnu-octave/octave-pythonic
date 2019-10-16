@@ -17,7 +17,7 @@ variables: &variables
   DOCTEST_ROOT: "/tmp/doctest"
   LIBSSL_DEV: "libssl-dev"
   PYENV_GIT_REPOSITORY: "https://github.com/pyenv/pyenv.git"
-  PYENV_GIT_TAG: "v1.2.13"
+  PYENV_GIT_TAG: "v1.2.14"
   PYENV_ROOT: "/tmp/pyenv"
   PYTHON_CONFIGURE_OPTS: "--enable-shared"
 
@@ -112,6 +112,13 @@ test with python3.7:
     <<: *variables
     PYTHON_VERSION: "3.7"
     PYTHON_VERSION_FULL: "3.7.4"
+  extends: .test with pyenv
+
+test with python3.8:
+  variables:
+    <<: *variables
+    PYTHON_VERSION: "3.8"
+    PYTHON_VERSION_FULL: "3.8.0"
   extends: .test with pyenv
 
 test pkg with python2:
