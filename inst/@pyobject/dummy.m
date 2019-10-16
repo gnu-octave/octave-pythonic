@@ -42,8 +42,7 @@
 ## sort (methods (g))
 ##   @result{} ans =
 ##     @{
-##       [1,1] = bit_length
-##       ...
+##       ... bit_length ...
 ##     @}
 ##
 ## sort (fieldnames (g))
