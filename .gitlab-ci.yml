@@ -6,9 +6,9 @@
 image: mtmiller/octave
 
 stages:
-- build
-- test
-- release
+  - build
+  - test
+  - release
 
 variables: &variables
   DEBIAN_FRONTEND: "noninteractive"
@@ -24,55 +24,55 @@ variables: &variables
 build:
   stage: build
   script:
-  - apt-get update && apt-get install -y git
-  - mkdir -p pkg
-  - make O=pkg dist dist-zip
+    - apt-get update && apt-get install -y git
+    - mkdir -p pkg
+    - make O=pkg dist dist-zip
   artifacts:
     paths:
-    - pkg/*.tar.gz
-    - pkg/*.zip
+      - pkg/*.tar.gz
+      - pkg/*.zip
 
 .test with pyenv:
   stage: test
   script:
-  - apt-get update && apt-get install -y blt-dev git libbz2-dev libdb-dev libffi-dev
-    libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev $LIBSSL_DEV
-    tk-dev uuid-dev zlib1g-dev
-  - git clone $DOCTEST_GIT_REPOSITORY $DOCTEST_ROOT
-  - git -C $DOCTEST_ROOT checkout $DOCTEST_GIT_TAG
-  - git clone $PYENV_GIT_REPOSITORY $PYENV_ROOT
-  - git -C $PYENV_ROOT checkout $PYENV_GIT_TAG
-  - export PATH=$PYENV_ROOT/bin:$PATH
-  - eval "$(pyenv init -)"
-  - pyenv install $PYTHON_VERSION_FULL
-  - pyenv global $PYTHON_VERSION_FULL
-  - mkdir -p python${PYTHON_VERSION}
-  - make O=python${PYTHON_VERSION} V=1 all
-  - make O=python${PYTHON_VERSION} V=1 check
-  - make O=python${PYTHON_VERSION} V=1 doctest OCTAVE_PATH=/tmp/doctest/inst
+    - apt-get update && apt-get install -y blt-dev git libbz2-dev libdb-dev libffi-dev
+      libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev $LIBSSL_DEV
+      tk-dev uuid-dev zlib1g-dev
+    - git clone $DOCTEST_GIT_REPOSITORY $DOCTEST_ROOT
+    - git -C $DOCTEST_ROOT checkout $DOCTEST_GIT_TAG
+    - git clone $PYENV_GIT_REPOSITORY $PYENV_ROOT
+    - git -C $PYENV_ROOT checkout $PYENV_GIT_TAG
+    - export PATH=$PYENV_ROOT/bin:$PATH
+    - eval "$(pyenv init -)"
+    - pyenv install $PYTHON_VERSION_FULL
+    - pyenv global $PYTHON_VERSION_FULL
+    - mkdir -p python${PYTHON_VERSION}
+    - make O=python${PYTHON_VERSION} V=1 all
+    - make O=python${PYTHON_VERSION} V=1 check
+    - make O=python${PYTHON_VERSION} V=1 doctest OCTAVE_PATH=/tmp/doctest/inst
   artifacts:
     paths:
-    - python${PYTHON_VERSION}/*.log
+      - python${PYTHON_VERSION}/*.log
     expire_in: 4 weeks
 
 .pkg:
   stage: test
   script:
-  - apt-get update && apt-get install -y python-dev python3-dev
-  - octave --eval "pkg install -verbose pkg/octave-pythonic-*.tar.gz"
-  - octave --eval "d = pkg ('describe', 'pythonic'); assert (d{:}.name, 'pythonic')"
-  - octave --eval "pkg load pythonic; v = pyversion (); assert (v(1), '${PYTHON_VERSION}')"
+    - apt-get update && apt-get install -y python-dev python3-dev
+    - octave --eval "pkg install -verbose pkg/octave-pythonic-*.tar.gz"
+    - octave --eval "d = pkg ('describe', 'pythonic'); assert (d{:}.name, 'pythonic')"
+    - octave --eval "pkg load pythonic; v = pyversion (); assert (v(1), '${PYTHON_VERSION}')"
 
 coverage:
   stage: test
   script:
-  - apt-get update && apt-get install -y python3-dev
-  - pip3 install -U gcovr
-  - mkdir -p coverage
-  - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" all
-  - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" check
-  - bash <(curl -S -s https://codecov.io/bash) -s coverage -a "-s $PWD/src -r"
-  - gcovr --print-summary coverage
+    - apt-get update && apt-get install -y python3-dev
+    - pip3 install -U gcovr
+    - mkdir -p coverage
+    - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" all
+    - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" check
+    - bash <(curl -S -s https://codecov.io/bash) -s coverage -a "-s $PWD/src -r"
+    - gcovr --print-summary coverage
   variables:
     <<: *variables
     PYTHON_VERSION: "3"
@@ -136,13 +136,13 @@ test pkg with python3:
 release:
   stage: release
   script:
-  - apt-get update && apt-get install -y curl python-minimal
-  - sh build-aux/release-create.sh
+    - apt-get update && apt-get install -y curl python-minimal
+    - sh build-aux/release-create.sh
   only:
     refs:
-    - tags
+      - tags
     variables:
-    - $CI_COMMIT_TAG =~ /^v[0-9]+(\.[0-9]+)*/
+      - $CI_COMMIT_TAG =~ /^v[0-9]+(\.[0-9]+)*/
 
 include:
   - template: Code-Quality.gitlab-ci.yml
