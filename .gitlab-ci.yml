@@ -3,7 +3,7 @@
 ##
 ## .gitlab-ci.yml - GitLab CI configuration for octave-pythonic
 
-image: mtmiller/octave
+image: registry.gitlab.com/mtmiller/docker-octave
 
 stages:
   - build
