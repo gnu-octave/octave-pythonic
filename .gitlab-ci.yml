@@ -50,6 +50,7 @@ build:
     - make O=python${PYTHON_VERSION} V=1 all
     - make O=python${PYTHON_VERSION} V=1 check
     - make O=python${PYTHON_VERSION} V=1 doctest OCTAVE_PATH=/tmp/doctest/inst
+  dependencies: []
   artifacts:
     paths:
       - python${PYTHON_VERSION}/*.log
@@ -62,6 +63,8 @@ build:
     - octave --eval "pkg install -verbose pkg/octave-pythonic-*.tar.gz"
     - octave --eval "d = pkg ('describe', 'pythonic'); assert (d{:}.name, 'pythonic')"
     - octave --eval "pkg load pythonic; v = pyversion (); assert (v(1), '${PYTHON_VERSION}')"
+  dependencies:
+    - build
 
 coverage:
   stage: test
@@ -76,6 +79,7 @@ coverage:
   variables:
     <<: *variables
     PYTHON_VERSION: "3"
+  dependencies: []
   coverage: '/^lines: \d+\.\d+/'
 
 test with python2.7:
