@@ -32,7 +32,7 @@ build:
       - pkg/*.tar.gz
       - pkg/*.zip
 
-.test with pyenv:
+.test:pyenv:
   stage: test
   script:
     - apt-get update && apt-get install -y blt-dev git libbz2-dev libdb-dev libffi-dev
@@ -56,7 +56,7 @@ build:
       - python${PYTHON_VERSION}/*.log
     expire_in: 4 weeks
 
-.pkg:
+.test:pkg:
   stage: test
   script:
     - apt-get update && apt-get install -y python-dev python3-dev
@@ -82,60 +82,60 @@ coverage:
   dependencies: []
   coverage: '/^lines: \d+\.\d+/'
 
-test with python2.7:
+python2.7:
   variables:
     <<: *variables
     PYTHON_VERSION: "2.7"
     PYTHON_VERSION_FULL: "2.7.16"
-  extends: .test with pyenv
+  extends: .test:pyenv
 
-test with python3.4:
+python3.4:
   variables:
     <<: *variables
     LIBSSL_DEV: "libssl1.0-dev"
     PYTHON_VERSION: "3.4"
     PYTHON_VERSION_FULL: "3.4.10"
-  extends: .test with pyenv
+  extends: .test:pyenv
 
-test with python3.5:
+python3.5:
   variables:
     <<: *variables
     PYTHON_VERSION: "3.5"
     PYTHON_VERSION_FULL: "3.5.7"
-  extends: .test with pyenv
+  extends: .test:pyenv
 
-test with python3.6:
+python3.6:
   variables:
     <<: *variables
     PYTHON_VERSION: "3.6"
     PYTHON_VERSION_FULL: "3.6.9"
-  extends: .test with pyenv
+  extends: .test:pyenv
 
-test with python3.7:
+python3.7:
   variables:
     <<: *variables
     PYTHON_VERSION: "3.7"
     PYTHON_VERSION_FULL: "3.7.4"
-  extends: .test with pyenv
+  extends: .test:pyenv
 
-test with python3.8:
+python3.8:
   variables:
     <<: *variables
     PYTHON_VERSION: "3.8"
     PYTHON_VERSION_FULL: "3.8.0"
-  extends: .test with pyenv
+  extends: .test:pyenv
 
-test pkg with python2:
+pkg:python2:
   variables:
     <<: *variables
     PYTHON_VERSION: 2
-  extends: .pkg
+  extends: .test:pkg
 
-test pkg with python3:
+pkg:python3:
   variables:
     <<: *variables
     PYTHON_VERSION: 3
-  extends: .pkg
+  extends: .test:pkg
 
 release:
   stage: release
