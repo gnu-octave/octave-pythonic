@@ -3,7 +3,7 @@
 ##
 ## .gitlab-ci.yml - GitLab CI configuration for octave-pythonic
 
-image: registry.gitlab.com/mtmiller/docker-octave
+image: registry.gitlab.com/mtmiller/docker-octave:latest
 
 stages:
   - build
@@ -89,6 +89,11 @@ python2.7:
     PYTHON_VERSION_FULL: "2.7.17"
   extends: .test:pyenv
 
+python2.7:devel:
+  extends: python2.7
+  image: registry.gitlab.com/mtmiller/docker-octave:devel
+  allow_failure: true
+
 python3.4:
   variables:
     <<: *variables
@@ -97,12 +102,22 @@ python3.4:
     PYTHON_VERSION_FULL: "3.4.10"
   extends: .test:pyenv
 
+python3.4:devel:
+  extends: python3.4
+  image: registry.gitlab.com/mtmiller/docker-octave:devel
+  allow_failure: true
+
 python3.5:
   variables:
     <<: *variables
     PYTHON_VERSION: "3.5"
     PYTHON_VERSION_FULL: "3.5.8"
   extends: .test:pyenv
+
+python3.5:devel:
+  extends: python3.5
+  image: registry.gitlab.com/mtmiller/docker-octave:devel
+  allow_failure: true
 
 python3.6:
   variables:
@@ -111,6 +126,11 @@ python3.6:
     PYTHON_VERSION_FULL: "3.6.9"
   extends: .test:pyenv
 
+python3.6:devel:
+  extends: python3.6
+  image: registry.gitlab.com/mtmiller/docker-octave:devel
+  allow_failure: true
+
 python3.7:
   variables:
     <<: *variables
@@ -118,12 +138,22 @@ python3.7:
     PYTHON_VERSION_FULL: "3.7.5"
   extends: .test:pyenv
 
+python3.7:devel:
+  extends: python3.7
+  image: registry.gitlab.com/mtmiller/docker-octave:devel
+  allow_failure: true
+
 python3.8:
   variables:
     <<: *variables
     PYTHON_VERSION: "3.8"
     PYTHON_VERSION_FULL: "3.8.0"
   extends: .test:pyenv
+
+python3.8:devel:
+  extends: python3.8
+  image: registry.gitlab.com/mtmiller/docker-octave:devel
+  allow_failure: true
 
 pkg:python2:
   variables:
