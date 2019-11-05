@@ -3,6 +3,7 @@
 SPDX-License-Identifier: GPL-3.0-or-later
 
 Copyright (C) 2016-2019 Mike Miller
+Copyright (C) 2019 Colin B. Macdonald
 
 This file is part of Octave Pythonic.
 
@@ -27,6 +28,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #endif
 
 #include <Python.h>
+#include <octave/oct-map.h>
 #include <octave/oct.h>
 #include <octave/parse.h>
 
@@ -185,12 +187,111 @@ namespace pythonic
   }
 
   void
-  py_objstore_del (uint64_t key)
+  py_objstore_clear ()
+  {
+    python_object store = py_objstore ();
+    PyDict_Clear (store);
+    store.release ();
+  }
+
+  octave_map
+  py_objstore_list ()
+  {
+    python_object store = py_objstore ();
+
+    std::vector<std::string> fields { "key", "count", "type", "value" };
+
+    Py_ssize_t sz = PyDict_Size (store);
+
+    octave_map map { dim_vector (sz, 1), string_vector (fields) };
+
+    octave_idx_type idx = 0;
+    Py_ssize_t pos = 0;
+    PyObject *key_obj, *tuple;
+
+    while (PyDict_Next (store, &pos, &key_obj, &tuple))
+      {
+        if (! tuple || ! PyTuple_Check (tuple))
+          continue;
+
+        uint64_t key = PyLong_AsUnsignedLong (key_obj);
+        uint64_t count = PyLong_AsUnsignedLong (PyTuple_GetItem (tuple, 0));
+        PyObject *value = PyTuple_GetItem (tuple, 1);
+
+        PyObject *valtype = PyObject_Type (value);
+        PyObject *valtypename = PyObject_Str (PyObject_GetAttrString (valtype, "__name__"));
+#if PY_VERSION_HEX >= 0x03000000
+        std::string valtypestr = PyUnicode_AsUTF8 (valtypename);
+#else
+        std::string valtypestr = PyString_AsString (valtypename);
+#endif
+        Py_DECREF (valtype);
+        Py_DECREF (valtypename);
+
+        std::string s;
+        if (false) // TODO http://gitlab.com/mtmiller/octave-pythonic/issues/51
+          s = "<large object>";
+        else
+          {
+            PyObject *valuestr = PyObject_Str (value);
+            if (! valuestr)
+              s = "<failed to extract string>";
+            else
+              {
+#if PY_VERSION_HEX >= 0x03000000
+                s = PyUnicode_AsUTF8 (valuestr);
+#else
+                s = PyString_AsString (valuestr);
+#endif
+                Py_DECREF (valuestr);
+                if (s.empty ())
+		  s = "<failed to extract string>";
+                if (s.length() > 1000)
+                  s = s.substr (0, 1000-3) + "...";
+              }
+          }
+
+        octave_scalar_map entry { string_vector (fields) };
+        entry.setfield ("key", octave_uint64 (key));
+        entry.setfield ("count", octave_uint64 (count));
+        entry.setfield ("type", valtypestr);
+        entry.setfield ("value", s);
+        map.fast_elem_insert (idx++, entry);
+      }
+
+    store.release ();
+
+    return map;
+  }
+
+  void
+  py_objstore_drop (uint64_t key)
   {
     python_object store = py_objstore ();
     python_object key_obj = make_py_int (key);
-    python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    PyDict_DelItem (store, key_fmt);
+    if (PyDict_Contains (store, key_obj))
+      {
+        PyObject *tuple = PyDict_GetItem (store, key_obj);
+        if (tuple && PyTuple_Check (tuple))
+          {
+            uint64_t count = PyLong_AsLong (PyTuple_GetItem (tuple, 0));
+            //octave_stdout << "objstore debug: deleting key " << key << " w/ count " << count << " and erasing refcount" << std::endl;
+            if (count > 1)
+              {
+                PyObject *obj = PyTuple_GetItem (tuple, 1);
+                tuple = PyTuple_Pack (2, make_py_int (count - 1), obj);
+                PyDict_SetItem (store, key_obj, tuple);
+                Py_DECREF (tuple);
+              }
+            else
+              PyDict_DelItem (store, key_obj);
+          }
+      }
+    else
+      {
+        //octave_stdout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
+        // FIXME: surely this is an error?
+      }
     store.release ();
   }
 
@@ -199,8 +300,10 @@ namespace pythonic
   {
     python_object store = py_objstore ();
     python_object key_obj = make_py_int (key);
-    python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    PyObject *obj = PyDict_GetItem (store, key_fmt);
+    PyObject *tuple = PyDict_GetItem (store, key_obj);
+    PyObject *obj = nullptr;
+    if (tuple && PyTuple_Check (tuple))
+      obj = PyTuple_GetItem (tuple, 1);
     store.release ();
     if (obj)
       Py_INCREF (obj);
@@ -213,8 +316,23 @@ namespace pythonic
     python_object store = py_objstore ();
     uint64_t key = reinterpret_cast<uint64_t> (obj);
     python_object key_obj = make_py_int (key);
-    python_object key_fmt = PyNumber_ToBase (key_obj, 16);
-    PyDict_SetItem (store, key_fmt, obj);
+    if (PyDict_Contains (store, key_obj))
+      {
+        PyObject *tuple = PyDict_GetItem (store, key_obj);
+        if (tuple && PyTuple_Check (tuple))
+          {
+            uint64_t count = PyLong_AsLong (PyTuple_GetItem (tuple, 0));
+            tuple = PyTuple_Pack (2, make_py_int (count + 1), obj);
+            PyDict_SetItem (store, key_obj, tuple);
+            Py_DECREF (tuple);
+          }
+      }
+    else
+      {
+        PyObject *tuple = PyTuple_Pack (2, make_py_int (1), obj);
+        PyDict_SetItem (store, key_obj, tuple);
+        Py_DECREF (tuple);
+      }
     store.release ();
     return key;
   }

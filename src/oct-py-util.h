@@ -29,6 +29,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #include <stdint.h>
 #include <string>
 
+class octave_map;
 class octave_value;
 
 namespace pythonic
@@ -101,7 +102,13 @@ namespace pythonic
   py_object_class_name (PyObject *obj);
 
   void
-  py_objstore_del (uint64_t key);
+  py_objstore_clear ();
+
+  octave_map
+  py_objstore_list ();
+
+  void
+  py_objstore_drop (uint64_t key);
 
   PyObject *
   py_objstore_get (uint64_t key);

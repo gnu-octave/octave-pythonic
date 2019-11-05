@@ -251,12 +251,34 @@ This is a private internal function not intended for direct use.\n\
 %!error <must be a string> __py_isinstance__ (pyeval ("None"), "object")
 */
 
-// PKG_ADD: autoload ("__py_objstore_del__", "__py_struct_from_dict__.oct");
-// PKG_DEL: autoload ("__py_objstore_del__", which ("__py_struct_from_dict__.oct"), "remove");
-DEFUN_DLD (__py_objstore_del__, args, ,
+// PKG_ADD: autoload ("__py_objstore_clear__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_clear__", which ("__py_struct_from_dict__.oct"), "remove");
+DEFUN_DLD (__py_objstore_clear__, , ,
            "-*- texinfo -*-\n\
-@deftypefn {} {} __py_objstore_del__ (@var{key})\n\
-Delete the Python object stored under @var{key} from the object store.\n\
+@deftypefn {} {} __py_objstore_clear__ ()\n\
+Clear the contents of the Python object store.\n\
+\n\
+If any existing variables refer to Python values, they will no longer be\n\
+valid.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  pythonic::py_init ();
+
+  pythonic::py_objstore_clear ();
+
+  return ovl ();
+}
+
+// PKG_ADD: autoload ("__py_objstore_drop__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_drop__", which ("__py_struct_from_dict__.oct"), "remove");
+DEFUN_DLD (__py_objstore_drop__, args, ,
+           "-*- texinfo -*-\n\
+@deftypefn {} {} __py_objstore_drop__ (@var{key})\n\
+Drop one reference from the Python object stored under @var{key}.\n\
+\n\
+If there are no more references, this will delete the object.\n\
 \n\
 This is a private internal function not intended for direct use.\n\
 @end deftypefn")
@@ -266,8 +288,8 @@ This is a private internal function not intended for direct use.\n\
 
   pythonic::py_init ();
 
-  uint64_t key = args(0).xuint64_scalar_value ("__py_objstore_del__: KEY must be an integer");
-  pythonic::py_objstore_del (key);
+  uint64_t key = args(0).xuint64_scalar_value ("__py_objstore_drop__: KEY must be an integer");
+  pythonic::py_objstore_drop (key);
 
   return ovl ();
 }
@@ -338,6 +360,23 @@ This is a private internal function not intended for direct use.\n\
   uint64_t key = pythonic::py_objstore_put (Py_None);
 
   return ovl (octave_uint64 (key));
+}
+
+// PKG_ADD: autoload ("__py_objstore_list__", "__py_struct_from_dict__.oct");
+// PKG_DEL: autoload ("__py_objstore_list__", which ("__py_struct_from_dict__.oct"), "remove");
+DEFUN_DLD (__py_objstore_list__, , ,
+           "-*- texinfo -*-\n\
+@deftypefn {} {} __py_objstore_list__ ()\n\
+Return all Python objects and their ref counts in the object store.\n\
+\n\
+This is a private internal function not intended for direct use.\n\
+@end deftypefn")
+{
+  pythonic::py_init ();
+
+  octave_map map = pythonic::py_objstore_list ();
+
+  return ovl (map);
 }
 
 // PKG_ADD: autoload ("__py_string_value__", "__py_struct_from_dict__.oct");

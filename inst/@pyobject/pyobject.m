@@ -76,7 +76,7 @@ classdef pyobject < handle
       #   @print{} ... KeyError ...
       # @end example
 
-      __py_objstore_del__ (x.m_id);
+      __py_objstore_drop__ (x.m_id);
     endfunction
 
     # methods defined in external files
