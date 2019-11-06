@@ -73,7 +73,7 @@ function varargout = subsref (x, idx)
       for i = 1:length (t.subs)
         j = t.subs{i};
         if (isindex (j) && isnumeric (j) && x_is_sequence)
-          t.subs{i} = cast (j, class (sizemax ())) - 1;
+          t.subs{i} = int64 (j) - 1;
         endif
       endfor
 

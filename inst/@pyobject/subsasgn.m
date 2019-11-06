@@ -56,7 +56,7 @@ function r = subsasgn(x, idx, rhs)
       for i = 1:length (idx.subs)
         j = idx.subs{i};
         if (x_is_sequence && isindex (j) && isnumeric (j))
-          idx.subs{i} = cast (j, class (sizemax ())) - 1;
+          idx.subs{i} = int64 (j) - 1;
         endif
       endfor
 
