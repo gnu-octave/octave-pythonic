@@ -151,7 +151,7 @@ namespace pythonic
         const char *cdata = reinterpret_cast<const char *> (data);
         python_object buf = PyBytes_FromStringAndSize (cdata, len);
         if (! buf)
-          octave_throw_bad_alloc ();
+          throw std::bad_alloc ();
 
         PyObject *frombytes = (PyObject_HasAttrString (array, "frombytes") ?
                                PyObject_GetAttrString (array, "frombytes") :
@@ -351,13 +351,13 @@ namespace pythonic
   {
     PyObject *dict = PyDict_New ();
     if (! dict)
-      octave_throw_bad_alloc ();
+      throw std::bad_alloc ();
 
     for (auto p = map.begin (); p != map.end (); ++p)
       {
         PyObject *key = make_py_str (map.key (p));
         if (! key)
-          octave_throw_bad_alloc ();
+          throw std::bad_alloc ();
 
         PyObject *item = py_implicitly_convert_argument (map.contents (p));
 
@@ -449,7 +449,7 @@ namespace pythonic
     octave_idx_type size = cell.numel ();
     PyObject *tuple = PyTuple_New (size);
     if (! tuple)
-      octave_throw_bad_alloc ();
+      throw std::bad_alloc ();
 
     for (octave_idx_type i = 0; i < size; ++i)
       {
@@ -478,7 +478,7 @@ namespace pythonic
         if (enc && PyBytes_Check (enc))
           retval.assign (PyBytes_AsString (enc), PyBytes_Size (enc));
         else
-          octave_throw_bad_alloc ();
+          throw std::bad_alloc ();
       }
     else
       error_conversion_mismatch_python_type ("a string value", "str");

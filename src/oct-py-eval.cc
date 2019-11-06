@@ -62,7 +62,7 @@ namespace pythonic
     python_object kwargs;
     python_object args_list = PyList_New (0);
     if (! args_list)
-      octave_throw_bad_alloc ();
+      throw std::bad_alloc ();
 
     for (int i = 0; i < args.length (); ++i)
       {
