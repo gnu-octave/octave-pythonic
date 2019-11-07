@@ -1,0 +1,10 @@
+## SPDX-License-Identifier: BSD-3-Clause
+## Copyright (C) 2019 Mike Miller
+##
+## .codecov.yml - Codecov configuration for octave-pythonic
+
+coverage:
+  status:
+    patch:
+      default:
+        target: 0%
