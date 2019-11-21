@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - New command `pythonic` to get information about the package.
 
+### Changed
+- Use system Python 3 interpreter by default.
+
 ### Fixed
 - Ensure that `pyobject` constructor does not recurse or overwrite itself.
 - Build with the right compiler and linker options on Windows.
