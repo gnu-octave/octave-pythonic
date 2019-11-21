@@ -25,7 +25,7 @@ GREP            ?= grep
 MKOCTFILE       ?= mkoctfile
 OCTAVE          ?= octave
 PYTHON          ?= python$(PYTHON_VERSION)
-PYTHON_VERSION  ?=
+PYTHON_VERSION  ?= 3
 SED             ?= sed
 
 ARFLAGS  = cr
