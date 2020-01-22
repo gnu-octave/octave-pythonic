@@ -112,7 +112,11 @@ namespace pythonic
       locals = globals;
 
     // Evaluate all expressions under "from __future__ import print_function"
-    PyCompilerFlags flags { CO_FUTURE_PRINT_FUNCTION };
+    PyCompilerFlags flags { CO_FUTURE_PRINT_FUNCTION,
+#if PY_VERSION_HEX >= 0x03080000
+      PY_MINOR_VERSION,
+#endif
+    };
 
     python_object retval = PyRun_StringFlags (expr.c_str (), start, globals, locals,
                                               &flags);
