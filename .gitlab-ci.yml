@@ -77,8 +77,8 @@ coverage:
     - mkdir -p coverage
     - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" all
     - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" check
-    - bash <(curl -S -s https://codecov.io/bash) -s coverage -a "-s $PWD/src -r"
-    - gcovr --print-summary coverage
+    - bash <(curl -S -s https://codecov.io/bash) -x gcov-8 -s coverage -a "-s $PWD/src -r"
+    - gcovr --gcov-executable gcov-8 --print-summary coverage
   variables:
     <<: *variables
     PYTHON_VERSION: "3"
