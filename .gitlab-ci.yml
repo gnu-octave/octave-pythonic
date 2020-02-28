@@ -11,7 +11,10 @@ stages:
   - release
 
 variables: &variables
+  CC: gcc-8
+  CXX: g++-8
   DEBIAN_FRONTEND: "noninteractive"
+  DL_LD: g++-8  ## FIXME: drop when Octave version 6 becomes latest
   DOCTEST_GIT_REPOSITORY: "https://github.com/catch22/octave-doctest.git"
   DOCTEST_GIT_TAG: "v0.7.0"
   DOCTEST_ROOT: "/tmp/doctest"
@@ -35,9 +38,9 @@ build:
 .test:pyenv:
   stage: test
   script:
-    - apt-get update && apt-get install -y blt-dev git libbz2-dev libdb-dev libffi-dev
-      libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev $LIBSSL_DEV
-      tk-dev uuid-dev zlib1g-dev
+    - apt-get update && apt-get install -y blt-dev g++-8 gcc-8 git libbz2-dev libdb-dev
+      libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev
+      $LIBSSL_DEV tk-dev uuid-dev zlib1g-dev
     - git clone $DOCTEST_GIT_REPOSITORY $DOCTEST_ROOT
     - git -C $DOCTEST_ROOT checkout $DOCTEST_GIT_TAG
     - git clone $PYENV_GIT_REPOSITORY $PYENV_ROOT
@@ -59,7 +62,7 @@ build:
 .test:pkg:
   stage: test
   script:
-    - apt-get update && apt-get install -y python-dev python3-dev
+    - apt-get update && apt-get install -y g++-8 gcc-8 python-dev python3-dev
     - octave --eval "pkg install -verbose pkg/octave-pythonic-*.tar.gz"
     - octave --eval "d = pkg ('describe', 'pythonic'); assert (d{:}.name, 'pythonic')"
     - octave --eval "pkg load pythonic; v = pyversion (); assert (v(1), '${PYTHON_VERSION}')"
@@ -69,13 +72,13 @@ build:
 coverage:
   stage: test
   script:
-    - apt-get update && apt-get install -y python3-dev
+    - apt-get update && apt-get install -y g++-8 gcc-8 python3-dev
     - pip3 install -U gcovr
     - mkdir -p coverage
     - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" all
     - make O=coverage V=1 CXXFLAGS="-g -O0 --coverage" check
-    - bash <(curl -S -s https://codecov.io/bash) -s coverage -a "-s $PWD/src -r"
-    - gcovr --print-summary coverage
+    - bash <(curl -S -s https://codecov.io/bash) -x gcov-8 -s coverage -a "-s $PWD/src -r"
+    - gcovr --gcov-executable gcov-8 --print-summary coverage
   variables:
     <<: *variables
     PYTHON_VERSION: "3"
