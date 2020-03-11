@@ -514,6 +514,8 @@ namespace pythonic
       return make_py_array (value);
     else if (value.isstruct () && value.numel () == 1)
       return make_py_dict (value.scalar_map_value ());
+    else if (value.isstruct () && value.numel () != 1)
+      error ("unable to convert Octave struct array to a Python object");
     else
       error ("unable to convert unhandled Octave type to a Python object");
 
