@@ -26,6 +26,8 @@
 
 function varargout = pyversion ()
 
+  persistent char_none = @(x) ifelse (__py_is_none__ (x), "", char (x));
+
   if (nargin > 0)
     print_usage ();
   endif
@@ -42,17 +44,17 @@ function varargout = pyversion ()
   endif
 
   if (nargout == 0)
-    dlllibrary = char (pycall ("sysconfig.get_config_var", "DLLLIBRARY"));
+    dlllibrary = char_none (pycall ("sysconfig.get_config_var", "DLLLIBRARY"));
     if (isempty (dlllibrary))
-      libdir = pycall ("sysconfig.get_config_var", "LIBDIR");
-      ldlibrary = pycall ("sysconfig.get_config_var", "LDLIBRARY");
+      libdir = char_none (pycall ("sysconfig.get_config_var", "LIBDIR"));
+      ldlibrary = char_none (pycall ("sysconfig.get_config_var", "LDLIBRARY"));
     else
-      libdir = pycall ("sysconfig.get_config_var", "BINDIR");
+      libdir = char_none (pycall ("sysconfig.get_config_var", "BINDIR"));
       ldlibrary = dlllibrary;
     endif
-    multiarch = pycall ("sysconfig.get_config_var", "MULTIARCH");
-    lib = char (pycall ("os.path.join", libdir, multiarch, ldlibrary));
-    prefix = char (pycall ("sysconfig.get_config_var", "prefix"));
+    multiarch = char_none (pycall ("sysconfig.get_config_var", "MULTIARCH"));
+    lib = char_none (pycall ("os.path.join", libdir, multiarch, ldlibrary));
+    prefix = char_none (pycall ("sysconfig.get_config_var", "prefix"));
 
     printf ("       version: \"%s\"\n", ver);
     printf ("    executable: \"%s\"\n", exec);
