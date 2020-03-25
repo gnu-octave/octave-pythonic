@@ -100,7 +100,7 @@ def get_lib_dir():
 def get_linker_opts():
     """Return a list of linker options needed for using the Python library."""
     lib_dir = get_lib_dir()
-    return ["-L" + lib_dir, "-Wl,-rpath=" + lib_dir] if lib_dir else []
+    return ["-L" + lib_dir, "-Wl,-rpath," + lib_dir] if lib_dir else []
 
 
 def quotify(word):
