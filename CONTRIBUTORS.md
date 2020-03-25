@@ -2,6 +2,7 @@
 
 - NVS Abhilash
 - Juan Pablo Carbajal
+- Avinoam Kalma
 - Vijay Krishnavanshi
 - Colin Macdonald
 - Mike Miller
