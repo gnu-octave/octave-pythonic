@@ -336,6 +336,9 @@ endclassdef
 %!error pyobject (struct ("a", {}))
 %!error pyobject (struct ("a", {1, 2}))
 
+%!error <unable to convert Octave struct array to a Python object>
+%! pyobject (struct ('a', {1, 2, 3, 4}))
+
 %!assert (char (pyeval ("None")), "None")
 %!assert (char (pyeval ("'this is a string'")), "this is a string")
 %!assert (char (pyeval ("[1, 2, 3, 4, 5]")), "[1, 2, 3, 4, 5]")
