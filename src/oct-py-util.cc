@@ -28,6 +28,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #endif
 
 #include <Python.h>
+#include <vector>
 #include <octave/oct-map.h>
 #include <octave/oct.h>
 #include <octave/parse.h>

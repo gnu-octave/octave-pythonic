@@ -25,6 +25,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #if ! defined (pythonic_oct_py_types_h)
 #define pythonic_oct_py_types_h 1
 
+#include <stdint.h>
 #include <Python.h>
 #include <complex>
 #include <string>
