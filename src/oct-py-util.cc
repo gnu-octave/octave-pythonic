@@ -276,7 +276,6 @@ namespace pythonic
         if (tuple && PyTuple_Check (tuple))
           {
             uint64_t count = PyLong_AsLong (PyTuple_GetItem (tuple, 0));
-            //octave_stdout << "objstore debug: deleting key " << key << " w/ count " << count << " and erasing refcount" << std::endl;
             if (count > 1)
               {
                 PyObject *obj = PyTuple_GetItem (tuple, 1);
@@ -290,7 +289,6 @@ namespace pythonic
       }
     else
       {
-        //octave_stdout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
         // FIXME: surely this is an error?
       }
     store.release ();
