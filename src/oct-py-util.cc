@@ -230,7 +230,8 @@ namespace pythonic
         Py_DECREF (valtypename);
 
         std::string s;
-        if (false) // TODO http://gitlab.com/mtmiller/octave-pythonic/issues/51
+        if (false)
+          // FIXME: http://gitlab.com/mtmiller/octave-pythonic/issues/51
           s = "<large object>";
         else
           {
