@@ -36,29 +36,29 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #include "oct-py-util.h"
 
 DEFUN_DLD (pyeval, args, nargout,
-           "-*- texinfo -*-\n\
-@deftypefn  {} {} pyeval (@var{expr})\n\
-@deftypefnx {} {} pyeval (@var{expr}, @var{localns})\n\
-@deftypefnx {} {@var{x} =} pyeval (@dots{})\n\
-Evaluate a Python expression and return the result.\n\
-\n\
-When called with an optional second argument, @var{localns} is a\n\
-@code{py.dict} that acts as the namespace for any assignments or other\n\
-side effects of the expression.\n\
-\n\
-Examples:\n\
-@example\n\
-@group\n\
-pyexec (\"import sys\")\n\
-pyeval (\"sys.version\")\n\
-  @result{} ...\n\
-pyeval (\"dict(two=2)\")\n\
-  @result{} [Python object of type dict]\n\
-      @{'two': 2@}\n\
-@end group\n\
-@end example\n\
-@seealso{pycall, pyexec}\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn  {} {} pyeval (@var{expr})
+@deftypefnx {} {} pyeval (@var{expr}, @var{localns})
+@deftypefnx {} {@var{x} =} pyeval (@dots{})
+Evaluate a Python expression and return the result.
+
+When called with an optional second argument, @var{localns} is a
+@code{py.dict} that acts as the namespace for any assignments or other
+side effects of the expression.
+
+Examples:
+@example
+@group
+pyexec ("import sys")
+pyeval ("sys.version")
+  @result{} ...
+pyeval ("dict(two=2)")
+  @result{} [Python object of type dict]
+      @{'two': 2@}
+@end group
+@end example
+@seealso{pycall, pyexec}
+@end deftypefn)doc")
 {
   octave_value_list retval;
 
