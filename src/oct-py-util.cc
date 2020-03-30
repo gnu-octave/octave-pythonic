@@ -246,7 +246,7 @@ namespace pythonic
 #endif
                 Py_DECREF (valuestr);
                 if (s.empty ())
-		  s = "<failed to extract string>";
+                  s = "<failed to extract string>";
                 if (s.length() > 1000)
                   s = s.substr (0, 1000-3) + "...";
               }
