@@ -25,6 +25,7 @@
 ## @deftypefnx {} {} pythonic update
 ## @deftypefnx {} {} pythonic version
 ## @deftypefnx {} {} pythonic versions
+## @deftypefnx {} {} pythonic wiki
 ## @deftypefnx {} {@var{v} =} pythonic ("version")
 ## @deftypefnx {} {@var{v} =} pythonic ("versions")
 ## Display useful information about the Pythonic package.
@@ -39,6 +40,9 @@
 ## @item  @qcode{"gitlab"}
 ## @itemx @qcode{"git"}
 ## Open the project page on GitLab in the default web browser.
+##
+## @item @qcode{"wiki"}
+## Open the project page on Wiki in the default web browser.
 ##
 ## @item  @qcode{"issue"}
 ## @itemx @qcode{"bug"}
@@ -70,6 +74,8 @@ function varargout = pythonic (command)
       help ();
     case {"git", "gitl", "gitla", "gitlab"}
       gitlab ();
+    case "wiki"
+      wiki ();
     case {"iss", "issu", "issue", "bug"}
       issue ();
     case {"up", "upd", "upda", "updat", "update"}
@@ -113,6 +119,10 @@ endfunction
 
 function gitlab ()
   pythonic_web ("https://gitlab.com/mtmiller/octave-pythonic");
+endfunction
+
+function wiki ()
+  pythonic_web ("https://wiki.octave.org/Pythonic");
 endfunction
 
 function issue ()
