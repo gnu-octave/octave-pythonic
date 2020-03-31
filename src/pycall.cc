@@ -36,42 +36,42 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #include "oct-py-util.h"
 
 DEFUN_DLD (pycall, args, nargout,
-           "-*- texinfo -*-\n\
-@deftypefn  {} {} pycall (@var{func})\n\
-@deftypefnx {} {@var{x} =} pycall (@var{func})\n\
-@deftypefnx {} {@var{x} =} pycall (@var{func}, @var{arg1}, @var{arg2}, @dots{})\n\
-Call a Python function or callable, passing Octave values as arguments.\n\
-\n\
-Examples:\n\
-@example\n\
-@group\n\
-pycall (\"float\", 6)\n\
-  @result{} 6\n\
-pycall (\"os.getuid\")\n\
-  @result{} ...\n\
-pycall (\"math.sqrt\", 2)\n\
-  @result{} 1.4142\n\
-@end group\n\
-@end example\n\
-\n\
-If the callable has no return, and an lvalue is specified, it will be set\n\
-to @code{None}.  However, if no lvalue was specified, @code{ans} will not\n\
-be set.  For example:\n\
-@example\n\
-@group\n\
-s = pyeval (\"set([1, 2])\");\n\
-pycall (s.add, 3)\n\
-\n\
-r = pycall (s.add, 4)\n\
-  @result{} r = [Python object of type NoneType]\n\
-\n\
-      None\n\
-\n\
-@end group\n\
-@end example\n\
-\n\
-@seealso{pyeval, pyexec}\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn  {} {} pycall (@var{func})
+@deftypefnx {} {@var{x} =} pycall (@var{func})
+@deftypefnx {} {@var{x} =} pycall (@var{func}, @var{arg1}, @var{arg2}, @dots{})
+Call a Python function or callable, passing Octave values as arguments.
+
+Examples:
+@example
+@group
+pycall ("float", 6)
+  @result{} 6
+pycall ("os.getuid")
+  @result{} ...
+pycall ("math.sqrt", 2)
+  @result{} 1.4142
+@end group
+@end example
+
+If the callable has no return, and an lvalue is specified, it will be set
+to @code{None}.  However, if no lvalue was specified, @code{ans} will not
+be set.  For example:
+@example
+@group
+s = pyeval ("set([1, 2])");
+pycall (s.add, 3)
+
+r = pycall (s.add, 4)
+  @result{} r = [Python object of type NoneType]
+
+      None
+
+@end group
+@end example
+
+@seealso{pyeval, pyexec}
+@end deftypefn)doc")
 {
   octave_value_list retval;
   std::string id;

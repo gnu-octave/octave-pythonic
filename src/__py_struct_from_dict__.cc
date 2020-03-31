@@ -38,12 +38,12 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 // PKG_ADD: autoload ("__py_class_name__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_class_name__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_class_name__, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn  {} {} __py_class_name__ (@var{obj})\n\
-Return the name of the class of the Python object @var{obj}.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn  {} {} __py_class_name__ (@var{obj})
+Return the name of the class of the Python object @var{obj}.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   if (args.length () != 1)
     print_usage ();
@@ -78,12 +78,12 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_int64_scalar_value__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_int64_scalar_value__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_int64_scalar_value__, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn {} {} __py_int64_scalar_value__ (@var{x})\n\
-Extract a scalar int64 value from the Python integer @var{x}.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn {} {} __py_int64_scalar_value__ (@var{x})
+Extract a scalar int64 value from the Python integer @var{x}.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   if (args.length () != 1)
     print_usage ();
@@ -115,12 +115,12 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_uint64_scalar_value__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_uint64_scalar_value__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_uint64_scalar_value__, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn {} {} __py_uint64_scalar_value__ (@var{x})\n\
-Extract a scalar uint64 value from the Python integer @var{x}.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn {} {} __py_uint64_scalar_value__ (@var{x})
+Extract a scalar uint64 value from the Python integer @var{x}.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   if (args.length () != 1)
     print_usage ();
@@ -151,12 +151,12 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_is_none__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_is_none__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_is_none__, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn  {} {} __py_is_none__ (@var{x})\n\
-Check whether the Python object @var{obj} is the @code{None} object.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn  {} {} __py_is_none__ (@var{x})
+Check whether the Python object @var{obj} is the @code{None} object.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   if (args.length () != 1)
     print_usage ();
@@ -183,26 +183,26 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_isinstance__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_isinstance__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_isinstance__, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn  {} {} __py_isinstance__ (@var{x}, @var{type})\n\
-Check whether @var{x} is an instance of a Python type named by the string\n\
-@var{type}.\n\
-\n\
-For example\n\
-\n\
-@example\n\
-@group\n\
-__py_isinstance__ (py.list, \"py.list\")\n\
-@result{} 1\n\
-__py_isinstance__ (py.sys.version, \"py.str\")\n\
-@result{} 1\n\
-__py_isinstance__ (py.list, \"py.no.such.object\")\n\
-@result{} 0\n\
-@end group\n\
-@end example\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn  {} {} __py_isinstance__ (@var{x}, @var{type})
+Check whether @var{x} is an instance of a Python type named by the string
+@var{type}.
+
+For example
+
+@example
+@group
+__py_isinstance__ (py.list, "py.list")
+@result{} 1
+__py_isinstance__ (py.sys.version, "py.str")
+@result{} 1
+__py_isinstance__ (py.list, "py.no.such.object")
+@result{} 0
+@end group
+@end example
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   octave_value_list retval;
 
@@ -254,15 +254,15 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_objstore_clear__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_objstore_clear__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_objstore_clear__, , ,
-           "-*- texinfo -*-\n\
-@deftypefn {} {} __py_objstore_clear__ ()\n\
-Clear the contents of the Python object store.\n\
-\n\
-If any existing variables refer to Python values, they will no longer be\n\
-valid.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn {} {} __py_objstore_clear__ ()
+Clear the contents of the Python object store.
+
+If any existing variables refer to Python values, they will no longer be
+valid.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   pythonic::py_init ();
 
@@ -274,14 +274,14 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_objstore_drop__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_objstore_drop__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_objstore_drop__, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn {} {} __py_objstore_drop__ (@var{key})\n\
-Drop one reference from the Python object stored under @var{key}.\n\
-\n\
-If there are no more references, this will delete the object.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn {} {} __py_objstore_drop__ (@var{key})
+Drop one reference from the Python object stored under @var{key}.
+
+If there are no more references, this will delete the object.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   if (args.length () != 1)
     print_usage ();
@@ -297,12 +297,12 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_objstore_get__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_objstore_get__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_objstore_get__, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn {} {} __py_objstore_get__ (@var{key})\n\
-Get the Python object stored under @var{key} from the object store.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn {} {} __py_objstore_get__ (@var{key})
+Get the Python object stored under @var{key} from the object store.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   if (args.length () != 1)
     print_usage ();
@@ -323,12 +323,12 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_objstore_put__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_objstore_put__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_objstore_put__, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn {} {} __py_objstore_put__ (@var{value})\n\
-Convert @var{value} to a Python value and store in the object store.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn {} {} __py_objstore_put__ (@var{value})
+Convert @var{value} to a Python value and store in the object store.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   if (args.length () != 1)
     print_usage ();
@@ -348,12 +348,12 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_objstore_put_none__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_objstore_put_none__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_objstore_put_none__, , ,
-           "-*- texinfo -*-\n\
-@deftypefn {} {} __py_objstore_put_none__ ()\n\
-Store None in the object store and return its index.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn {} {} __py_objstore_put_none__ ()
+Store None in the object store and return its index.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   pythonic::py_init ();
 
@@ -365,12 +365,12 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_objstore_list__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_objstore_list__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_objstore_list__, , ,
-           "-*- texinfo -*-\n\
-@deftypefn {} {} __py_objstore_list__ ()\n\
-Return all Python objects and their ref counts in the object store.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn {} {} __py_objstore_list__ ()
+Return all Python objects and their ref counts in the object store.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   pythonic::py_init ();
 
@@ -382,12 +382,12 @@ This is a private internal function not intended for direct use.\n\
 // PKG_ADD: autoload ("__py_string_value__", "__py_struct_from_dict__.oct");
 // PKG_DEL: autoload ("__py_string_value__", which ("__py_struct_from_dict__.oct"), "remove");
 DEFUN_DLD (__py_string_value__, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn {} {} __py_string_value__ (@var{obj})\n\
-Return the string value or representation of the Python object @var{obj}.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn {} {} __py_string_value__ (@var{obj})
+Return the string value or representation of the Python object @var{obj}.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   if (args.length () != 1)
     print_usage ();
@@ -436,12 +436,12 @@ This is a private internal function not intended for direct use.\n\
 */
 
 DEFUN_DLD (__py_struct_from_dict__, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn  {} {} __py_struct_from_dict__ (@var{dict})\n\
-Extract a scalar struct from the Python dict @var{dict}.\n\
-\n\
-This is a private internal function not intended for direct use.\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn  {} {} __py_struct_from_dict__ (@var{dict})
+Extract a scalar struct from the Python dict @var{dict}.
+
+This is a private internal function not intended for direct use.
+@end deftypefn)doc")
 {
   octave_value_list retval;
   std::string id;

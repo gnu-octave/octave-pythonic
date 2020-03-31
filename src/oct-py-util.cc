@@ -28,6 +28,7 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #endif
 
 #include <Python.h>
+#include <vector>
 #include <octave/oct-map.h>
 #include <octave/oct.h>
 #include <octave/parse.h>
@@ -229,7 +230,8 @@ namespace pythonic
         Py_DECREF (valtypename);
 
         std::string s;
-        if (false) // TODO http://gitlab.com/mtmiller/octave-pythonic/issues/51
+        if (false)
+          // FIXME: http://gitlab.com/mtmiller/octave-pythonic/issues/51
           s = "<large object>";
         else
           {
@@ -245,7 +247,7 @@ namespace pythonic
 #endif
                 Py_DECREF (valuestr);
                 if (s.empty ())
-		  s = "<failed to extract string>";
+                  s = "<failed to extract string>";
                 if (s.length() > 1000)
                   s = s.substr (0, 1000-3) + "...";
               }
@@ -275,7 +277,6 @@ namespace pythonic
         if (tuple && PyTuple_Check (tuple))
           {
             uint64_t count = PyLong_AsLong (PyTuple_GetItem (tuple, 0));
-            //octave_stdout << "objstore debug: deleting key " << key << " w/ count " << count << " and erasing refcount" << std::endl;
             if (count > 1)
               {
                 PyObject *obj = PyTuple_GetItem (tuple, 1);
@@ -289,7 +290,6 @@ namespace pythonic
       }
     else
       {
-        //octave_stdout << "objstore debug: asked to delete key " << key << " but its not present" << std::endl;
         // FIXME: surely this is an error?
       }
     store.release ();

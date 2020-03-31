@@ -35,26 +35,26 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #include "oct-py-util.h"
 
 DEFUN_DLD (pyexec, args, ,
-           "-*- texinfo -*-\n\
-@deftypefn  {} {} pyexec (@var{expr})\n\
-@deftypefnx {} {} pyexec (@var{expr}, @var{localns})\n\
-Execute a Python expression or block of code.\n\
-\n\
-When called with an optional second argument, @var{localns} is a\n\
-@code{py.dict} that acts as the namespace for any assignments or other\n\
-side effects of the expression.\n\
-\n\
-Examples:\n\
-@example\n\
-@group\n\
-@c FIXME: Python stdout not same as Octave's https://gitlab.com/mtmiller/octave-pythonic/issues/7\n\
-@c doctest: +XFAIL\n\
-pyexec (\"print(42)\")\n\
-  @print{} 42\n\
-@end group\n\
-@end example\n\
-@seealso{pycall, pyeval}\n\
-@end deftypefn")
+           R"doc(-*- texinfo -*-
+@deftypefn  {} {} pyexec (@var{expr})
+@deftypefnx {} {} pyexec (@var{expr}, @var{localns})
+Execute a Python expression or block of code.
+
+When called with an optional second argument, @var{localns} is a
+@code{py.dict} that acts as the namespace for any assignments or other
+side effects of the expression.
+
+Examples:
+@example
+@group
+@c FIXME: Python stdout not same as Octave's https://gitlab.com/mtmiller/octave-pythonic/issues/7
+@c doctest: +XFAIL
+pyexec ("print(42)")
+  @print{} 42
+@end group
+@end example
+@seealso{pycall, pyeval}
+@end deftypefn)doc")
 {
   octave_value_list retval;
 
