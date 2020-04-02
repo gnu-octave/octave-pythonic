@@ -313,7 +313,7 @@ This is a private internal function not intended for direct use.
   PyObject *obj = pythonic::py_objstore_get (key);
 
   if (! obj)
-    error ("__py_objstore_get__: no existing Python object found for key %ju", key);
+    error ("__py_objstore_get__: no existing Python object found for key %" PRIu64, key);
 
   octave_value retval = pythonic::pyobject_wrap_object (obj);
 
