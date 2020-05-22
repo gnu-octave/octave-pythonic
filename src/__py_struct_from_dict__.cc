@@ -27,6 +27,12 @@ along with Octave Pythonic; see the file COPYING.  If not, see
 #  include <config.h>
 #endif
 
+#if ! defined (__STDC_FORMAT_MACROS)
+#  define __STDC_FORMAT_MACROS
+#endif
+
+#include <cinttypes>
+
 #include <Python.h>
 #include <octave/oct.h>
 
