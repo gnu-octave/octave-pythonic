@@ -29,7 +29,8 @@ PYTHON_VERSION  ?= 3
 SED             ?= sed
 
 ARFLAGS  = cr
-CXXFLAGS = -g -O2
+
+export CXXFLAGS ?= -g -O2
 
 srcdir = .
 
