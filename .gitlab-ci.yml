@@ -160,6 +160,18 @@ python3.8:devel:
   image: registry.gitlab.com/mtmiller/docker-octave:devel
   allow_failure: true
 
+python3.9:
+  variables:
+    <<: *variables
+    PYTHON_VERSION: "3.9"
+    PYTHON_VERSION_FULL: "3.9.0"
+  extends: .test:pyenv
+
+python3.9:devel:
+  extends: python3.9
+  image: registry.gitlab.com/mtmiller/docker-octave:devel
+  allow_failure: true
+
 pkg:python2:
   variables:
     <<: *variables
